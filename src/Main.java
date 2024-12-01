@@ -2,8 +2,6 @@
 import java.sql.*;
 import javax.swing.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
         try{
@@ -20,5 +18,9 @@ public class Main {
             System.out.println(e.getMessage());
         }
 
+        PaginaHome home = new PaginaHome();
+
+
+        /// de facut aici chestiile ce tin de frame
     }
 }
