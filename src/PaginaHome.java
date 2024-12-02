@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class PaginaHome {
+public class PaginaHome extends JPanel {
 
     public JButton CreateButton(String nume, JPanel panel) {
         JButton buton = new JButton(nume);
@@ -15,24 +15,16 @@ public class PaginaHome {
     }
 
 
-    public PaginaHome(){
-        JFrame frame = new JFrame();
+    public PaginaHome(JFrame frame) {
+
         frame.setTitle("PaginaHome");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setVisible(true);
+        /// Panelul (adica clasa noastra) care contine butoanele
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        /// Panelul care contine butoanele
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton butonAutentificare = CreateButton("Autentificare", panel);
-
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));           // trebuie intre elementele intre care vreau spatiu
-
-        JButton butonLogin = CreateButton("Login", panel);
-
+        JButton butonAutentificare = CreateButton("Autentificare", this);
+        this.add(Box.createRigidArea(new Dimension(0, 20)));           // trebuie intre elementele intre care vreau spatiu
+        JButton butonLogin = CreateButton("Login", this);
         butonLogin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
@@ -45,8 +37,6 @@ public class PaginaHome {
         });
 
         frame.setLayout(new GridBagLayout());
-        frame.add(panel);
-
+        frame.add(this);
     }
-
 }

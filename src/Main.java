@@ -1,4 +1,5 @@
 
+import java.awt.*;
 import java.sql.*;
 import javax.swing.*;
 
@@ -18,9 +19,16 @@ public class Main {
             System.out.println(e.getMessage());
         }
 
-        PaginaHome home = new PaginaHome();
+        ///  Frame-ul nostru
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setVisible(true);
+
+        JPanel panel = new PaginaHome(frame);
+        frame.add(panel);
 
 
-        /// de facut aici chestiile ce tin de frame
+
     }
 }
