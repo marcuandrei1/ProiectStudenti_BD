@@ -5,7 +5,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 public class PaginaAutentificare extends JPanel {
-    JLabel titluText = new JLabel("CNP:");
 
     public JTextField textCNP = new JTextField();
     public JTextField textNume = new JTextField();
