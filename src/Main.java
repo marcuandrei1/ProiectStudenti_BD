@@ -28,7 +28,5 @@ public class Main {
         JPanel panel = new PaginaHome(frame);
         frame.add(panel);
 
-
-
     }
 }
