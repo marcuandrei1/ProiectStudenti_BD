@@ -10,12 +10,15 @@ public class PaginaInitiala extends JPanel {
 
     public PaginaInitiala(JFrame frame) {
 
-        frame.setTitle("PaginaHome");
+        frame.setTitle("PaginaInitiala");
+        this.setLayout(new GridBagLayout());
         /// Panelul (adica clasa noastra) care contine butoanele
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JButton butonAutentificare = FunctiiUtile.CreateButton("Autentificare", this);
+        JPanel panelButtons = new JPanel();
+        panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.Y_AXIS));
+        panelButtons.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton butonAutentificare = FunctiiUtile.CreateButton("Autentificare", panelButtons);
         butonAutentificare.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
@@ -26,19 +29,18 @@ public class PaginaInitiala extends JPanel {
             }
         });
 
-        this.add(Box.createRigidArea(new Dimension(0, 20)));           // trebuie intre elementele intre care vreau spatiu
-        JButton butonLogin = FunctiiUtile.CreateButton("Login", this);
+        panelButtons.add(Box.createRigidArea(new Dimension(0, 20)));           // trebuie intre elementele intre care vreau spatiu
+        JButton butonLogin = FunctiiUtile.CreateButton("Login", panelButtons);
         butonLogin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
                 frame.setTitle("PaginaLogare");
-                frame.getContentPane().add(new PaginaLogare(frame));             // seteaza ca content un nou panel (PaginaLogare care extends JPanel)
+                frame.add(new PaginaLogare(frame),BorderLayout.CENTER);             // seteaza ca content un nou panel (PaginaLogare care extends JPanel)
                 frame.revalidate();
                 frame.repaint();
             }
         });
+        this.add(panelButtons);
 
-        frame.setLayout(new GridBagLayout());
-        frame.add(this);
     }
 }

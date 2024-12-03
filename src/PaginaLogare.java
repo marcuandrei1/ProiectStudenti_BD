@@ -19,7 +19,7 @@ public class PaginaLogare extends JPanel {
 
             Statement statement=conn.createStatement();
             ResultSet rs=statement.executeQuery("SELECT Username FROM utilizator");
-
+            //TODO:as pune conexiunea intr o clasa noua,conditia nu pare buna ca trebuie sa cauta prin toate usernamurile inainte sa dea exceptie
             while(rs.next()){
                 if (!rs.getString("Username").equals(s))
                     throw new IOException(s);
@@ -37,7 +37,10 @@ public class PaginaLogare extends JPanel {
 
     public PaginaLogare(JFrame frame) {
 
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setLayout(new GridBagLayout());
+
+        JPanel dataPanel =new JPanel();
+        dataPanel.setLayout(new BoxLayout(dataPanel, BoxLayout.Y_AXIS));
 
 
 
@@ -54,33 +57,17 @@ public class PaginaLogare extends JPanel {
 
 
 
-        this.add(l1);
-        this.add(Box.createVerticalStrut(10));
-        this.add(l2);
-        this.add(Box.createVerticalStrut(30));
+        dataPanel.add(l1);
+        dataPanel.add(Box.createVerticalStrut(10));
+        dataPanel.add(l2);
+        dataPanel.add(Box.createVerticalStrut(10));
 
-
-
-
-        JButton home = new JButton("Home");
-        home.setBackground(Color.LIGHT_GRAY);
-
-
-
-        home.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.getContentPane().removeAll();
-                frame.setTitle("PaginaInitiala");
-                frame.getContentPane().add(new PaginaInitiala(frame));
-                frame.revalidate();
-                frame.repaint();
-            }
-        });
-
-        JButton submit = FunctiiUtile.CreateButton("Submit",this);
+        JButton submit = FunctiiUtile.CreateButton("Submit",dataPanel);
 
         submit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                //TODO:aceasi chestie un singur try
                 try{
                     verificareUsername(username.getText());
                     System.out.println("Username valid!");
@@ -93,23 +80,38 @@ public class PaginaLogare extends JPanel {
                 }catch(IOException exception){
                     System.out.println("Password invalid");
                 }
-
-//                frame.getContentPane().removeAll();
-//                frame.setTitle("PaginaHome");
-//                frame.getContentPane().add(new PaginaHome(frame));
-//                frame.revalidate();
-//                frame.repaint();
+                frame.getContentPane().removeAll();
+                frame.setTitle("PaginaHome");
+                frame.getContentPane().add(new PaginaHome(frame));
+                frame.revalidate();
+                frame.repaint();
             }
         });
 
+        JPanel panelBack=new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton butonBack = new JButton("Inapoi");
+        butonBack.setBackground(Color.LIGHT_GRAY);
+        panelBack.add(butonBack);
 
 
-        home.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        this.add(home);
-        this.add(Box.createVerticalStrut(20));
-        this.add(submit);
-        this.add(Box.createVerticalStrut(20));
+        butonBack.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.getContentPane().removeAll();
+                frame.setTitle("PaginaInitiala");
+                frame.getContentPane().add(new PaginaInitiala(frame));
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+        this.add(dataPanel);
+        GridBagConstraints gbc=new GridBagConstraints();
+        gbc.gridx=0;
+        gbc.gridy=0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill=GridBagConstraints.BOTH;
+        this.add(panelBack,gbc);
 
 
     }

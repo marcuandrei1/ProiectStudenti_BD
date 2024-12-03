@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -112,7 +113,7 @@ public class PaginaAutentificare extends JPanel {
             ResultSet rs=statement.executeQuery("SELECT Username FROM utilizator");
 
             while(rs.next()){
-                if (!rs.getString("Username").equals(s))
+                if (rs.getString("Username").equals(s))
                     throw new IOException(s);
             }
         } catch (SQLException e) {
@@ -125,8 +126,8 @@ public class PaginaAutentificare extends JPanel {
     }
 
     public PaginaAutentificare(JFrame frame) {
-
         JPanel[] l = new JPanel[10];
+        JPanel data=new JPanel();
         l[0] = FunctiiUtile.creareText(textCNP,"CNP:  ","Introduce-ti CNP");
         l[1] = FunctiiUtile.creareText(textNume,"Nume:  ","Introduce-ti numele");
         l[2] = FunctiiUtile.creareText(textPrenume,"Prenume:  ","Introduce-ti prenumele");
@@ -138,17 +139,17 @@ public class PaginaAutentificare extends JPanel {
         l[8] = FunctiiUtile.creareText(textUsername,"Username:  ","Introduce-ti Username");
         l[9] = FunctiiUtile.creareText(textPassword,"Password:  ","Introduce-ti Password");
 
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
+        this.setLayout(new GridBagLayout());
+        data.setLayout(new BoxLayout(data, BoxLayout.Y_AXIS));
         for(int i=0;i<10;i++){
-            this.add(l[i]);
-            this.add(Box.createVerticalStrut(10));      /// lasa spatiu intre liniile JPanel-ului
+            data.add(l[i]);
+            data.add(Box.createVerticalStrut(10));      /// lasa spatiu intre liniile JPanel-ului
         }
 
-        JButton butonSubmit = FunctiiUtile.CreateButton("Submit", this);
+        JButton butonSubmit = FunctiiUtile.CreateButton("Submit", data);
         butonSubmit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
+                //TODO:un singur try nu merita 100 de mii,si refresh pagina daca ii gresit si spus unde
                 try{
                     verificareCNP(textCNP.getText());
                     System.out.println("CNP valid");
@@ -217,7 +218,10 @@ public class PaginaAutentificare extends JPanel {
                 frame.repaint();
             }
         });
-        JButton butonBack = FunctiiUtile.CreateButton("Înapoi", this);
+        JPanel panelBack=new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton butonBack = new JButton("Inapoi");
+        butonBack.setBackground(Color.LIGHT_GRAY);
+        panelBack.add(butonBack);
         butonBack.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
@@ -227,6 +231,16 @@ public class PaginaAutentificare extends JPanel {
                 frame.repaint();
             }
         });
+        this.add(data);
+        GridBagConstraints gbc=new GridBagConstraints();
+        gbc.gridx=0;
+        gbc.gridy=0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill=GridBagConstraints.BOTH;
+        this.add(panelBack,gbc);
+
+
     }
 
     public String getCNP() {
