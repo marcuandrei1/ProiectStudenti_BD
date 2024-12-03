@@ -1,19 +1,22 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class PaginaAutentificare extends JPanel {
 
-    public JTextField textCNP = new JTextField();
-    public JTextField textNume = new JTextField();
-    public JTextField textPrenume = new JTextField();
-    public JTextField textAdresa = new JTextField();
-    public JTextField textNrTel = new JTextField();
-    public JTextField textEmail = new JTextField();
-    public JTextField textContIBAN = new JTextField();
-    public JTextField textNrContract = new JTextField();
+    private JTextField textCNP = new JTextField();
+    private JTextField textNume = new JTextField();
+    private JTextField textPrenume = new JTextField();
+    private JTextField textAdresa = new JTextField();
+    private JTextField textNrTel = new JTextField();
+    private JTextField textEmail = new JTextField();
+    private JTextField textContIBAN = new JTextField();
+    private JTextField textNrContract = new JTextField();
 
 
 
-    public PaginaAutentificare() {
+    public PaginaAutentificare(JFrame frame) {
 
         JPanel[] l = new JPanel[8];
         l[0] = FunctiiUtile.creareText(textCNP,"CNP:  ","Introduce-ti CNP");
@@ -31,6 +34,29 @@ public class PaginaAutentificare extends JPanel {
             this.add(l[i]);
             this.add(Box.createVerticalStrut(10));      /// lasa spatiu intre liniile JPanel-ului
         }
+
+        JButton butonSubmit = FunctiiUtile.CreateButton("Submit", this);
+        butonSubmit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+
+                frame.getContentPane().removeAll();
+                frame.setTitle("PaginaHome");
+                frame.getContentPane().add(new PaginaHome(frame));
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+        JButton butonBack = FunctiiUtile.CreateButton("Înapoi", this);
+        butonBack.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.getContentPane().removeAll();
+                frame.setTitle("PaginaHome");
+                frame.getContentPane().add(new PaginaHome(frame));
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
     }
 
     public String getCNP() {

@@ -20,7 +20,7 @@ public class PaginaHome extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
                 frame.setTitle("PaginaAutentificare");
-                frame.getContentPane().add(new PaginaAutentificare());
+                frame.getContentPane().add(new PaginaAutentificare(frame));
                 frame.revalidate();
                 frame.repaint();
             }
