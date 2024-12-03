@@ -23,12 +23,16 @@ public class PaginaAutentificare extends JPanel {
         if (s.length()!=13 || !s.matches("\\d+"))
             throw new IOException(s);
     }
-    public static void verificareNULL(String s) throws IOException {
-        if (s.isEmpty())
+    public static void verificareNume(String s) throws IOException {
+        if (s.equals("Introduce-ti numele"))
+            throw new IOException(s);
+    }
+    public static void verificarePrenume(String s) throws IOException {
+        if (s.equals("Introduce-ti prenumele"))
             throw new IOException(s);
     }
     public static void verificareAdresa(String s) throws IOException {
-        if (s.isEmpty())
+        if (s.equals("Introduce-ti adresa"))
             throw new IOException(s);
         String regex = "^[A-Za-z\\s]+\\s*\\d+[A-Za-z]*$";
         if(!s.matches(regex))
@@ -39,7 +43,7 @@ public class PaginaAutentificare extends JPanel {
             throw new IOException(s);
     }
     public static void verificareEmail(String s) throws IOException {
-        if (s.isEmpty())
+        if (s.equals("Introduce-ti Email"))
             throw new IOException(s);
         String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         if(!s.matches(regex))
@@ -61,7 +65,7 @@ public class PaginaAutentificare extends JPanel {
         }
     }
     public static void verificareIban(String s) throws IOException {
-        if (s == null || s.length() < 15 || s.length() > 34) {
+        if (s.equals("Introduce-ti cont IBAN") || s.length() < 15 || s.length() > 34) {
             throw new IOException(s); // IBAN is too short or too long
         }
 
@@ -94,11 +98,11 @@ public class PaginaAutentificare extends JPanel {
             throw new IOException(s);
     }
     public static void verificareNrContract(String s) throws IOException {
-        if (s.isEmpty() || !s.matches("\\d+"))
+        if (s.equals("Introduce-ti numar de contract") || !s.matches("\\d+"))
             throw new IOException(s);
     }
     public static void verificareUsername(String s) throws IOException {
-        if (s.isEmpty())
+        if (s.equals("Introduce-ti Username"))
             throw new IOException(s);
         try{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
@@ -116,7 +120,7 @@ public class PaginaAutentificare extends JPanel {
         }
     }
     public static void verificarePassword(String s) throws IOException {
-        if (s.isEmpty())
+        if (s.equals("Introduce-ti Password"))
             throw new IOException(s);
     }
 
@@ -152,13 +156,13 @@ public class PaginaAutentificare extends JPanel {
                     System.out.println("CNP invalid");
                 }
                 try{
-                    verificareNULL(textNume.getText());
+                    verificareNume(textNume.getText());
                     System.out.println("Nume valid");
                 }catch(IOException exception){
                     System.out.println("Nume invalid");
                 }
                 try{
-                    verificareNULL(textPrenume.getText());
+                    verificarePrenume(textPrenume.getText());
                     System.out.println("Prenume valid");
                 }catch(IOException exception){
                     System.out.println("Prenume invalid");
