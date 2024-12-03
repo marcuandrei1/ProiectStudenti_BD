@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -41,8 +40,8 @@ public class PaginaAutentificare extends JPanel {
 
 
                 frame.getContentPane().removeAll();
-                frame.setTitle("PaginaHome");
-                frame.getContentPane().add(new PaginaHome(frame));
+                frame.setTitle("PaginaInitiala");
+                frame.getContentPane().add(new PaginaInitiala(frame));
                 frame.revalidate();
                 frame.repaint();
             }
@@ -51,8 +50,8 @@ public class PaginaAutentificare extends JPanel {
         butonBack.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
-                frame.setTitle("PaginaHome");
-                frame.getContentPane().add(new PaginaHome(frame));
+                frame.setTitle("PaginaInitiala");
+                frame.getContentPane().add(new PaginaInitiala(frame));
                 frame.revalidate();
                 frame.repaint();
             }

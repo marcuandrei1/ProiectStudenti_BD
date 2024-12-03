@@ -1,5 +1,4 @@
 
-import java.awt.*;
 import java.sql.*;
 import javax.swing.*;
 
@@ -25,7 +24,7 @@ public class Main {
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
 
-        JPanel panel = new PaginaHome(frame);
+        JPanel panel = new PaginaInitiala(frame);
         frame.add(panel);
         frame.setVisible(true);
     }

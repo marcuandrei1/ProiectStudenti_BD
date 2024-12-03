@@ -4,11 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class PaginaHome extends JPanel {
+public class PaginaInitiala extends JPanel {
 
 
 
-    public PaginaHome(JFrame frame) {
+    public PaginaInitiala(JFrame frame) {
 
         frame.setTitle("PaginaHome");
         /// Panelul (adica clasa noastra) care contine butoanele
