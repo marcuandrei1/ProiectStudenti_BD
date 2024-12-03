@@ -6,13 +6,6 @@ import java.awt.event.ActionListener;
 
 public class PaginaHome extends JPanel {
 
-    public JButton CreateButton(String nume, JPanel panel) {
-        JButton buton = new JButton(nume);
-        buton.setBackground(Color.LIGHT_GRAY);
-        buton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(buton);
-        return buton;
-    }
 
 
     public PaginaHome(JFrame frame) {
@@ -22,7 +15,7 @@ public class PaginaHome extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JButton butonAutentificare = CreateButton("Autentificare", this);
+        JButton butonAutentificare = FunctiiUtile.CreateButton("Autentificare", this);
         butonAutentificare.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
@@ -34,7 +27,7 @@ public class PaginaHome extends JPanel {
         });
 
         this.add(Box.createRigidArea(new Dimension(0, 20)));           // trebuie intre elementele intre care vreau spatiu
-        JButton butonLogin = CreateButton("Login", this);
+        JButton butonLogin = FunctiiUtile.CreateButton("Login", this);
         butonLogin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();

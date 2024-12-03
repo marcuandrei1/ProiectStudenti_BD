@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-public class BoxTextInformatii {
+public class FunctiiUtile {
 
     public static JPanel creareText(JTextField txt, String numeTitlu, String placeholder){
         JPanel panelMic = new JPanel(new BorderLayout());
@@ -32,5 +32,13 @@ public class BoxTextInformatii {
         panelMic.add(txt, BorderLayout.CENTER);
 
         return panelMic;
+    }
+
+    public static JButton CreateButton(String nume, JPanel panel) {
+        JButton buton = new JButton(nume);
+        buton.setBackground(Color.LIGHT_GRAY);
+        buton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(buton);
+        return buton;
     }
 }

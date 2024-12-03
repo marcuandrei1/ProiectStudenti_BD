@@ -1,8 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 public class PaginaAutentificare extends JPanel {
 
@@ -20,14 +16,14 @@ public class PaginaAutentificare extends JPanel {
     public PaginaAutentificare() {
 
         JPanel[] l = new JPanel[8];
-        l[0] = BoxTextInformatii.creareText(textCNP,"CNP:  ","Introduce-ti CNP");
-        l[1] = BoxTextInformatii.creareText(textNume,"Nume:  ","Introduce-ti numele");
-        l[2] = BoxTextInformatii.creareText(textPrenume,"Prenume:  ","Introduce-ti prenumele");
-        l[3] = BoxTextInformatii.creareText(textAdresa,"Adresa:  ","Introduce-ti adresa");
-        l[4] = BoxTextInformatii.creareText(textNrTel,"Nr. Telefon:  ","Introduce-ti numarul de telefon");
-        l[5] = BoxTextInformatii.creareText(textEmail,"Email:  ","Introduce-ti Email");
-        l[6] = BoxTextInformatii.creareText(textContIBAN,"IBAN:  ","Introduce-ti cont IBAN");
-        l[7] = BoxTextInformatii.creareText(textNrContract,"Nr. Contract:  ","Introduce-ti numar de contract");
+        l[0] = FunctiiUtile.creareText(textCNP,"CNP:  ","Introduce-ti CNP");
+        l[1] = FunctiiUtile.creareText(textNume,"Nume:  ","Introduce-ti numele");
+        l[2] = FunctiiUtile.creareText(textPrenume,"Prenume:  ","Introduce-ti prenumele");
+        l[3] = FunctiiUtile.creareText(textAdresa,"Adresa:  ","Introduce-ti adresa");
+        l[4] = FunctiiUtile.creareText(textNrTel,"Nr. Telefon:  ","Introduce-ti numarul de telefon");
+        l[5] = FunctiiUtile.creareText(textEmail,"Email:  ","Introduce-ti Email");
+        l[6] = FunctiiUtile.creareText(textContIBAN,"IBAN:  ","Introduce-ti cont IBAN");
+        l[7] = FunctiiUtile.creareText(textNrContract,"Nr. Contract:  ","Introduce-ti numar de contract");
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
