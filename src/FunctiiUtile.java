@@ -8,6 +8,7 @@ public class FunctiiUtile {
     public static JPanel creareText(JTextField txt, String numeTitlu, String placeholder){
         JPanel panelMic = new JPanel(new BorderLayout());
         JLabel label = new JLabel(numeTitlu);
+        label.setFont(new Font("Arial", Font.BOLD, 25));
 
         txt.setText(placeholder);
         txt.setForeground(Color.GRAY);
@@ -39,6 +40,13 @@ public class FunctiiUtile {
         buton.setBackground(Color.LIGHT_GRAY);
         buton.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(buton);
+        return buton;
+    }
+
+    public static JButton CreateButton(String nume) {
+        JButton buton = new JButton(nume);
+        buton.setBackground(Color.LIGHT_GRAY);
+        buton.setAlignmentX(Component.CENTER_ALIGNMENT);
         return buton;
     }
 }

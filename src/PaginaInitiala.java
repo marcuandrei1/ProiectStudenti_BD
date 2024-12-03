@@ -32,7 +32,7 @@ public class PaginaInitiala extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
                 frame.setTitle("PaginaLogare");
-                frame.getContentPane().add(new PaginaLogare());             // seteaza ca content un nou panel (PaginaLogare care extends JPanel)
+                frame.getContentPane().add(new PaginaLogare(frame));             // seteaza ca content un nou panel (PaginaLogare care extends JPanel)
                 frame.revalidate();
                 frame.repaint();
             }
