@@ -23,10 +23,10 @@ public class Main {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setVisible(true);
+
 
         JPanel panel = new PaginaHome(frame);
         frame.add(panel);
-
+        frame.setVisible(true);
     }
 }

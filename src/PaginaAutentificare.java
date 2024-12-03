@@ -15,46 +15,19 @@ public class PaginaAutentificare extends JPanel {
     public JTextField textContIBAN = new JTextField();
     public JTextField textNrContract = new JTextField();
 
-    public static JPanel creareText(JTextField txt,String numeTitlu,String placeholder){
-        JPanel panelMic = new JPanel(new BorderLayout());
-        JLabel label = new JLabel(numeTitlu);
 
-        txt.setText(placeholder);
-        txt.setForeground(Color.GRAY);
-
-        txt.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {                             /// cand dau click pe field, daca textul e la fel cu placeholder-ul atunci initializam cu ""
-                if(txt.getText().equals(placeholder)){
-                    txt.setText("");
-                    txt.setForeground(Color.BLACK);
-                }
-            }
-            @Override
-            public void focusLost(FocusEvent e) {           /// daca nu am introdus nimic atunci va ramane ce e ca placeholder
-                if(txt.getText().isEmpty()){
-                    txt.setText(placeholder);
-                    txt.setForeground(Color.GRAY);
-                }
-            }
-        });
-        panelMic.add(label, BorderLayout.WEST);
-        panelMic.add(txt, BorderLayout.CENTER);
-
-        return panelMic;
-    }
 
     public PaginaAutentificare() {
 
         JPanel[] l = new JPanel[8];
-        l[0] = creareText(textCNP,"CNP:  ","Introduce-ti CNP");
-        l[1] = creareText(textNume,"Nume:  ","Introduce-ti numele");
-        l[2] = creareText(textPrenume,"Prenume:  ","Introduce-ti prenumele");
-        l[3] = creareText(textAdresa,"Adresa:  ","Introduce-ti adresa");
-        l[4] = creareText(textNrTel,"Nr. Telefon:  ","Introduce-ti numarul de telefon");
-        l[5] = creareText(textEmail,"Email:  ","Introduce-ti Email");
-        l[6] = creareText(textContIBAN,"IBAN:  ","Introduce-ti cont IBAN");
-        l[7] = creareText(textNrContract,"Nr. Contract:  ","Introduce-ti numar de contract");
+        l[0] = BoxTextInformatii.creareText(textCNP,"CNP:  ","Introduce-ti CNP");
+        l[1] = BoxTextInformatii.creareText(textNume,"Nume:  ","Introduce-ti numele");
+        l[2] = BoxTextInformatii.creareText(textPrenume,"Prenume:  ","Introduce-ti prenumele");
+        l[3] = BoxTextInformatii.creareText(textAdresa,"Adresa:  ","Introduce-ti adresa");
+        l[4] = BoxTextInformatii.creareText(textNrTel,"Nr. Telefon:  ","Introduce-ti numarul de telefon");
+        l[5] = BoxTextInformatii.creareText(textEmail,"Email:  ","Introduce-ti Email");
+        l[6] = BoxTextInformatii.creareText(textContIBAN,"IBAN:  ","Introduce-ti cont IBAN");
+        l[7] = BoxTextInformatii.creareText(textNrContract,"Nr. Contract:  ","Introduce-ti numar de contract");
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
