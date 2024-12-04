@@ -10,7 +10,7 @@ public class PaginaLogare extends JPanel {
     private JTextField username = new JTextField();
     private JTextField password = new JTextField();
 
-    public static void verificareUsername(String s) throws IOException {
+    public  void verificareUsername(String s) throws IOException {
         if (s.equals("Introduce-ti Username"))
             throw new IOException(s);
         try{
@@ -18,7 +18,7 @@ public class PaginaLogare extends JPanel {
             Connection conn= DriverManager.getConnection(url);
 
             Statement statement=conn.createStatement();
-            ResultSet rs=statement.executeQuery("SELECT Username FROM utilizator");
+            ResultSet rs=statement.executeQuery("SELECT Username FROM utilizator WHERE Username="+ username.getText()+";");
             //TODO:as pune conexiunea intr o clasa noua,conditia nu pare buna ca trebuie sa cauta prin toate usernamurile inainte sa dea exceptie
             while(rs.next()){
                 if (!rs.getString("Username").equals(s))
@@ -71,15 +71,12 @@ public class PaginaLogare extends JPanel {
                 try{
                     verificareUsername(username.getText());
                     System.out.println("Username valid!");
-                }catch(IOException exception){
-                    System.out.println("Username invalid");
-                }
-                try{
                     verificarePassword(password.getText());
                     System.out.println("Password valid!");
                 }catch(IOException exception){
-                    System.out.println("Password invalid");
+                    System.out.println("Username or Password invalid");
                 }
+
                 frame.getContentPane().removeAll();
                 frame.setTitle("PaginaHome");
                 frame.getContentPane().add(new PaginaHome(frame));
