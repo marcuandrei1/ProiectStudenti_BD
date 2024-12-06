@@ -14,16 +14,16 @@ public class PaginaLogare extends JPanel {
         if (s.equals("Introduce-ti Username"))
             throw new IOException(s);
         try{
+            //TODO:as pune conexiunea intr o clasa noua
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
             Statement statement=conn.createStatement();
             ResultSet rs=statement.executeQuery("SELECT Username FROM utilizator WHERE Username="+ username.getText()+";");
-            //TODO:as pune conexiunea intr o clasa noua,conditia nu pare buna ca trebuie sa cauta prin toate usernamurile inainte sa dea exceptie
-            while(rs.next()){
+
                 if (!rs.getString("Username").equals(s))
                     throw new IOException(s);
-            }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -67,7 +67,7 @@ public class PaginaLogare extends JPanel {
         submit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                //TODO:aceasi chestie un singur try
+
                 try{
                     verificareUsername(username.getText());
                     System.out.println("Username valid!");
