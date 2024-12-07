@@ -9,16 +9,6 @@ import java.sql.*;
 
 public class PaginaAutentificare extends JPanel {
 
-    private JTextField textCNP = new JTextField();
-    private JTextField textNume = new JTextField();
-    private JTextField textPrenume = new JTextField();
-    private JTextField textAdresa = new JTextField();
-    private JTextField textNrTel = new JTextField();
-    private JTextField textEmail = new JTextField();
-    private JTextField textContIBAN = new JTextField();
-    private JTextField textNrContract = new JTextField();
-    private JTextField textUsername = new JTextField();
-    private JTextField textPassword = new JTextField();
 
     public static void verificareCNP(String s) throws IOException {
         if (s.length()!=13 || !s.matches("\\d+"))
@@ -54,13 +44,11 @@ public class PaginaAutentificare extends JPanel {
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
-            Statement statement=conn.createStatement();
-            ResultSet rs=statement.executeQuery("SELECT email FROM utilizator");
-
-            while(rs.next()){
-                if (!rs.getString("email").equals(s))
-                    throw new IOException(s);
-            }
+           PreparedStatement statement=conn.prepareStatement("SELECT email FROM utilizator WHERE email=?");
+           statement.setString(1,s);
+            ResultSet rs=statement.executeQuery();
+            if (!(!rs.isBeforeFirst() && rs.getRow()==0))
+                throw new IOException(s);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -109,23 +97,35 @@ public class PaginaAutentificare extends JPanel {
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
-            Statement statement=conn.createStatement();
-            ResultSet rs=statement.executeQuery("SELECT Username FROM utilizator");
 
-            while(rs.next()){
-                if (rs.getString("Username").equals(s))
-                    throw new IOException(s);
-            }
+            PreparedStatement statement=conn.prepareStatement("SELECT username FROM utilizator WHERE username=?");
+            statement.setString(1,s);
+            ResultSet rs=statement.executeQuery();
+            if (!(!rs.isBeforeFirst() && rs.getRow()==0))
+                throw new IOException(s);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
     public static void verificarePassword(String s) throws IOException {
+        //TODO:maybe check for a strong password?
         if (s.equals("Introduce-ti Password"))
             throw new IOException(s);
     }
 
     public PaginaAutentificare(JFrame frame) {
+        JTextField textCNP = new JTextField();
+        JTextField textNume = new JTextField();
+        JTextField textPrenume = new JTextField();
+        JTextField textAdresa = new JTextField();
+        JTextField textNrTel = new JTextField();
+        JTextField textEmail = new JTextField();
+        JTextField textContIBAN = new JTextField();
+        JTextField textNrContract = new JTextField();
+        JTextField textUsername = new JTextField();
+        JTextField textPassword = new JTextField();
+
+
         JPanel[] l = new JPanel[10];
         JPanel data=new JPanel();
         l[0] = FunctiiUtile.creareText(textCNP,"CNP:  ","Introduce-ti CNP");
@@ -149,73 +149,124 @@ public class PaginaAutentificare extends JPanel {
         JButton butonSubmit = FunctiiUtile.CreateButton("Submit", data);
         butonSubmit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //TODO:un singur try nu merita 100 de mii,si refresh pagina daca ii gresit si spus unde
+                int ok=1;
+                //TODO:you can check if email or username are duplicates with the same query,you dont need more
                 try{
                     verificareCNP(textCNP.getText());
                     System.out.println("CNP valid");
                 }catch(IOException exception){
-                    System.out.println("CNP invalid");
+                    System.out.println(exception.getMessage());
+                    ok=0;
                 }
                 try{
                     verificareNume(textNume.getText());
                     System.out.println("Nume valid");
                 }catch(IOException exception){
                     System.out.println("Nume invalid");
+                    ok=0;
                 }
                 try{
                     verificarePrenume(textPrenume.getText());
                     System.out.println("Prenume valid");
                 }catch(IOException exception){
                     System.out.println("Prenume invalid");
+                    ok=0;
                 }
                 try{
                     verificareAdresa(textAdresa.getText());
                     System.out.println("Adresa valid");
+
                 }catch(IOException exception){
                     System.out.println("Adresa invalid");
+                    ok=0;
                 }
                 try{
                     verificareNrtel(textNrTel.getText());
                     System.out.println("Numar Telefon valid");
                 }catch(IOException exception){
                     System.out.println("Numar Telefon invalid");
+                    ok=0;
                 }
                 try{
                     verificareEmail(textEmail.getText());
                     System.out.println("Email valid");
                 }catch(IOException exception){
                     System.out.println("Email invalid");
+                    ok=0;
                 }
                 try{
                     verificareIban(textContIBAN.getText());
                     System.out.println("ContIBAN valid");
                 }catch(IOException exception){
                     System.out.println("ContIBAN invalid");
+                    ok=0;
                 }
                 try{
                     verificareNrContract(textNrContract.getText());
                     System.out.println("NrContract valid");
                 }catch(IOException exception){
                     System.out.println("NrContract invalid");
+                    ok=0;
                 }
                 try{
                     verificareUsername(textUsername.getText());
                     System.out.println("Username valid");
                 }catch(IOException exception){
                     System.out.println("Username invalid");
+                    ok=0;
                 }
                 try{
                     verificarePassword(textPassword.getText());
                     System.out.println("Password valid");
                 }catch(IOException exception){
                     System.out.println("Password invalid");
+                    ok=0;
                 }
+                if(ok==1){//if all data is correct
+                    try{
+                        String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                        Connection conn= DriverManager.getConnection(url);
+                        PreparedStatement stmt = conn.prepareStatement("SELECT idAdresa FROM adresa WHERE idAdresa = (SELECT max(idAdresa) FROM adresa)");
+                        ResultSet ls = stmt.executeQuery();
 
-                frame.getContentPane().removeAll();
-                frame.setTitle("PaginaInitiala");
-                frame.getContentPane().add(new PaginaInitiala(frame));
-                frame.revalidate();
-                frame.repaint();
+                        int idAdresa = 1; // Default value if no records are found
+                        if (ls.next()) {
+                            idAdresa = ls.getInt("idAdresa") + 1; // Incrementing the max idAdresa
+                        }
+
+                        String[] parts = textAdresa.getText().split(" ", 2);
+
+                        // Step 4: Insert into 'adresa' table using prepared statement
+                        PreparedStatement insertAdresaStmt = conn.prepareStatement("INSERT INTO adresa(idAdresa, strada, numar) VALUES (?, ?, ?)");
+                        insertAdresaStmt.setInt(1, idAdresa); // Set idAdresa
+                        insertAdresaStmt.setString(2, parts[0]); // Set strada
+                        insertAdresaStmt.setInt(3, Integer.parseInt(parts[1])); // Set numar
+                        insertAdresaStmt.executeUpdate();
+
+                        // Step 5: Insert into 'utilizator' table using prepared statement
+                        PreparedStatement insertUtilizatorStmt = conn.prepareStatement("INSERT INTO utilizator(Username, password, CNP, nume, prenume, idAdresa, numarTelefon, email, IBAN, nrContract) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        insertUtilizatorStmt.setString(1, textUsername.getText()); // Set Username
+                        insertUtilizatorStmt.setString(2, textPassword.getText()); // Set Password
+                        insertUtilizatorStmt.setString(3, textCNP.getText()); // Set CNP
+                        insertUtilizatorStmt.setString(4, textNume.getText()); // Set Nume
+                        insertUtilizatorStmt.setString(5, textPrenume.getText()); // Set Prenume
+                        insertUtilizatorStmt.setInt(6, idAdresa); // Set idAdresa (from previous step)
+                        insertUtilizatorStmt.setString(7, textNrTel.getText()); // Set numarTelefon
+                        insertUtilizatorStmt.setString(8, textEmail.getText()); // Set email
+                        insertUtilizatorStmt.setString(9, textContIBAN.getText()); // Set IBAN
+                        insertUtilizatorStmt.setString(10, textNrContract.getText()); // Set nrContract
+                        insertUtilizatorStmt.executeUpdate();
+
+                    } catch (SQLException en) {
+                        System.out.println(en.getMessage());
+                    }
+                    frame.getContentPane().removeAll();
+                    frame.setTitle("PaginaInitiala");
+                    frame.getContentPane().add(new PaginaInitiala(frame));
+                    frame.revalidate();
+                    frame.repaint();
+                }
             }
         });
         JPanel panelBack=new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -241,9 +292,5 @@ public class PaginaAutentificare extends JPanel {
         this.add(panelBack,gbc);
 
 
-    }
-
-    public String getCNP() {
-        return textCNP.getText();
     }
 }

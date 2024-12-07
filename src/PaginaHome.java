@@ -4,8 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class PaginaHome extends JPanel {
-    public PaginaHome(JFrame frame) {
 
+
+    public PaginaHome(JFrame frame) {
         this.setLayout(new GridBagLayout());
 
         JButton profile = new JButtonCircle("Abc");

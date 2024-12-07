@@ -7,26 +7,9 @@ import java.sql.*;
 
 public class PaginaLogare extends JPanel {
 
-    private JTextField username = new JTextField();
-    private JTextField password = new JTextField();
-
     public  void verificareUsername(String s) throws IOException {
         if (s.equals("Introduce-ti Username"))
             throw new IOException(s);
-        try{
-            //TODO:as pune conexiunea intr o clasa noua
-            String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
-            Connection conn= DriverManager.getConnection(url);
-
-            Statement statement=conn.createStatement();
-            ResultSet rs=statement.executeQuery("SELECT Username FROM utilizator WHERE Username="+ username.getText()+";");
-
-                if (!rs.getString("Username").equals(s))
-                    throw new IOException(s);
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     public static void verificarePassword(String s) throws IOException {
@@ -34,8 +17,29 @@ public class PaginaLogare extends JPanel {
             throw new IOException(s);
     }
 
+    private static Utilizator getUser(String username,String password) throws IOException{
+        try{
+            String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+            Connection conn= DriverManager.getConnection(url);
 
+
+            PreparedStatement statement=conn.prepareStatement("SELECT * FROM utilizator WHERE username=? and password=?");
+            statement.setString(1,username);
+            statement.setString(2,password);
+            ResultSet rs=statement.executeQuery();
+            if (!rs.isBeforeFirst() && rs.getRow()==0)//e empty=>nu e bine
+                throw new IOException();
+            //Utilizator user=new Utilizator(rs.getString("username"),rs.getString("password"),rs.getString(""),
+             //                               rs.getString("nume"),rs.getString("prenume"),rs.getString(""))
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
     public PaginaLogare(JFrame frame) {
+        JTextField username = new JTextField();
+        JTextField password = new JTextField();
+
 
         this.setLayout(new GridBagLayout());
 
@@ -66,22 +70,18 @@ public class PaginaLogare extends JPanel {
 
         submit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
-
                 try{
                     verificareUsername(username.getText());
-                    System.out.println("Username valid!");
                     verificarePassword(password.getText());
-                    System.out.println("Password valid!");
+                    getUser(username.getText(),password.getText());
+                    frame.getContentPane().removeAll();
+                    frame.setTitle("PaginaHome");
+                    frame.getContentPane().add(new PaginaHome(frame));
+                    frame.revalidate();
+                    frame.repaint();
                 }catch(IOException exception){
                     System.out.println("Username or Password invalid");
                 }
-
-                frame.getContentPane().removeAll();
-                frame.setTitle("PaginaHome");
-                frame.getContentPane().add(new PaginaHome(frame));
-                frame.revalidate();
-                frame.repaint();
             }
         });
 
