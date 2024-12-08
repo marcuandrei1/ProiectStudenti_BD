@@ -8,7 +8,7 @@ public class FunctiiUtile {
     public static JPanel creareText(JTextField txt, String numeTitlu, String placeholder){
         JPanel panelMic = new JPanel(new BorderLayout());
         JLabel label = new JLabel(numeTitlu);
-        label.setFont(new Font("Arial", Font.BOLD, 25));
+        label.setFont(new Font("Arial", Font.BOLD, 15));
 
         txt.setText(placeholder);
         txt.setForeground(Color.GRAY);
@@ -37,7 +37,9 @@ public class FunctiiUtile {
 
     public static JButton CreateButton(String nume, JPanel panel) {
         JButton buton = new JButton(nume);
-        buton.setBackground(Color.LIGHT_GRAY);
+        buton.setBackground(Color.DARK_GRAY);
+        buton.setForeground(Color.WHITE);
+        buton.setFont(new Font("Arial", Font.BOLD, 15));
         buton.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(buton);
         return buton;

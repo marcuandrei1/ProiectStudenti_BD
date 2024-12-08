@@ -53,8 +53,8 @@ public class PaginaLogare extends JPanel {
 
         l1 = FunctiiUtile.creareText(username,"Username:  ","Introduce-ti Username");
         l2 = FunctiiUtile.creareText(password,"Parola:  ","Introduce-ti Password");
-        username.setFont(new Font("Arial", Font.PLAIN, 18));
-        password.setFont(new Font("Arial", Font.PLAIN, 18));
+        username.setFont(new Font("Arial", Font.PLAIN, 15));
+        password.setFont(new Font("Arial", Font.PLAIN, 15));
 
         l1.setAlignmentX(Component.CENTER_ALIGNMENT);
         l2.setAlignmentX(Component.CENTER_ALIGNMENT);

@@ -138,7 +138,16 @@ public class PaginaAutentificare extends JPanel {
         l[7] = FunctiiUtile.creareText(textNrContract,"Nr. Contract:  ","Introduce-ti numar de contract");
         l[8] = FunctiiUtile.creareText(textUsername,"Username:  ","Introduce-ti Username");
         l[9] = FunctiiUtile.creareText(textPassword,"Password:  ","Introduce-ti Password");
-
+        textCNP.setFont(new Font("Arial", Font.PLAIN, 15));
+        textNume.setFont(new Font("Arial", Font.PLAIN, 15));
+        textPrenume.setFont(new Font("Arial", Font.PLAIN, 15));
+        textAdresa.setFont(new Font("Arial", Font.PLAIN, 15));
+        textNrTel.setFont(new Font("Arial", Font.PLAIN, 15));
+        textEmail.setFont(new Font("Arial", Font.PLAIN, 15));
+        textContIBAN.setFont(new Font("Arial", Font.PLAIN, 15));
+        textNrContract.setFont(new Font("Arial", Font.PLAIN, 15));
+        textUsername.setFont(new Font("Arial", Font.PLAIN, 15));
+        textPassword.setFont(new Font("Arial", Font.PLAIN, 15));
         this.setLayout(new GridBagLayout());
         data.setLayout(new BoxLayout(data, BoxLayout.Y_AXIS));
         for(int i=0;i<10;i++){
