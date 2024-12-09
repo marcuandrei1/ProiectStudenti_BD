@@ -4,4 +4,5 @@ De adaugat tabelul Orar.
 De adaugat tabelul Calendar (si pentru profesori sa programeze chestii).
 
 TO DO in Proiect: 
-De adaugat date in campurile de autentificare si de populat tabele.
+-	In caz ca introduce date gresite sa apare cu rosu ceva avertizare.
+-	// TODO: de facut clasa abstracta si de facut clasele: student, administrator, profesor
