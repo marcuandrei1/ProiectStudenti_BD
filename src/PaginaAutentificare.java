@@ -225,7 +225,7 @@ public class PaginaAutentificare extends JPanel {
 
                         // Step 5: Insert into  table depending on what was chosen in combobox using prepared statement
                         if(job.equals("Student")){
-                            conn.prepareStatement("SELECT max(idStudent) as maxStudent FROM Student");
+                            stmt=conn.prepareStatement("SELECT max(idStudent) as maxStudent FROM student");
                             ResultSet rs = stmt.executeQuery();
 
                             int idStudent= 1; // Default value if no records are found
@@ -239,7 +239,7 @@ public class PaginaAutentificare extends JPanel {
                             insertStudentStmt.executeUpdate();
                         }
                         else if(job.equals("Profesor")){
-                            conn.prepareStatement("SELECT max(idProfesor) as maxProfesor FROM Profesor");
+                            stmt=conn.prepareStatement("SELECT max(idProfesor) as maxProfesor FROM profesor");
                             ResultSet rp= stmt.executeQuery();
 
                             int idProfesor = 1; // Default value if no records are found
