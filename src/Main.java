@@ -23,7 +23,7 @@ public class Main {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        //TODO:clasa utilizator pe care o trimit variabila instanta/locala in PaginaHome pentru a avea acces la toate datele despre acesta
+
        JPanel panel = new PaginaInitiala(frame);
 
         frame.add(panel, BorderLayout.CENTER);

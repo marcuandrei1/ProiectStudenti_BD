@@ -36,8 +36,6 @@ public class PaginaHome extends JPanel {
 
         this.add(topPanel,BorderLayout.NORTH);
 
-        //l.setLayout(new BorderLayout());
-       // l.add(logOut);
 
         profile.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

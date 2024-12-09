@@ -113,7 +113,7 @@ public class PaginaAutentificare extends JPanel {
             throw new IOException("Password invalid!");
     }
 
-    public PaginaAutentificare(JFrame frame) {
+    public PaginaAutentificare(JFrame frame,String job) {
         JTextField textCNP = new JTextField();
         JTextField textNume = new JTextField();
         JTextField textPrenume = new JTextField();
@@ -124,7 +124,6 @@ public class PaginaAutentificare extends JPanel {
         JTextField textNrContract = new JTextField();
         JTextField textUsername = new JTextField();
         JTextField textPassword = new JTextField();
-
 
         JPanel[] l = new JPanel[10];
         JPanel data=new JPanel();
@@ -154,11 +153,27 @@ public class PaginaAutentificare extends JPanel {
             data.add(l[i]);
             data.add(Box.createVerticalStrut(10));      /// lasa spatiu intre liniile JPanel-ului
         }
-
+        //daca e student
+        if(job.equals("Student")){
+            JTextField anStudiu=new JTextField();
+            JPanel p= FunctiiUtile.creareText(anStudiu,"An Studiu:","Introduce-ti anul de studiu");
+            anStudiu.setFont(new Font("Arial", Font.PLAIN, 15));
+            data.add(p);
+            data.add(Box.createVerticalStrut(10));
+        }
+        else if(job.equals("Profesor")){
+            JTextField departament =new JTextField();
+            JPanel p= FunctiiUtile.creareText(departament,"Departament: ","Introduce-ti departamentul");
+            departament.setFont(new Font("Arial", Font.PLAIN, 15));
+            data.add(p);
+            data.add(Box.createVerticalStrut(10));
+        }
+        else{
+            data.add(new Checkbox("Supervisor"));
+        }
         JButton butonSubmit = FunctiiUtile.CreateButton("Submit", data);
         butonSubmit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int ok=1;
                 //TODO:you can check if email or username are duplicates with the same query,you dont need more
                 try{
                     verificareCNP(textCNP.getText());
@@ -171,15 +186,11 @@ public class PaginaAutentificare extends JPanel {
                     verificareNrContract(textNrContract.getText());
                     verificareUsername(textUsername.getText());
                     verificarePassword(textPassword.getText());
-                }catch(IOException exception){
-                    System.out.println(exception.getMessage());
-                    ok=0;
-                }
-                if(ok==1){//if all data is correct
-                    try{
+
+                    try{//if all data is correct
                         String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                         Connection conn= DriverManager.getConnection(url);
-                        PreparedStatement stmt = conn.prepareStatement("SELECT idAdresa FROM adresa WHERE idAdresa = (SELECT max(idAdresa) FROM adresa)");
+                        PreparedStatement stmt = conn.prepareStatement(" SELECT max(idAdresa) FROM adresa");
                         ResultSet ls = stmt.executeQuery();
 
                         int idAdresa = 1; // Default value if no records are found
@@ -211,6 +222,17 @@ public class PaginaAutentificare extends JPanel {
                         insertUtilizatorStmt.setString(10, textNrContract.getText()); // Set nrContract
                         insertUtilizatorStmt.executeUpdate();
 
+                        // Step 5: Insert into  table depending on what was chosen in combobox using prepared statement
+                        /*if(Objects.equals(c1.getSelectedItem(), "Student")){
+                            conn.prepareStatement("SELECT max(idStudent) FROM Student");
+                            ls = stmt.executeQuery();
+
+                            int idStudent= 1; // Default value if no records are found
+                            if (ls.next()) {
+                                idStudent = ls.getInt("idStudent") + 1; // Incrementing the max idStudent
+                            }
+                           PreparedStatement insertStudentStmt=conn.prepareStatement("INSERT INTO student(idStudent,Username,anStudiu) VALUES ( ?, ?, ?)");
+                        }*/
                     } catch (SQLException en) {
                         System.out.println(en.getMessage());
                     }
@@ -219,6 +241,8 @@ public class PaginaAutentificare extends JPanel {
                     frame.getContentPane().add(new PaginaInitiala(frame));
                     frame.revalidate();
                     frame.repaint();
+                }catch(IOException exception){
+                    System.out.println(exception.getMessage());
                 }
             }
         });

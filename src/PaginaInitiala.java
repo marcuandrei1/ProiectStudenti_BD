@@ -12,22 +12,30 @@ public class PaginaInitiala extends JPanel {
 
         frame.setTitle("PaginaInitiala");
         this.setLayout(new GridBagLayout());
-        /// Panelul (adica clasa noastra) care contine butoanele
+
 
         JPanel panelButtons = new JPanel();
         panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.Y_AXIS));
-        panelButtons.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JButton butonAutentificare = FunctiiUtile.CreateButton("Autentificare", panelButtons);
+        JPanel btnAutentificare= new JPanel();
+        btnAutentificare.setLayout(new BoxLayout(btnAutentificare, BoxLayout.X_AXIS));
+
+        btnAutentificare.add(Box.createHorizontalStrut(173));//pentru aliniere
+        JButton butonAutentificare = FunctiiUtile.CreateButton("Autentificare", btnAutentificare);
+        JComboBox<String> c1=new JComboBox<>(new String[]{"Student", "Profesor", "Administrator"});
         butonAutentificare.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();
                 frame.setTitle("PaginaAutentificare");
-                frame.getContentPane().add(new PaginaAutentificare(frame));
+                frame.getContentPane().add(new PaginaAutentificare(frame, (String) c1.getSelectedItem()));
                 frame.revalidate();
                 frame.repaint();
             }
         });
+        btnAutentificare.add(Box.createHorizontalStrut(20));//pentru spatiu intre buton si combobox
+
+        btnAutentificare.add(c1);
+        panelButtons.add(btnAutentificare);
 
         panelButtons.add(Box.createRigidArea(new Dimension(0, 20)));           // trebuie intre elementele intre care vreau spatiu
         JButton butonLogin = FunctiiUtile.CreateButton("Login", panelButtons);
