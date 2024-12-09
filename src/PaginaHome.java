@@ -4,9 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class PaginaHome extends JPanel {
+    private Utilizator user;
 
+    // TODO de verificat ce am trimis aici parametru
+    public PaginaHome(JFrame frame,Utilizator user) {
+        this.user = user;
 
-    public PaginaHome(JFrame frame) {
         this.setLayout(new BorderLayout());
 
         JButton profile = new JButtonCircle("Profil");
@@ -54,41 +57,41 @@ public class PaginaHome extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         frame.getContentPane().removeAll();
                         frame.setTitle("PaginaHome");
-                        frame.getContentPane().add(new PaginaHome(frame));
+                        frame.getContentPane().add(new PaginaHome(frame,user));
                         frame.revalidate();
                         frame.repaint();
                     }
                 });
 
-                JLabel userNameLabel = new JLabel("User: cosmin1304");
+                JLabel userNameLabel = new JLabel("User: " + user.getUsername());
                 userNameLabel.setForeground(Color.black);
                 userNameLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-                JLabel numeLabel = new JLabel("Nume: Cosma");
+                JLabel numeLabel = new JLabel("Nume: " + user.getNume());
                 numeLabel.setForeground(Color.black);
                 numeLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-                JLabel prenumeLabel = new JLabel("Prenume: Cosmin");
+                JLabel prenumeLabel = new JLabel("Prenume: " + user.getPrenume());
                 prenumeLabel.setForeground(Color.black);
                 prenumeLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-                JLabel CNPJLabel = new JLabel("CNP: 5040413129557");
+                JLabel CNPJLabel = new JLabel("CNP: " + user.getCNP());
                 CNPJLabel.setForeground(Color.black);
                 CNPJLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-                JLabel emailLabel = new JLabel("Email: cosmincosma04@gmail.com");
+                JLabel emailLabel = new JLabel("Email: " + user.getEmail());
                 emailLabel.setForeground(Color.black);
                 emailLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-                JLabel adresaLabel = new JLabel("Adresa: Baritiu 58");
+                JLabel adresaLabel = new JLabel("Adresa: de facut adresa" );
                 adresaLabel.setForeground(Color.black);
                 adresaLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-                JLabel nrTelefonLabel = new JLabel("Nr Telefon: 0773815992");
+                JLabel nrTelefonLabel = new JLabel("Nr Telefon: " + user.getNume());
                 nrTelefonLabel.setForeground(Color.black);
                 nrTelefonLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-                JLabel nrContractLabel = new JLabel("Nr Contract: 30223");
+                JLabel nrContractLabel = new JLabel("Nr Contract: " + user.getNrContract());
                 nrContractLabel.setForeground(Color.black);
                 nrContractLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 

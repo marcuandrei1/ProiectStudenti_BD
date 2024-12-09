@@ -20,4 +20,40 @@ public class Utilizator {
         this.IBAN = IBAN;
         this.nrContract = nrContract;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getCNP() {
+        return CNP;
+    }
+
+    public String getNume() {
+        return nume;
+    }
+
+    public String getPrenume() {
+        return prenume;
+    }
+
+    public String getNumarTelefon() {
+        return numarTelefon;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getIBAN() {
+        return IBAN;
+    }
+
+    public int getNrContract() {
+        return nrContract;
+    }
 }

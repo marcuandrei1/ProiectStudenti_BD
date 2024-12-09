@@ -18,23 +18,36 @@ public class PaginaLogare extends JPanel {
     }
 
     private static Utilizator getUser(String username,String password) throws IOException{
+        Utilizator user = null;
         try{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
 
-            PreparedStatement statement=conn.prepareStatement("SELECT * FROM utilizator WHERE username=? and password=?");
+            PreparedStatement statement=conn.prepareStatement(
+                    "SELECT * FROM utilizator WHERE username=? and password=?");
+
             statement.setString(1,username);
             statement.setString(2,password);
+
             ResultSet rs=statement.executeQuery();
-            if (!rs.isBeforeFirst() && rs.getRow()==0)//e empty=>nu e bine
-                throw new IOException();
-            //Utilizator user=new Utilizator(rs.getString("username"),rs.getString("password"),rs.getString(""),
-             //                               rs.getString("nume"),rs.getString("prenume"),rs.getString(""))
+//            if (!rs.isBeforeFirst() && rs.getRow()==0)//e empty=>nu e bine
+//                throw new IOException("Invalid username or password");
+            if(rs.next()) {
+                user = new Utilizator(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"));
+            }
+            else {
+            throw new IOException("Invalid username or password");
+            }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return null;
+        if(user == null){
+            System.out.println("User este null");
+        }
+        return user;                // daca user e null atunci returneaza null
+        //return null;
     }
     public PaginaLogare(JFrame frame) {
         JTextField username = new JTextField();
@@ -73,10 +86,10 @@ public class PaginaLogare extends JPanel {
                 try{
                     verificareUsername(username.getText());
                     verificarePassword(password.getText());
-                    getUser(username.getText(),password.getText());
+                    Utilizator user = getUser(username.getText(),password.getText());
                     frame.getContentPane().removeAll();
                     frame.setTitle("PaginaHome");
-                    frame.getContentPane().add(new PaginaHome(frame));
+                    frame.getContentPane().add(new PaginaHome(frame,user));
                     frame.revalidate();
                     frame.repaint();
                 }catch(IOException exception){
