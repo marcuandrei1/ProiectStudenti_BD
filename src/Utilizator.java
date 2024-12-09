@@ -1,3 +1,4 @@
+// TODO: de facut clasa abstracta si de facut clasele: student, administrator, profesor
 public class Utilizator {
     private String username;
     private String password;
@@ -8,8 +9,9 @@ public class Utilizator {
     private String email;
     private String IBAN;
     private int nrContract;
+    private String adresa;
 
-    public Utilizator(String username, String password, String CNP, String nume, String prenume, String numarTelefon, String email, String IBAN, int nrContract) {
+    public Utilizator(String username, String password, String CNP, String nume, String prenume, String numarTelefon, String email, String IBAN, int nrContract,String adresa) {
         this.username = username;
         this.password = password;
         this.CNP = CNP;
@@ -19,10 +21,15 @@ public class Utilizator {
         this.email = email;
         this.IBAN = IBAN;
         this.nrContract = nrContract;
+        this.adresa = adresa;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public String getAdresa() {
+        return adresa;
     }
 
     public String getPassword() {

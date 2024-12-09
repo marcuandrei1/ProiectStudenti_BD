@@ -9,12 +9,12 @@ public class PaginaLogare extends JPanel {
 
     public  void verificareUsername(String s) throws IOException {
         if (s.equals("Introduce-ti Username"))
-            throw new IOException(s);
+            throw new IOException("Username invalid");
     }
 
     public static void verificarePassword(String s) throws IOException {
         if (s.equals("Introduce-ti Password"))
-            throw new IOException(s);
+            throw new IOException("Password invalid");
     }
 
     private static Utilizator getUser(String username,String password) throws IOException{
@@ -23,21 +23,29 @@ public class PaginaLogare extends JPanel {
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
-
             PreparedStatement statement=conn.prepareStatement(
                     "SELECT * FROM utilizator WHERE username=? and password=?");
 
             statement.setString(1,username);
             statement.setString(2,password);
-
             ResultSet rs=statement.executeQuery();
-//            if (!rs.isBeforeFirst() && rs.getRow()==0)//e empty=>nu e bine
-//                throw new IOException("Invalid username or password");
+
+            statement=conn.prepareStatement("SELECT * FROM adresa join utilizator using(idAdresa)");
+            ResultSet rs1=statement.executeQuery();
+            String adresa = "";
+            if(rs1.next()){
+                adresa=adresa.concat("Strada: ").concat(rs1.getString("strada"));
+                adresa = adresa.concat(" Nr: ").concat(rs1.getString("numar"));
+            }
+            else{
+                throw new IOException("User invalid! (adresa)");
+            }
+
             if(rs.next()) {
-                user = new Utilizator(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"));
+                user = new Utilizator(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"),adresa);
             }
             else {
-            throw new IOException("Invalid username or password");
+                throw new IOException("User invalid");
             }
 
         } catch (SQLException e) {
@@ -72,8 +80,6 @@ public class PaginaLogare extends JPanel {
         l1.setAlignmentX(Component.CENTER_ALIGNMENT);
         l2.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-
-
         dataPanel.add(l1);
         dataPanel.add(Box.createVerticalStrut(10));
         dataPanel.add(l2);
@@ -93,7 +99,7 @@ public class PaginaLogare extends JPanel {
                     frame.revalidate();
                     frame.repaint();
                 }catch(IOException exception){
-                    System.out.println("Username or Password invalid");
+                    System.out.println(exception.getMessage());     // in functie de eroare (adresa sau user) ne da eroarea
                 }
             }
         });

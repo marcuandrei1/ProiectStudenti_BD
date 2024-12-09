@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 public class PaginaHome extends JPanel {
     private Utilizator user;
 
-    // TODO de verificat ce am trimis aici parametru
     public PaginaHome(JFrame frame,Utilizator user) {
         this.user = user;
 
@@ -83,7 +82,7 @@ public class PaginaHome extends JPanel {
                 emailLabel.setForeground(Color.black);
                 emailLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-                JLabel adresaLabel = new JLabel("Adresa: de facut adresa" );
+                JLabel adresaLabel = new JLabel("Adresa: "+ user.getAdresa());
                 adresaLabel.setForeground(Color.black);
                 adresaLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 

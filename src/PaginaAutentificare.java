@@ -12,33 +12,33 @@ public class PaginaAutentificare extends JPanel {
 
     public static void verificareCNP(String s) throws IOException {
         if (s.length()!=13 || !s.matches("\\d+"))
-            throw new IOException(s);
+            throw new IOException("CNP invalid!");
     }
     public static void verificareNume(String s) throws IOException {
         if (s.equals("Introduce-ti numele"))
-            throw new IOException(s);
+            throw new IOException("Nume invalid!");
     }
     public static void verificarePrenume(String s) throws IOException {
         if (s.equals("Introduce-ti prenumele"))
-            throw new IOException(s);
+            throw new IOException("Prenume invalid!");
     }
     public static void verificareAdresa(String s) throws IOException {
         if (s.equals("Introduce-ti adresa"))
-            throw new IOException(s);
+            throw new IOException("Adresa invalid!");
         String regex = "^[A-Za-z\\s]+\\s*\\d+[A-Za-z]*$";
         if(!s.matches(regex))
-            throw new IOException(s);
+            throw new IOException("Adresa invalid!");
     }
     public static void verificareNrtel(String s) throws IOException {
         if (s.length()!=10 || !s.matches("\\d+"))
-            throw new IOException(s);
+            throw new IOException("Nrtel invalid!");
     }
     public static void verificareEmail(String s) throws IOException {
         if (s.equals("Introduce-ti Email"))
-            throw new IOException(s);
+            throw new IOException("Email invalid!");
         String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         if(!s.matches(regex))
-            throw new IOException(s);
+            throw new IOException("Email invalid!");
 
         try{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
@@ -46,16 +46,16 @@ public class PaginaAutentificare extends JPanel {
 
            PreparedStatement statement=conn.prepareStatement("SELECT email FROM utilizator WHERE email=?");
            statement.setString(1,s);
-            ResultSet rs=statement.executeQuery();
-            if (!(!rs.isBeforeFirst() && rs.getRow()==0))
-                throw new IOException(s);
+           ResultSet rs=statement.executeQuery();
+           if (!(!rs.isBeforeFirst() && rs.getRow()==0))
+                throw new IOException("Email invalid!");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
     public static void verificareIban(String s) throws IOException {
         if (s.equals("Introduce-ti cont IBAN") || s.length() < 15 || s.length() > 34) {
-            throw new IOException(s); // IBAN is too short or too long
+            throw new IOException("IBAN invalid!"); // IBAN is too short or too long
         }
 
         // Remove spaces and make uppercase
@@ -65,7 +65,7 @@ public class PaginaAutentificare extends JPanel {
         String countryCode = s.substring(0, 2);
         Integer expectedLength = 24;//pt RO
         if (expectedLength == null || s.length() != expectedLength) {
-            throw new IOException(s); // Invalid country code or incorrect length
+            throw new IOException("IBAN invalid!"); // Invalid country code or incorrect length
         }
 
         // Rearrange IBAN: Move the first four characters to the end
@@ -84,15 +84,15 @@ public class PaginaAutentificare extends JPanel {
         // Perform Modulo 97 operation
         BigInteger ibanNumber = new BigInteger(numericIBAN.toString());
         if (ibanNumber.mod(BigInteger.valueOf(97)).intValue() != 1)
-            throw new IOException(s);
+            throw new IOException("IBAN invalid!");
     }
     public static void verificareNrContract(String s) throws IOException {
         if (s.equals("Introduce-ti numar de contract") || !s.matches("\\d+"))
-            throw new IOException(s);
+            throw new IOException("Numar de contract invalid!");
     }
     public static void verificareUsername(String s) throws IOException {
         if (s.equals("Introduce-ti Username"))
-            throw new IOException(s);
+            throw new IOException("Username invalid!");
         try{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
@@ -102,7 +102,7 @@ public class PaginaAutentificare extends JPanel {
             statement.setString(1,s);
             ResultSet rs=statement.executeQuery();
             if (!(!rs.isBeforeFirst() && rs.getRow()==0))
-                throw new IOException(s);
+                throw new IOException("Username invalid!");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -110,7 +110,7 @@ public class PaginaAutentificare extends JPanel {
     public static void verificarePassword(String s) throws IOException {
         //TODO:maybe check for a strong password?
         if (s.equals("Introduce-ti Password"))
-            throw new IOException(s);
+            throw new IOException("Password invalid!");
     }
 
     public PaginaAutentificare(JFrame frame) {
@@ -162,73 +162,17 @@ public class PaginaAutentificare extends JPanel {
                 //TODO:you can check if email or username are duplicates with the same query,you dont need more
                 try{
                     verificareCNP(textCNP.getText());
-                    System.out.println("CNP valid");
+                    verificareNume(textNume.getText());
+                    verificarePrenume(textPrenume.getText());
+                    verificareAdresa(textAdresa.getText());
+                    verificareNrtel(textNrTel.getText());
+                    verificareEmail(textEmail.getText());
+                    verificareIban(textContIBAN.getText());
+                    verificareNrContract(textNrContract.getText());
+                    verificareUsername(textUsername.getText());
+                    verificarePassword(textPassword.getText());
                 }catch(IOException exception){
                     System.out.println(exception.getMessage());
-                    ok=0;
-                }
-                try{
-                    verificareNume(textNume.getText());
-                    System.out.println("Nume valid");
-                }catch(IOException exception){
-                    System.out.println("Nume invalid");
-                    ok=0;
-                }
-                try{
-                    verificarePrenume(textPrenume.getText());
-                    System.out.println("Prenume valid");
-                }catch(IOException exception){
-                    System.out.println("Prenume invalid");
-                    ok=0;
-                }
-                try{
-                    verificareAdresa(textAdresa.getText());
-                    System.out.println("Adresa valid");
-
-                }catch(IOException exception){
-                    System.out.println("Adresa invalid");
-                    ok=0;
-                }
-                try{
-                    verificareNrtel(textNrTel.getText());
-                    System.out.println("Numar Telefon valid");
-                }catch(IOException exception){
-                    System.out.println("Numar Telefon invalid");
-                    ok=0;
-                }
-                try{
-                    verificareEmail(textEmail.getText());
-                    System.out.println("Email valid");
-                }catch(IOException exception){
-                    System.out.println("Email invalid");
-                    ok=0;
-                }
-                try{
-                    verificareIban(textContIBAN.getText());
-                    System.out.println("ContIBAN valid");
-                }catch(IOException exception){
-                    System.out.println("ContIBAN invalid");
-                    ok=0;
-                }
-                try{
-                    verificareNrContract(textNrContract.getText());
-                    System.out.println("NrContract valid");
-                }catch(IOException exception){
-                    System.out.println("NrContract invalid");
-                    ok=0;
-                }
-                try{
-                    verificareUsername(textUsername.getText());
-                    System.out.println("Username valid");
-                }catch(IOException exception){
-                    System.out.println("Username invalid");
-                    ok=0;
-                }
-                try{
-                    verificarePassword(textPassword.getText());
-                    System.out.println("Password valid");
-                }catch(IOException exception){
-                    System.out.println("Password invalid");
                     ok=0;
                 }
                 if(ok==1){//if all data is correct
