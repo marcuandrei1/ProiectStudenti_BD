@@ -123,7 +123,9 @@ public class PaginaAutentificare extends JPanel {
         JTextField textContIBAN = new JTextField();
         JTextField textNrContract = new JTextField();
         JTextField textUsername = new JTextField();
-        JTextField textPassword = new JTextField();
+        JPasswordField textPassword = new JPasswordField();
+        JTextField anStudiu=new JTextField();
+        JTextField departament =new JTextField();
 
         JPanel[] l = new JPanel[10];
         JPanel data=new JPanel();
@@ -155,14 +157,13 @@ public class PaginaAutentificare extends JPanel {
         }
         //daca e student
         if(job.equals("Student")){
-            JTextField anStudiu=new JTextField();
+
             JPanel p= FunctiiUtile.creareText(anStudiu,"An Studiu:","Introduce-ti anul de studiu");
             anStudiu.setFont(new Font("Arial", Font.PLAIN, 15));
             data.add(p);
             data.add(Box.createVerticalStrut(10));
         }
         else if(job.equals("Profesor")){
-            JTextField departament =new JTextField();
             JPanel p= FunctiiUtile.creareText(departament,"Departament: ","Introduce-ti departamentul");
             departament.setFont(new Font("Arial", Font.PLAIN, 15));
             data.add(p);
@@ -190,12 +191,12 @@ public class PaginaAutentificare extends JPanel {
                     try{//if all data is correct
                         String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                         Connection conn= DriverManager.getConnection(url);
-                        PreparedStatement stmt = conn.prepareStatement(" SELECT max(idAdresa) FROM adresa");
+                        PreparedStatement stmt = conn.prepareStatement(" SELECT max(idAdresa) as maxId FROM adresa");
                         ResultSet ls = stmt.executeQuery();
 
                         int idAdresa = 1; // Default value if no records are found
                         if (ls.next()) {
-                            idAdresa = ls.getInt("idAdresa") + 1; // Incrementing the max idAdresa
+                            idAdresa = ls.getInt("maxId") + 1; // Incrementing the max idAdresa
                         }
 
                         String[] parts = textAdresa.getText().split(" ", 2);
@@ -208,8 +209,8 @@ public class PaginaAutentificare extends JPanel {
                         insertAdresaStmt.executeUpdate();
 
                         // Step 5: Insert into 'utilizator' table using prepared statement
-                        PreparedStatement insertUtilizatorStmt = conn.prepareStatement("INSERT INTO utilizator(Username, password, CNP, nume, prenume, idAdresa, numarTelefon, email, IBAN, nrContract) " +
-                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        PreparedStatement insertUtilizatorStmt = conn.prepareStatement("INSERT INTO utilizator(Username, password, CNP, nume, prenume, idAdresa, numarTelefon, email, IBAN, nrContract,Aprobare) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,'Unknown')");
                         insertUtilizatorStmt.setString(1, textUsername.getText()); // Set Username
                         insertUtilizatorStmt.setString(2, textPassword.getText()); // Set Password
                         insertUtilizatorStmt.setString(3, textCNP.getText()); // Set CNP
@@ -223,16 +224,34 @@ public class PaginaAutentificare extends JPanel {
                         insertUtilizatorStmt.executeUpdate();
 
                         // Step 5: Insert into  table depending on what was chosen in combobox using prepared statement
-                        /*if(Objects.equals(c1.getSelectedItem(), "Student")){
-                            conn.prepareStatement("SELECT max(idStudent) FROM Student");
-                            ls = stmt.executeQuery();
+                        if(job.equals("Student")){
+                            conn.prepareStatement("SELECT max(idStudent) as maxStudent FROM Student");
+                            ResultSet rs = stmt.executeQuery();
 
                             int idStudent= 1; // Default value if no records are found
-                            if (ls.next()) {
-                                idStudent = ls.getInt("idStudent") + 1; // Incrementing the max idStudent
+                            if (rs.next()) {
+                                idStudent = rs.getInt("maxStudent") + 1; // Incrementing the max idStudent
                             }
-                           PreparedStatement insertStudentStmt=conn.prepareStatement("INSERT INTO student(idStudent,Username,anStudiu) VALUES ( ?, ?, ?)");
-                        }*/
+                           PreparedStatement insertStudentStmt=conn.prepareStatement("INSERT INTO student(idStudent,Username,anStudiu,NrOreObligatori) VALUES ( ?, ?, ?,35)");
+                            insertStudentStmt.setInt(1, idStudent);
+                            insertStudentStmt.setString(2, textUsername.getText());
+                            insertStudentStmt.setString(3,anStudiu.getText());
+                            insertStudentStmt.executeUpdate();
+                        }
+                        else if(job.equals("Profesor")){
+                            conn.prepareStatement("SELECT max(idProfesor) as maxProfesor FROM Profesor");
+                            ResultSet rp= stmt.executeQuery();
+
+                            int idProfesor = 1; // Default value if no records are found
+                            if (rp.next()) {
+                                idProfesor = rp.getInt("maxProfesor") + 1; // Incrementing the max idStudent
+                            }
+                            PreparedStatement insertProfesorStmt=conn.prepareStatement("INSERT INTO profesor(idProfesor,Username,nrMinOre,NrMaxOre,departament) VALUES ( ?, ?,20,40, ?)");
+                            insertProfesorStmt.setInt(1, idProfesor);
+                            insertProfesorStmt.setString(2, textUsername.getText());
+                            insertProfesorStmt.setString(3,departament.getText());
+                            insertProfesorStmt.executeUpdate();
+                        }
                     } catch (SQLException en) {
                         System.out.println(en.getMessage());
                     }

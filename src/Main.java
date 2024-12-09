@@ -22,6 +22,7 @@ public class Main {
         ///  Frame-ul nostru
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setMinimumSize(new Dimension(800, 600));
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
        JPanel panel = new PaginaInitiala(frame);
