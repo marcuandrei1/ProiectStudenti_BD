@@ -23,15 +23,15 @@ public class PaginaLogare extends JPanel {
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
-            PreparedStatement statement=conn.prepareStatement(
-                    "SELECT * FROM utilizator WHERE username=? and password=?");
+            CallableStatement statement=conn.prepareCall("{call selectTypeOfUtilizator(?,?,?)}");
 
             statement.setString(1,username);
             statement.setString(2,password);
+            statement.registerOutParameter(3,java.sql.Types.VARCHAR);
             ResultSet rs=statement.executeQuery();
 
-            statement=conn.prepareStatement("SELECT * FROM adresa join utilizator using(idAdresa)");
-            ResultSet rs1=statement.executeQuery();
+            PreparedStatement stmtAdresa=conn.prepareStatement("SELECT * FROM adresa join utilizator using(idAdresa)");
+            ResultSet rs1=stmtAdresa.executeQuery();
             String adresa = "";
             if(rs1.next()){
                 adresa=adresa.concat("Strada: ").concat(rs1.getString("strada"));
@@ -42,8 +42,16 @@ public class PaginaLogare extends JPanel {
             }
 
             if(rs.next()) {
-
-                user = new Utilizator(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"),adresa);
+                //verificare ce este in functie de tip
+                if(statement.getString(3).equals("Administrator")){
+                    user = new Administrator(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"),adresa);
+                }
+                else if(statement.getString(3).equals("Student")){
+                    user = new Student(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"),adresa,rs.getInt("anStudiu"),rs.getInt("nrOreObligatorii"));
+                }
+                else if(statement.getString(3).equals("Profesor")){
+                    user = new Profesor(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"),adresa,rs.getInt("nrMinOre"),rs.getInt("nrMaxOre"),rs.getString("departament"));
+                }
             }
             else {
                 throw new IOException("User invalid");
@@ -53,7 +61,7 @@ public class PaginaLogare extends JPanel {
             System.out.println(e.getMessage());
         }
         if(user == null){
-            System.out.println("User este null");
+            throw new IOException("User invalid");
         }
         return user;                // daca user e null atunci returneaza null
         //return null;

@@ -1,4 +1,4 @@
-public abstract class Utilizator {
+public  abstract class Utilizator {
     private String username;
     private String password;
     private String CNP;
