@@ -169,9 +169,6 @@ public class PaginaAutentificare extends JPanel {
             data.add(p);
             data.add(Box.createVerticalStrut(10));
         }
-        else{
-            data.add(new Checkbox("Supervisor"));
-        }
         JButton butonSubmit = FunctiiUtile.CreateButton("Submit", data);
         butonSubmit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -232,7 +229,7 @@ public class PaginaAutentificare extends JPanel {
                             if (rs.next()) {
                                 idStudent = rs.getInt("maxStudent") + 1; // Incrementing the max idStudent
                             }
-                           PreparedStatement insertStudentStmt=conn.prepareStatement("INSERT INTO student(idStudent,Username,anStudiu,NrOreObligatori) VALUES ( ?, ?, ?,35)");
+                           PreparedStatement insertStudentStmt=conn.prepareStatement("INSERT INTO student(idStudent,Username,anStudiu,NrOreObligatorii) VALUES ( ?, ?, ?,35)");
                             insertStudentStmt.setInt(1, idStudent);
                             insertStudentStmt.setString(2, textUsername.getText());
                             insertStudentStmt.setString(3,anStudiu.getText());

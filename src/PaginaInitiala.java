@@ -22,7 +22,7 @@ public class PaginaInitiala extends JPanel {
 
         btnAutentificare.add(Box.createHorizontalStrut(173));//pentru aliniere
         JButton butonAutentificare = FunctiiUtile.CreateButton("Autentificare", btnAutentificare);
-        JComboBox<String> c1=new JComboBox<>(new String[]{"Student", "Profesor", "Administrator"});
+        JComboBox<String> c1=new JComboBox<>(new String[]{"Student", "Profesor"});
         butonAutentificare.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();

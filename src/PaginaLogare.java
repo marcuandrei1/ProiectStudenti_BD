@@ -42,6 +42,7 @@ public class PaginaLogare extends JPanel {
             }
 
             if(rs.next()) {
+
                 user = new Utilizator(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"),adresa);
             }
             else {

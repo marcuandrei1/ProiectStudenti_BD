@@ -1,5 +1,4 @@
-// TODO: de facut clasa abstracta si de facut clasele: student, administrator, profesor
-public class Utilizator {
+public abstract class Utilizator {
     private String username;
     private String password;
     private String CNP;
