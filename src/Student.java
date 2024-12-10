@@ -6,4 +6,11 @@ public class Student extends Utilizator{
         this.anStudiu = anStudiu;
         this.nrOreObligatorii = nrOreObligatorii;
     }
+
+    //studentul se poate inscrie la curs daca mai sunt locuri
+    //studentul poate vedea activitatiile din ziua curenta
+    //studentul poate vedea toate activitatille la care este inscris
+    //renunta la cursuri?
+    //sa isi vada notele
+    //+chestii despre grupu de stidiu chat+stuff
 }

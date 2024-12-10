@@ -30,7 +30,9 @@ public class PaginaLogare extends JPanel {
             statement.registerOutParameter(3,java.sql.Types.VARCHAR);
             ResultSet rs=statement.executeQuery();
 
-            PreparedStatement stmtAdresa=conn.prepareStatement("SELECT * FROM adresa join utilizator using(idAdresa)");
+            PreparedStatement stmtAdresa=conn.prepareStatement("SELECT * FROM adresa join utilizator using(idAdresa) where username=? and password=?");
+            stmtAdresa.setString(1,username);
+            stmtAdresa.setString(2,password);
             ResultSet rs1=stmtAdresa.executeQuery();
             String adresa = "";
             if(rs1.next()){
@@ -104,7 +106,15 @@ public class PaginaLogare extends JPanel {
                     Utilizator user = getUser(username.getText(),password.getText());
                     frame.getContentPane().removeAll();
                     frame.setTitle("PaginaHome");
-                    frame.getContentPane().add(new PaginaHome(frame,user));
+                    if(user instanceof Administrator){
+                        frame.add(new PaginaHome(frame,user));
+                    }
+                    else if(user instanceof Student){
+                       frame.getContentPane().add(new PaginaHomeStudent(frame, (Student) user));
+                    }
+                    else{
+                        ///add la frame Pagina home destinata administratorului
+                    }
                     frame.revalidate();
                     frame.repaint();
                 }catch(IOException exception){

@@ -5,10 +5,8 @@ import java.awt.event.ActionListener;
 
 public class PaginaHome extends JPanel {
     private Utilizator user;
-
     public PaginaHome(JFrame frame,Utilizator user) {
-        this.user = user;
-
+        this.user=user;
         this.setLayout(new BorderLayout());
 
         JButton profile = new JButtonCircle("Profil");
@@ -54,7 +52,15 @@ public class PaginaHome extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                         frame.getContentPane().removeAll();
                         frame.setTitle("PaginaHome");
-                        frame.getContentPane().add(new PaginaHome(frame,user));
+                        if(user instanceof Administrator){
+                            frame.add(new PaginaHome(frame,user));
+                        }
+                        else if(user instanceof Student){
+                            frame.getContentPane().add(new PaginaHomeStudent(frame, (Student) user));
+                        }
+                        else{
+                            ///add la frame Pagina home destinata administratorului
+                        }
                         frame.revalidate();
                         frame.repaint();
                     }
@@ -84,7 +90,7 @@ public class PaginaHome extends JPanel {
                 adresaLabel.setForeground(Color.black);
                 adresaLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
-                JLabel nrTelefonLabel = new JLabel("Nr Telefon: " + user.getNume());
+                JLabel nrTelefonLabel = new JLabel("Nr Telefon: " + user.getNumarTelefon());
                 nrTelefonLabel.setForeground(Color.black);
                 nrTelefonLabel.setFont(new Font("Arial", Font.PLAIN, 15));
 
