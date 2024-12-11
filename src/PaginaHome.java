@@ -53,13 +53,13 @@ public class PaginaHome extends JPanel {
                         frame.getContentPane().removeAll();
                         frame.setTitle("PaginaHome");
                         if(user instanceof Administrator){
-                            frame.add(new PaginaHome(frame,user));
+                            frame.add(new PaginaHomeAdministrator(frame,(Administrator) user));
                         }
                         else if(user instanceof Student){
                             frame.getContentPane().add(new PaginaHomeStudent(frame, (Student) user));
                         }
                         else{
-                            ///add la frame Pagina home destinata administratorului
+                            frame.add(new PaginaHomeProfesor(frame,(Profesor) user));
                         }
                         frame.revalidate();
                         frame.repaint();

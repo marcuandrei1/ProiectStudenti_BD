@@ -103,7 +103,7 @@ public class PaginaLogare extends JPanel {
                     frame.getContentPane().removeAll();
                     frame.setTitle("PaginaHome");
                     if(user instanceof Administrator){
-                        frame.add(new PaginaHome(frame,user));
+                        frame.getContentPane().add(new PaginaHomeAdministrator(frame, (Administrator) user));
                     }
                     else if(user instanceof Student){
                        frame.getContentPane().add(new PaginaHomeStudent(frame, (Student) user));
