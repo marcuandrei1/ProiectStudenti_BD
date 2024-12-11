@@ -7,5 +7,4 @@ public class PaginaHomeStudent extends PaginaHome{
         this.student = student;
         System.out.println("f");
     }
-
 }
