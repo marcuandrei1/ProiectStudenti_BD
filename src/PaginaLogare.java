@@ -66,19 +66,15 @@ public class PaginaLogare extends JPanel {
             throw new IOException("User invalid");
         }
         return user;                // daca user e null atunci returneaza null
-        //return null;
     }
     public PaginaLogare(JFrame frame) {
         JTextField username = new JTextField();
         JTextField password = new JTextField();
 
-
         this.setLayout(new GridBagLayout());
 
         JPanel dataPanel =new JPanel();
         dataPanel.setLayout(new BoxLayout(dataPanel, BoxLayout.Y_AXIS));
-
-
 
         JPanel l1 = new JPanel();
         JPanel l2 = new JPanel();
@@ -113,7 +109,7 @@ public class PaginaLogare extends JPanel {
                        frame.getContentPane().add(new PaginaHomeStudent(frame, (Student) user));
                     }
                     else{
-                        ///add la frame Pagina home destinata administratorului
+                        frame.getContentPane().add(new PaginaHomeProfesor(frame, (Profesor) user));
                     }
                     frame.revalidate();
                     frame.repaint();
@@ -127,8 +123,6 @@ public class PaginaLogare extends JPanel {
         JButton butonBack = new JButton("Inapoi");
         butonBack.setBackground(Color.LIGHT_GRAY);
         panelBack.add(butonBack);
-
-
 
         butonBack.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -147,8 +141,5 @@ public class PaginaLogare extends JPanel {
         gbc.weighty = 1;
         gbc.fill=GridBagConstraints.BOTH;
         this.add(panelBack,gbc);
-
-
     }
-
 }
