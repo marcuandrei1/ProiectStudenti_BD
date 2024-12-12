@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.*;
+import java.util.List;
 
 public class PaginaHomeAdministrator extends JPanel {
     private Administrator administrator;
@@ -172,7 +173,7 @@ public class PaginaHomeAdministrator extends JPanel {
                             Connection conn = DriverManager.getConnection(url);
 
                             PreparedStatement statement = conn.prepareStatement(
-                                    "SELECT Username, nume, prenume, CNP, email, numarTelefon FROM utilizator WHERE Aprobare='Unknown'");
+                                    "SELECT Username, nume, prenume, CNP, email, numarTelefon, idAdresa FROM utilizator WHERE Aprobare='Unknown'");
                             ResultSet rs = statement.executeQuery();
                             if (!rs.isBeforeFirst()) {
                                 // Publish a label indicating no data
@@ -185,6 +186,7 @@ public class PaginaHomeAdministrator extends JPanel {
                                     String CNP = rs.getString("CNP");
                                     String email = rs.getString("email");
                                     String numarTelefon = rs.getString("numarTelefon");
+                                    int idAdresa = rs.getInt("idAdresa");
 
                                     JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
                                     rowPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -228,7 +230,21 @@ public class PaginaHomeAdministrator extends JPanel {
 
                                     butonNeacceptat.addActionListener(new ActionListener() {
                                         public void actionPerformed(ActionEvent e) {
-                                            ///call functie delete
+                                            try{
+                                                PreparedStatement updateStatement = conn.prepareStatement(
+                                                        "DELETE from utilizator where Username = ?");
+                                                updateStatement.setString(1, username);
+                                                updateStatement.executeUpdate();
+                                                PreparedStatement updateStatement2 = conn.prepareStatement(
+                                                        "Delete from adresa where idAdresa = ?");
+                                                updateStatement2.setInt(1, idAdresa);
+                                                updateStatement2.executeUpdate();
+                                                butonNeacceptat.setEnabled(false); // Disable the button after approval
+                                            }catch (SQLException ex) {
+                                                JOptionPane.showMessageDialog(null,
+                                                        "Error while approving user: " + ex.getMessage());
+                                            }
+
                                         }
                                     });
                                     rowPanel.add(butonAcceptat);
@@ -243,7 +259,7 @@ public class PaginaHomeAdministrator extends JPanel {
                     }
 
                     @Override
-                    protected void process(java.util.List<JLabel> chunks) {
+                    protected void process(List<JLabel> chunks) {
                         // Add each label to the panel on the EDT
                         for (JLabel label : chunks) {
                             listaCereri.add(label);
