@@ -2,10 +2,37 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
 
 public class PaginaHomeStudent extends JPanel {
     private Student student;
 
+    private  JPanel InterfataInscriere(){
+        JPanel panel = new JPanel();
+        JComboBox<String> c=new JComboBox<>();
+        JButton b=new JButton("Submit");
+        b.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                student.InscriereStudent(c.getSelectedItem().toString());
+            }
+        });
+        try{
+            String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+            Connection conn= DriverManager.getConnection(url);
+
+            PreparedStatement stmt=conn.prepareStatement("select Nume from disciplina");
+            ResultSet rs=stmt.executeQuery();
+
+            while(rs.next()){
+                c.addItem(rs.getString(1));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        panel.add(c);
+        panel.add(b);
+        return panel;
+    }
     public PaginaHomeStudent(JFrame frame, Student student ) {
 
         this.student = student;
@@ -121,7 +148,35 @@ public class PaginaHomeStudent extends JPanel {
                 topRightPanel.repaint();
             }
         });
+        //pana aici este chestia de profile
+
+
+
+
+        JButton inscriere=new JButton("Inscriere");//buton inscriere
+        inscriere.setBackground(Color.DARK_GRAY);
+        inscriere.setForeground(Color.WHITE);
+        inscriere.addActionListener(new ActionListener() {
+            private int clicks=0;
+            public void actionPerformed(ActionEvent e) {
+                if(clicks%2==0){
+                    PaginaHomeStudent.this.add(InterfataInscriere(),BorderLayout.CENTER);
+                    PaginaHomeStudent.this.revalidate();
+                    PaginaHomeStudent.this.repaint();
+                    clicks++;
+                }
+                else{
+                    frame.getContentPane().removeAll();
+                    frame.setTitle("PaginaHome");
+                    frame.getContentPane().add(new PaginaHomeStudent(frame, student));
+                    frame.revalidate();
+                    frame.repaint();
+                    clicks++;
+                }
+            }
+        });
+        JPanel butonsPanel=new JPanel();
+        butonsPanel.add(inscriere);
+        this.add(butonsPanel, BorderLayout.EAST);
     }
-
-
 }

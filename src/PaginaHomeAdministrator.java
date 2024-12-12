@@ -160,10 +160,6 @@ public class PaginaHomeAdministrator extends JPanel {
                 listaCereri.setOpaque(true);
 
                 // Add the panel to the frame before loading data
-                PaginaHomeAdministrator.this.add(new JScrollPane(listaCereri), BorderLayout.CENTER);
-                PaginaHomeAdministrator.this.revalidate();
-                PaginaHomeAdministrator.this.repaint();
-
                 // Use SwingWorker to perform the database query in a background thread
                 new SwingWorker<Void, JLabel>() {
                     @Override
@@ -171,7 +167,6 @@ public class PaginaHomeAdministrator extends JPanel {
                         try {
                             String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                             Connection conn = DriverManager.getConnection(url);
-
                             PreparedStatement statement = conn.prepareStatement(
                                     "SELECT Username, nume, prenume, CNP, email, numarTelefon, idAdresa FROM utilizator WHERE Aprobare='Unknown'");
                             ResultSet rs = statement.executeQuery();
@@ -191,7 +186,6 @@ public class PaginaHomeAdministrator extends JPanel {
                                     JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
                                     rowPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
                                     listaCereri.add(rowPanel);
-
                                     JLabel nameLabel = new JLabel(
                                             String.format("%s %s, %s, %s, %s",
                                                     nume, prenume, CNP, email, numarTelefon));
@@ -214,6 +208,7 @@ public class PaginaHomeAdministrator extends JPanel {
                                                     JOptionPane.showMessageDialog(null,
                                                             "User " + nume + " " + prenume + " has been approved.");
                                                     butonAcceptat.setEnabled(false); // Disable the button after approval
+                                                    butonCereri.doClick();
                                                 } else {
                                                     JOptionPane.showMessageDialog(null,
                                                             "Failed to approve user " + nume + " " + prenume + ".");
@@ -263,9 +258,16 @@ public class PaginaHomeAdministrator extends JPanel {
                         // Add each label to the panel on the EDT
                         for (JLabel label : chunks) {
                             listaCereri.add(label);
+                            System.out.println(label.getText());
                         }
                         listaCereri.revalidate();
                         listaCereri.repaint();
+                    }
+                    @Override
+                    protected void done(){
+                        PaginaHomeAdministrator.this.add(new JScrollPane(listaCereri), BorderLayout.CENTER);
+                        PaginaHomeAdministrator.this.revalidate();
+                        PaginaHomeAdministrator.this.repaint();
                     }
                 }.execute();
             }
