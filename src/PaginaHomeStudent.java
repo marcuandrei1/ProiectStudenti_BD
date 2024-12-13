@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.Objects;
 
 public class PaginaHomeStudent extends JPanel {
     private Student student;
@@ -13,7 +14,14 @@ public class PaginaHomeStudent extends JPanel {
         JButton b=new JButton("Submit");
         b.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                student.InscriereStudent(c.getSelectedItem().toString());
+                try {
+                    student.InscriereStudent(Objects.requireNonNull(c.getSelectedItem()).toString());
+                    JOptionPane.showMessageDialog(null,
+                            "Utilizatorul " + student.getNume()+ " " +student.getPrenume()  + "a reusit sa se inscrie la "+c.getSelectedItem().toString()+ ".");
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null,
+                            "Nu exista profesor la cursul de "+c.getSelectedItem().toString()+ ".");
+                }
             }
         });
         try{
@@ -31,6 +39,32 @@ public class PaginaHomeStudent extends JPanel {
         }
         panel.add(c);
         panel.add(b);
+        return panel;
+    }
+    private JPanel InterfataVizualizareNote(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Vertical stacking of labels
+        panel.setBorder(BorderFactory.createTitledBorder("Notele la toate disciplinele"));
+        panel.setOpaque(true);
+        try {
+            ResultSet rs=student.VizualizareNote();
+            while (rs.next()){
+                JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                rowPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+                panel.add(rowPanel);
+                JLabel nameLabel = new JLabel(
+                        String.format("%s, %s, %s, %s, %s",
+                                rs.getString("Nume"), rs.getString("notaSeminar"),rs.getString("notaCurs"),
+                                rs.getString("notaLaborator"),rs.getString("notaFinala")));
+                nameLabel.setForeground(Color.BLACK);
+                nameLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+                rowPanel.add(nameLabel);
+            }
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(null,
+                    "Studentul nu este inscris la nici o disciplina");
+        }
+
         return panel;
     }
     public PaginaHomeStudent(JFrame frame, Student student ) {
@@ -175,8 +209,36 @@ public class PaginaHomeStudent extends JPanel {
                 }
             }
         });
+
+        JButton vizualizareNote=new JButton("Vizualizare Note");//buton vizulizare note
+        vizualizareNote.setBackground(Color.DARK_GRAY);
+        vizualizareNote.setForeground(Color.WHITE);
+        vizualizareNote.addActionListener(new ActionListener() {
+            private int clicks=0;
+            public void actionPerformed(ActionEvent e) {
+                if(clicks%2==0){
+                    PaginaHomeStudent.this.add(InterfataVizualizareNote(),BorderLayout.CENTER);
+                    PaginaHomeStudent.this.revalidate();
+                    PaginaHomeStudent.this.repaint();
+                    clicks++;
+                }
+                else{
+                    frame.getContentPane().removeAll();
+                    frame.setTitle("PaginaHome");
+                    frame.getContentPane().add(new PaginaHomeStudent(frame, student));
+                    frame.revalidate();
+                    frame.repaint();
+                    clicks++;
+                }
+            }
+        });
+
+
+
         JPanel butonsPanel=new JPanel();
+        butonsPanel.setLayout(new BoxLayout(butonsPanel,BoxLayout.Y_AXIS));
         butonsPanel.add(inscriere);
+        butonsPanel.add(vizualizareNote);
         this.add(butonsPanel, BorderLayout.EAST);
     }
 }

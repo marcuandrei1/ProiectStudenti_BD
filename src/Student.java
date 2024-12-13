@@ -9,24 +9,25 @@ public class Student extends Utilizator{
         this.nrOreObligatorii = nrOreObligatorii;
     }
 
-    public void InscriereStudent(String discplina){
-        try{
+    public void InscriereStudent(String discplina)throws SQLException{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
-            System.out.println("f");
             CallableStatement stmt=conn.prepareCall("{call InscriereStudent(?,?)}");
             stmt.setString(1, super.getUsername());
             stmt.setString(2, discplina);
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+            stmt.execute();
+            System.out.println(super.getUsername()+" "+discplina);
     }
-
-    //studentul se poate inscrie la curs daca mai sunt locuri
+    public ResultSet VizualizareNote() throws SQLException{
+        String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+        Connection conn= DriverManager.getConnection(url);
+        PreparedStatement stmt=conn.prepareStatement("SELECT Nume,notaSeminar,notaCurs,notaLaborator,notaFinala from nota join lms.disciplina using(idDisciplina) join lms.student using(idStudent) where Username=?");
+        stmt.setString(1, super.getUsername());
+        return stmt.executeQuery();
+    }
+    //trebuie sa vedem cum facem sa aiba acelasi prof la discipline diferite,nu se poate aceeasi primary key,se alege alt prof?
     //studentul poate vedea activitatiile din ziua curenta
     //studentul poate vedea toate activitatille la care este inscris
     //renunta la cursuri?
-    //sa isi vada notele
     //+chestii despre grupu de stidiu chat+stuff
 }

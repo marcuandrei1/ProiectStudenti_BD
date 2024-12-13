@@ -49,6 +49,5 @@ public class PaginaInitiala extends JPanel {
             }
         });
         this.add(panelButtons);
-
     }
 }
