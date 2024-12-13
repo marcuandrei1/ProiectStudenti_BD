@@ -147,19 +147,22 @@ public class PaginaHomeProfesor extends JPanel {
             }
         });
 
+
+
         /// Un label mare in care se afla un label left
         // Middle Panel
         JPanel middlePanel = new JPanel();
         middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.Y_AXIS));
         middlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); /// avem padding
 
-
+        /// Label-ul pentru Inscriere Curs
         JPanel borderedPanel = new JPanel();
         borderedPanel.setLayout(new BoxLayout(borderedPanel, BoxLayout.Y_AXIS));
         borderedPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 2), "Inscriere Curs")); // Add border with title
-        borderedPanel.setMaximumSize(new Dimension(500, 200));
+        borderedPanel.setMaximumSize(new Dimension(500, 100));
         borderedPanel.setBackground(Color.WHITE);
         borderedPanel.setVisible(false);
+        borderedPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 
         /// Componentele pentru inscriereCursLabel
@@ -187,7 +190,7 @@ public class PaginaHomeProfesor extends JPanel {
         inscriereCursButton.setForeground(Color.WHITE);
         inscriereCursButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        /// cand apas pe buton sa imi aparea label-urile, cu TOGGLE
+        /// cand apas pe buton sa imi apara label-urile, cu TOGGLE
         inscriereCursButton.addActionListener(e -> {
 
             // Check if the components are already visible
@@ -241,8 +244,7 @@ public class PaginaHomeProfesor extends JPanel {
         });
 
 
-        /// TODO: la apasarea tastei submit sa imi bage in baza de date conexiunea dintre profesor si disciplina
-        /// TODO: DONE
+        /// la apasarea tastei submit sa imi bage in baza de date conexiunea dintre profesor si disciplina
 
         submitButton.addActionListener(new ActionListener() {
             @Override
@@ -299,5 +301,119 @@ public class PaginaHomeProfesor extends JPanel {
                 }
             }
         });
+
+
+
+
+
+
+        /// TODO: de setat procente (in curs procent, laborator procent si seminar procent)
+        /// - un comboBox cu toate materiile pe care le preda profesorul
+        /// - odata selectata materia sa iti afiseze cele 3 rubrici (curs, laborator, seminar) in care sa introduci procentele
+
+        /// Panel-ul pentru notare procente
+        JPanel borderedPanelProcente = new JPanel();
+        borderedPanelProcente.setLayout(new BoxLayout(borderedPanelProcente, BoxLayout.Y_AXIS));
+        borderedPanelProcente.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 2), "Notare procente")); // Add border with title
+        borderedPanelProcente.setMaximumSize(new Dimension(500, 200));
+        borderedPanelProcente.setBackground(Color.WHITE);
+        borderedPanelProcente.setAlignmentX(Component.LEFT_ALIGNMENT);
+        borderedPanelProcente.setVisible(false);
+
+
+        JButton NotareProcenteButton = new JButton("Notare procente");
+        NotareProcenteButton.setBackground(Color.DARK_GRAY);
+        NotareProcenteButton.setForeground(Color.WHITE);
+        NotareProcenteButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+
+        /// TODO: Sa avem un comboBox in care sa se afiseze materiile la care este inscris profesorul
+
+        JComboBox materiiProfesorComboBox = new JComboBox();
+        materiiProfesorComboBox.setPreferredSize(new Dimension(150, 25));
+        materiiProfesorComboBox.setMaximumSize(new Dimension(250, 25));
+        materiiProfesorComboBox.setMinimumSize(new Dimension(150, 25));
+        materiiProfesorComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        materiiProfesorComboBox.setVisible(false);
+
+        try {
+            String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+            Connection conn = DriverManager.getConnection(url);
+            PreparedStatement selectMateriiProf = conn.prepareStatement("SELECT disciplina.nume FROM disciplina JOIN `prof/disciplina` USING (idDisciplina) JOIN profesor USING (idProfesor) WHERE profesor.username = ?");
+            selectMateriiProf.setString(1, profesor.getUsername());
+            ResultSet rezultat = selectMateriiProf.executeQuery();
+
+            while(rezultat.next()){
+                materiiProfesorComboBox.addItem(rezultat.getString("nume"));
+            }
+
+        }catch(SQLException ex){
+            ex.printStackTrace();
+        }
+
+
+        /// TOGGLE la NotareProcenteButton
+        NotareProcenteButton.addActionListener(e -> {
+
+            // Check if the components are already visible
+            boolean isVisible = materiiProfesorComboBox.isVisible();
+
+            // Toggle visibility
+            materiiProfesorComboBox.setVisible(!isVisible);
+            borderedPanelProcente.setVisible(!isVisible); // Toggle the bordered panel visibility
+
+            // Revalidate and repaint the panel to update the layout
+            middlePanel.revalidate();
+            middlePanel.repaint();
+        });
+
+        /// Cand se apasa butonul de Notare Procente
+        NotareProcenteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                borderedPanelProcente.setVisible(true);
+            }
+        });
+
+
+        /// Adaugam componentele la panel-urile care trebuie
+        middlePanel.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing intre butonul inscriereCurs si NotareProcente
+        borderedPanelProcente.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing
+        borderedPanelProcente.add(materiiProfesorComboBox);
+
+        /// Creez campurile pentru adaugarea procentelor de note
+
+        JLabel procentCursLabel = new JLabel("Procente curs: ");
+        JLabel procentSeminarLabel = new JLabel("Procente seminar: ");
+        JLabel procentLaboratorLabel = new JLabel("Procente laborator: ");
+        JTextField procentCursField = new JTextField(10);
+        procentCursField.setMaximumSize(new Dimension(100, 20));
+        JTextField procentSeminarField = new JTextField(10);
+        procentSeminarField.setMaximumSize(new Dimension(100, 20));
+        JTextField procentLaboratorField = new JTextField(10);
+        procentLaboratorField.setMaximumSize(new Dimension(100, 20));
+
+
+
+        borderedPanelProcente.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing
+        borderedPanelProcente.add(procentCursLabel);
+        borderedPanelProcente.add(procentCursField);
+
+        borderedPanelProcente.add(procentSeminarLabel);
+        borderedPanelProcente.add(procentSeminarField);
+
+        borderedPanelProcente.add(procentLaboratorLabel);
+        borderedPanelProcente.add(procentLaboratorField);
+
+
+
+        /// Adaugam componentele la label-urile care trebuie
+
+        middlePanel.add(NotareProcenteButton);
+        middlePanel.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing
+        middlePanel.add(borderedPanelProcente);
+
+
+
     }
 }

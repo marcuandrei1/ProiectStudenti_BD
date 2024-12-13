@@ -37,6 +37,4 @@ public class Profesor extends Utilizator{
         this.departament = departament;
     }
 
-    //profesorul se inscrie la cursuri
-
 }
