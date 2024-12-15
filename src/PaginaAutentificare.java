@@ -10,36 +10,65 @@ import java.sql.*;
 public class PaginaAutentificare extends JPanel {
 
 
-    public static void verificareCNP(String s) throws IOException {
-        if (s.length()!=13 || !s.matches("\\d+"))
+    public static void verificareCNP(String s, JTextField text) throws IOException {
+        if (s.length()!=13 || !s.matches("\\d+")){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
             throw new IOException("CNP invalid!");
-    }
-    public static void verificareNume(String s) throws IOException {
-        if (s.equals("Introduce-ti numele"))
-            throw new IOException("Nume invalid!");
-    }
-    public static void verificarePrenume(String s) throws IOException {
-        if (s.equals("Introduce-ti prenumele"))
-            throw new IOException("Prenume invalid!");
-    }
-    public static void verificareAdresa(String s) throws IOException {
-        if (s.equals("Introduce-ti adresa"))
-            throw new IOException("Adresa invalid!");
-        String regex = "^[A-Za-z\\s]+\\s*\\d+[A-Za-z]*$";
-        if(!s.matches(regex))
-            throw new IOException("Adresa invalid!");
-    }
-    public static void verificareNrtel(String s) throws IOException {
-        if (s.length()!=10 || !s.matches("\\d+"))
-            throw new IOException("Nrtel invalid!");
-    }
-    public static void verificareEmail(String s) throws IOException {
-        if (s.equals("Introduce-ti Email"))
-            throw new IOException("Email invalid!");
-        String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-        if(!s.matches(regex))
-            throw new IOException("Email invalid!");
+        }
+        text.setBackground(Color.WHITE);
 
+    }
+    public static void verificareNume(String s, JTextField text) throws IOException {
+        if (s.equals("Introduce-ti numele")) {
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
+            throw new IOException("Nume invalid!");
+        }
+        text.setBackground(Color.WHITE);
+    }
+    public static void verificarePrenume(String s, JTextField text) throws IOException {
+        if (s.equals("Introduce-ti prenumele")){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
+            throw new IOException("Prenume invalid!");
+        }
+        text.setBackground(Color.WHITE);
+    }
+    public static void verificareAdresa(String s, JTextField text) throws IOException {
+        if (s.equals("Introduce-ti adresa")){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
+            throw new IOException("Adresa invalid!");
+        }
+        String regex = "^[A-Za-z\\s]+\\s*\\d+[A-Za-z]*$";
+        if(!s.matches(regex)) {
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
+            throw new IOException("Adresa invalid!");
+        }
+        text.setBackground(Color.WHITE);
+    }
+    public static void verificareNrtel(String s, JTextField text) throws IOException {
+        if (s.length()!=10 || !s.matches("\\d+")){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
+            throw new IOException("Nrtel invalid!");
+        }
+        text.setBackground(Color.WHITE);
+    }
+    public static void verificareEmail(String s, JTextField text) throws IOException {
+        if (s.equals("Introduce-ti Email")){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
+            throw new IOException("Email invalid!");
+        }
+        String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        if(!s.matches(regex)){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
+            throw new IOException("Email invalid!");
+        }
         try{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
@@ -47,14 +76,20 @@ public class PaginaAutentificare extends JPanel {
            PreparedStatement statement=conn.prepareStatement("SELECT email FROM utilizator WHERE email=?");
            statement.setString(1,s);
            ResultSet rs=statement.executeQuery();
-           if (!(!rs.isBeforeFirst() && rs.getRow()==0))
-                throw new IOException("Email invalid!");
+           if (!(!rs.isBeforeFirst() && rs.getRow()==0)){
+               Color lightRed = new Color(255, 102, 102);
+               text.setBackground(lightRed);
+               throw new IOException("Email invalid!");
+           }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        text.setBackground(Color.WHITE);
     }
-    public static void verificareIban(String s) throws IOException {
+    public static void verificareIban(String s, JTextField text) throws IOException {
         if (s.equals("Introduce-ti cont IBAN") || s.length() < 15 || s.length() > 34) {
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
             throw new IOException("IBAN invalid!"); // IBAN is too short or too long
         }
 
@@ -65,6 +100,8 @@ public class PaginaAutentificare extends JPanel {
         String countryCode = s.substring(0, 2);
         Integer expectedLength = 24;//pt RO
         if (expectedLength == null || s.length() != expectedLength) {
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
             throw new IOException("IBAN invalid!"); // Invalid country code or incorrect length
         }
 
@@ -83,16 +120,27 @@ public class PaginaAutentificare extends JPanel {
 
         // Perform Modulo 97 operation
         BigInteger ibanNumber = new BigInteger(numericIBAN.toString());
-        if (ibanNumber.mod(BigInteger.valueOf(97)).intValue() != 1)
+        if (ibanNumber.mod(BigInteger.valueOf(97)).intValue() != 1){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
             throw new IOException("IBAN invalid!");
+        }
+        text.setBackground(Color.WHITE);
     }
-    public static void verificareNrContract(String s) throws IOException {
-        if (s.equals("Introduce-ti numar de contract") || !s.matches("\\d+"))
+    public static void verificareNrContract(String s, JTextField text) throws IOException {
+        if (s.equals("Introduce-ti numar de contract") || !s.matches("\\d+")){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
             throw new IOException("Numar de contract invalid!");
+        }
+        text.setBackground(Color.WHITE);
     }
-    public static void verificareUsername(String s) throws IOException {
-        if (s.equals("Introduce-ti Username"))
+    public static void verificareUsername(String s, JTextField text) throws IOException {
+        if (s.equals("Introduce-ti Username")){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
             throw new IOException("Username invalid!");
+        }
         try{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
@@ -101,16 +149,24 @@ public class PaginaAutentificare extends JPanel {
             PreparedStatement statement=conn.prepareStatement("SELECT username FROM utilizator WHERE username=?");
             statement.setString(1,s);
             ResultSet rs=statement.executeQuery();
-            if (!(!rs.isBeforeFirst() && rs.getRow()==0))
+            if (!(!rs.isBeforeFirst() && rs.getRow()==0)) {
+                Color lightRed = new Color(255, 102, 102);
+                text.setBackground(lightRed);
                 throw new IOException("Username invalid!");
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        text.setBackground(Color.WHITE);
     }
-    public static void verificarePassword(String s) throws IOException {
+    public static void verificarePassword(String s, JTextField text) throws IOException {
         //TODO:maybe check for a strong password?
-        if (s.equals("Introduce-ti Password"))
+        if (s.equals("Introduce-ti Password")){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
             throw new IOException("Password invalid!");
+        }
+        text.setBackground(Color.WHITE);
     }
 
     public PaginaAutentificare(JFrame frame,String job) {
@@ -126,6 +182,7 @@ public class PaginaAutentificare extends JPanel {
         JPasswordField textPassword = new JPasswordField();
         JTextField anStudiu=new JTextField();
         JTextField departament =new JTextField();
+
 
         JPanel[] l = new JPanel[10];
         JPanel data=new JPanel();
@@ -174,16 +231,16 @@ public class PaginaAutentificare extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 //TODO:you can check if email or username are duplicates with the same query,you dont need more
                 try{
-                    verificareCNP(textCNP.getText());
-                    verificareNume(textNume.getText());
-                    verificarePrenume(textPrenume.getText());
-                    verificareAdresa(textAdresa.getText());
-                    verificareNrtel(textNrTel.getText());
-                    verificareEmail(textEmail.getText());
-                    verificareIban(textContIBAN.getText());
-                    verificareNrContract(textNrContract.getText());
-                    verificareUsername(textUsername.getText());
-                    verificarePassword(textPassword.getText());
+                    verificareCNP(textCNP.getText(),textCNP);
+                    verificareNume(textNume.getText(),textNume);
+                    verificarePrenume(textPrenume.getText(),textPrenume);
+                    verificareAdresa(textAdresa.getText(),textAdresa);
+                    verificareNrtel(textNrTel.getText(),textNrTel);
+                    verificareEmail(textEmail.getText(),textEmail);
+                    verificareIban(textContIBAN.getText(),textContIBAN);
+                    verificareNrContract(textNrContract.getText(),textNrContract);
+                    verificareUsername(textUsername.getText(),textUsername);
+                    verificarePassword(textPassword.getText(),textPassword);
 
                     try{//if all data is correct
                         String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
