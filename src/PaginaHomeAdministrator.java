@@ -138,18 +138,55 @@ public class PaginaHomeAdministrator extends JPanel {
 
 
 
-
+        Dimension buttonSize = new Dimension(175, 30);
 
         JButton butonCereri = new JButton("Cereri înscriere");
+        butonCereri.setMinimumSize(buttonSize);
+        butonCereri.setMaximumSize(buttonSize);
+        butonCereri.setPreferredSize(buttonSize);
         butonCereri.setBackground(Color.DARK_GRAY);
         butonCereri.setForeground(Color.WHITE);
 
-        JPanel rightPanel = new JPanel();
-        rightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT)); // Align content to the right
-        rightPanel.setOpaque(false); // Transparent background
-        rightPanel.add(butonCereri);
+        JButton butonAdd = new JButton("Adaugă informații");
+        butonAdd.setMinimumSize(buttonSize);
+        butonAdd.setMaximumSize(buttonSize);
+        butonAdd.setPreferredSize(buttonSize);
+        butonAdd.setBackground(Color.DARK_GRAY);
+        butonAdd.setForeground(Color.WHITE);
 
-        this.add(rightPanel, BorderLayout.CENTER);
+        JButton butonDelete = new JButton("Șterge informații");
+        butonDelete.setMinimumSize(buttonSize);
+        butonDelete.setMaximumSize(buttonSize);
+        butonDelete.setPreferredSize(buttonSize);
+        butonDelete.setBackground(Color.DARK_GRAY);
+        butonDelete.setForeground(Color.WHITE);
+
+        JButton butonModificari = new JButton("Modifică informații");
+        butonModificari.setMinimumSize(buttonSize);
+        butonModificari.setMaximumSize(buttonSize);
+        butonModificari.setPreferredSize(buttonSize);
+        butonModificari.setBackground(Color.DARK_GRAY);
+        butonModificari.setForeground(Color.WHITE);
+
+        // Align the buttons to the right
+        butonCereri.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        butonModificari.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        butonAdd.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        butonDelete.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS)); // Vertical stacking
+        rightPanel.setOpaque(false); // Transparent background
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
+        rightPanel.add(butonCereri);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
+        rightPanel.add(butonAdd);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
+        rightPanel.add(butonDelete);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
+        rightPanel.add(butonModificari);
+
+        this.add(rightPanel, BorderLayout.EAST);
 
         butonCereri.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -272,5 +309,15 @@ public class PaginaHomeAdministrator extends JPanel {
                 }.execute();
             }
         });
+
+        butonModificari.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
     }
 }
+
+///to do:
+///- adauga, sterge, modifica informatii in baza de date
+
