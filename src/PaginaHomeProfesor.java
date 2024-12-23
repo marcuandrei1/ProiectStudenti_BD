@@ -7,6 +7,7 @@ import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.sql.*;
 
+
 public class PaginaHomeProfesor extends JPanel {
     private Profesor profesor;
 
@@ -260,12 +261,12 @@ public class PaginaHomeProfesor extends JPanel {
                     stmtSelectId.setString(1, profesor.getUsername());
                     stmtSelectId.setString(2, profesor.getPassword());
                     ResultSet rezultat = stmtSelectId.executeQuery();
-                    int iD = 0;
+                    int idProfesor = 0;
                     if(rezultat.next()){                    // verifica daca a returnat vreun rezultat query-ul
-                        iD = rezultat.getInt("idProfesor");
+                        idProfesor = rezultat.getInt("idProfesor");
                     }
 
-                    System.out.println(iD);
+                    System.out.println(idProfesor);
 
 
 
@@ -290,10 +291,12 @@ public class PaginaHomeProfesor extends JPanel {
                     }
 
                     // Insert statement in prof/disciplina table
-                    PreparedStatement insertProfDisciplinaStmt = conn.prepareStatement("INSERT INTO `prof/disciplina`(idProfesor, idDisciplina, nrStudenti)  VALUES (?, ?, ?)");
-                    insertProfDisciplinaStmt.setInt(1,iD);
+                    PreparedStatement insertProfDisciplinaStmt = conn.prepareStatement(
+                            "INSERT INTO curs (idProfesor, idDisciplina,nrMaxStudenti, Procent, `interval`, ziua, ora, numarStudenti)  " +
+                                    "VALUES (?, ?,0,0,'saptamanal','luni','12:30:20',0)");
+                    //insertProfDisciplinaStmt.setInt(1,);
+                    insertProfDisciplinaStmt.setInt(1, idProfesor);
                     insertProfDisciplinaStmt.setInt(2, idMaterie);
-                    insertProfDisciplinaStmt.setInt(3, 30);
                     insertProfDisciplinaStmt.executeUpdate();
 
                 } catch (SQLException ex) {
@@ -315,7 +318,7 @@ public class PaginaHomeProfesor extends JPanel {
         JPanel borderedPanelProcente = new JPanel();
         borderedPanelProcente.setLayout(new BoxLayout(borderedPanelProcente, BoxLayout.Y_AXIS));
         borderedPanelProcente.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 2), "Notare procente")); // Add border with title
-        borderedPanelProcente.setMaximumSize(new Dimension(500, 200));
+        borderedPanelProcente.setMaximumSize(new Dimension(500, 300));
         borderedPanelProcente.setBackground(Color.WHITE);
         borderedPanelProcente.setAlignmentX(Component.LEFT_ALIGNMENT);
         borderedPanelProcente.setVisible(false);
@@ -339,7 +342,7 @@ public class PaginaHomeProfesor extends JPanel {
         try {
             String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn = DriverManager.getConnection(url);
-            PreparedStatement selectMateriiProf = conn.prepareStatement("SELECT disciplina.nume FROM disciplina JOIN `prof/disciplina` USING (idDisciplina) JOIN profesor USING (idProfesor) WHERE profesor.username = ?");
+            PreparedStatement selectMateriiProf = conn.prepareStatement("SELECT disciplina.nume FROM disciplina JOIN curs USING (idDisciplina) JOIN profesor USING (idProfesor) WHERE profesor.username = ?");
             selectMateriiProf.setString(1, profesor.getUsername());
             ResultSet rezultat = selectMateriiProf.executeQuery();
 
@@ -392,20 +395,45 @@ public class PaginaHomeProfesor extends JPanel {
         procentSeminarField.setMaximumSize(new Dimension(100, 20));
         JTextField procentLaboratorField = new JTextField(10);
         procentLaboratorField.setMaximumSize(new Dimension(100, 20));
+        JButton butonSubmit1 = new JButton("Submit1");
+        JButton butonSubmit2 = new JButton("Submit2");
+        JButton butonSubmit3 = new JButton("Submit3");
+
 
 
 
         borderedPanelProcente.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing
         borderedPanelProcente.add(procentCursLabel);
         borderedPanelProcente.add(procentCursField);
+        borderedPanelProcente.add(butonSubmit1);
 
         borderedPanelProcente.add(procentSeminarLabel);
         borderedPanelProcente.add(procentSeminarField);
+        borderedPanelProcente.add(butonSubmit2);
 
         borderedPanelProcente.add(procentLaboratorLabel);
         borderedPanelProcente.add(procentLaboratorField);
+        borderedPanelProcente.add(butonSubmit3);
 
+        ///TODO: Cum adaug la procentul cursului specific profesorului (poate mai sunt profesori care pun procente la materia respectiva)
 
+        butonSubmit1.addActionListener(e->{
+            if (Integer.parseInt(procentCursField.getText()) <= 100) {
+                try{
+                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                    Connection conn = DriverManager.getConnection(url);
+                    PreparedStatement selectProcentCurs = conn.prepareStatement("INSERt into curs (Procent) values (?)");
+                    selectProcentCurs.setString(1, procentCursField.getText());
+                    ResultSet rezultat = selectProcentCurs.executeQuery();
+                }catch(SQLException ex){
+                    ex.printStackTrace();
+                }
+            }
+            else{
+                procentCursField.setText("Procent invalid!");
+                procentCursField.setForeground(Color.RED);
+            };
+        });
 
         /// Adaugam componentele la label-urile care trebuie
 
