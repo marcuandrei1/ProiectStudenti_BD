@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class PaginaHomeStudent extends JPanel {
@@ -17,7 +19,7 @@ public class PaginaHomeStudent extends JPanel {
                 try {
                     student.InscriereStudent(Objects.requireNonNull(c.getSelectedItem()).toString());
                     JOptionPane.showMessageDialog(null,
-                            "Utilizatorul " + student.getNume()+ " " +student.getPrenume()  + "a reusit sa se inscrie la "+c.getSelectedItem().toString()+ ".");
+                            "Utilizatorul " + student.getNume()+ " " +student.getPrenume()  + " a reusit sa se inscrie la "+c.getSelectedItem().toString()+ ".");
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(null,
                             "Nu exista profesor la cursul de "+c.getSelectedItem().toString()+ ".");
@@ -65,6 +67,45 @@ public class PaginaHomeStudent extends JPanel {
                     "Studentul nu este inscris la nici o disciplina");
         }
 
+        return panel;
+    }
+    private JPanel InterfataVizualizareGrupuri(){
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        List<JButton> groups=new ArrayList<>();
+        List<Integer> groupsID=new ArrayList<>();
+        try{
+            String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+            Connection conn= DriverManager.getConnection(url);
+
+            PreparedStatement stmt=conn.prepareStatement("SELECT  numeGrup,idGrupStudiu from grupstudiu join `grup/student` using (idGrupStudiu) where idStudent=(select idStudent from student where Username=?);");
+            stmt.setString(1,student.getUsername());
+            ResultSet rs=stmt.executeQuery();
+            while(rs.next()){
+                groups.add(new JButton(rs.getString(1)));
+                groupsID.add(rs.getInt(2));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        for(JButton b:groups){
+            //creare butoane pentru a te conecta unui anumit grup din cele la care esti inscris
+            b.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(b);
+            panel.add(Box.createVerticalStrut(10));
+            b.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    System.out.println("f");
+                        JFrame chatFrame=new JFrame();
+                        chatFrame.setTitle(b.getText());
+                        chatFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        chatFrame.setMinimumSize(new Dimension(400, 600));
+                        chatFrame.add(new ChatWindow(student,groupsID.get(groups.indexOf(b))));
+                        chatFrame.setVisible(true);
+
+                }
+            });
+        }
         return panel;
     }
     public PaginaHomeStudent(JFrame frame, Student student ) {
@@ -233,12 +274,35 @@ public class PaginaHomeStudent extends JPanel {
             }
         });
 
+        JButton vizualizareGrupuri =new JButton("Vizualizare Grupuri");//buton vizulizare grupuri
+        vizualizareGrupuri.setBackground(Color.DARK_GRAY);
+        vizualizareGrupuri.setForeground(Color.WHITE);
+        vizualizareGrupuri.addActionListener(new ActionListener() {
+            private int clicks=0;
+            public void actionPerformed(ActionEvent e) {
+                if(clicks%2==0){
+                    PaginaHomeStudent.this.add(InterfataVizualizareGrupuri(),BorderLayout.CENTER);
+                    PaginaHomeStudent.this.revalidate();
+                    PaginaHomeStudent.this.repaint();
+                    clicks++;
+                }
+                else{
+                    frame.getContentPane().removeAll();
+                    frame.setTitle("PaginaHome");
+                    frame.getContentPane().add(new PaginaHomeStudent(frame, student));
+                    frame.revalidate();
+                    frame.repaint();
+                    clicks++;
+                }
+            }
+        });
 
 
         JPanel butonsPanel=new JPanel();
         butonsPanel.setLayout(new BoxLayout(butonsPanel,BoxLayout.Y_AXIS));
         butonsPanel.add(inscriere);
         butonsPanel.add(vizualizareNote);
+        butonsPanel.add(vizualizareGrupuri);
         this.add(butonsPanel, BorderLayout.EAST);
     }
 }

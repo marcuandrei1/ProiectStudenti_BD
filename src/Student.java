@@ -25,6 +25,9 @@ public class Student extends Utilizator{
         stmt.setString(1, super.getUsername());
         return stmt.executeQuery();
     }
+    public void ConectareGrup() throws SQLException{
+
+    }
     //trebuie sa vedem cum facem sa aiba acelasi prof la discipline diferite,nu se poate aceeasi primary key,se alege alt prof?
     //studentul poate vedea activitatiile din ziua curenta
     //studentul poate vedea toate activitatille la care este inscris
