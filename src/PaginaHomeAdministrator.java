@@ -147,12 +147,26 @@ public class PaginaHomeAdministrator extends JPanel {
         butonCereri.setBackground(Color.DARK_GRAY);
         butonCereri.setForeground(Color.WHITE);
 
-        JButton butonAdd = new JButton("Adaugă informații");
-        butonAdd.setMinimumSize(buttonSize);
-        butonAdd.setMaximumSize(buttonSize);
-        butonAdd.setPreferredSize(buttonSize);
-        butonAdd.setBackground(Color.DARK_GRAY);
-        butonAdd.setForeground(Color.WHITE);
+        JButton butonAddStudent = new JButton("Adaugă Student");
+        butonAddStudent.setMinimumSize(buttonSize);
+        butonAddStudent.setMaximumSize(buttonSize);
+        butonAddStudent.setPreferredSize(buttonSize);
+        butonAddStudent.setBackground(Color.DARK_GRAY);
+        butonAddStudent.setForeground(Color.WHITE);
+
+        JButton butonAddProfesor = new JButton("Adaugă Profesor");
+        butonAddProfesor.setMinimumSize(buttonSize);
+        butonAddProfesor.setMaximumSize(buttonSize);
+        butonAddProfesor.setPreferredSize(buttonSize);
+        butonAddProfesor.setBackground(Color.DARK_GRAY);
+        butonAddProfesor.setForeground(Color.WHITE);
+
+        JButton butonAddAdmin = new JButton("Adaugă Administrator");
+        butonAddAdmin.setMinimumSize(buttonSize);
+        butonAddAdmin.setMaximumSize(buttonSize);
+        butonAddAdmin.setPreferredSize(buttonSize);
+        butonAddAdmin.setBackground(Color.DARK_GRAY);
+        butonAddAdmin.setForeground(Color.WHITE);
 
         JButton butonDelete = new JButton("Șterge informații");
         butonDelete.setMinimumSize(buttonSize);
@@ -171,7 +185,9 @@ public class PaginaHomeAdministrator extends JPanel {
         // Align the buttons to the right
         butonCereri.setAlignmentX(Component.RIGHT_ALIGNMENT);
         butonModificari.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        butonAdd.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        butonAddStudent.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        butonAddProfesor.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        butonAddAdmin.setAlignmentX(Component.RIGHT_ALIGNMENT);
         butonDelete.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
         JPanel rightPanel = new JPanel();
@@ -180,7 +196,11 @@ public class PaginaHomeAdministrator extends JPanel {
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
         rightPanel.add(butonCereri);
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
-        rightPanel.add(butonAdd);
+        rightPanel.add(butonAddStudent);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
+        rightPanel.add(butonAddProfesor);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
+        rightPanel.add(butonAddAdmin);
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
         rightPanel.add(butonDelete);
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
@@ -310,11 +330,98 @@ public class PaginaHomeAdministrator extends JPanel {
             }
         });
 
+        butonAddStudent.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Create a new dialog to embed PaginaAutentificare
+                JDialog addInfoDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this), "Adaugă informații", true);
+                addInfoDialog.setLayout(new BorderLayout());
+                addInfoDialog.setSize(800, 600); // Set appropriate size
+                addInfoDialog.setLocationRelativeTo(PaginaHomeAdministrator.this); // Center it relative to the main panel
+
+                // Embed PaginaAutentificare content
+                PaginaAutentificare paginaAutentificare = new PaginaAutentificare((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this),"Student");
+                addInfoDialog.add(paginaAutentificare, BorderLayout.CENTER);
+
+                // Add a close button at the bottom of the dialog
+                JButton closeButton = new JButton("Close");
+                closeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        addInfoDialog.dispose(); // Close the dialog
+                    }
+                });
+                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                buttonPanel.add(closeButton);
+                addInfoDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+                addInfoDialog.setVisible(true); // Show the dialog
+            }
+        });
+        butonAddProfesor.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Create a new dialog to embed PaginaAutentificare
+                JDialog addInfoDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this), "Adaugă informații", true);
+                addInfoDialog.setLayout(new BorderLayout());
+                addInfoDialog.setSize(800, 600); // Set appropriate size
+                addInfoDialog.setLocationRelativeTo(PaginaHomeAdministrator.this); // Center it relative to the main panel
+
+                // Embed PaginaAutentificare content
+                PaginaAutentificare paginaAutentificare = new PaginaAutentificare((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this),"Profesor");
+                addInfoDialog.add(paginaAutentificare, BorderLayout.CENTER);
+
+                // Add a close button at the bottom of the dialog
+                JButton closeButton = new JButton("Close");
+                closeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        addInfoDialog.dispose(); // Close the dialog
+                    }
+                });
+                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                buttonPanel.add(closeButton);
+                addInfoDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+                addInfoDialog.setVisible(true); // Show the dialog
+            }
+        });
+        butonAddAdmin.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Create a new dialog to embed PaginaAutentificare
+                JDialog addInfoDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this), "Adaugă informații", true);
+                addInfoDialog.setLayout(new BorderLayout());
+                addInfoDialog.setSize(800, 600); // Set appropriate size
+                addInfoDialog.setLocationRelativeTo(PaginaHomeAdministrator.this); // Center it relative to the main panel
+
+                // Embed PaginaAutentificare content
+                PaginaAutentificare paginaAutentificare = new PaginaAutentificare((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this),"Administrator");
+                addInfoDialog.add(paginaAutentificare, BorderLayout.CENTER);
+
+                // Add a close button at the bottom of the dialog
+                JButton closeButton = new JButton("Close");
+                closeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        addInfoDialog.dispose(); // Close the dialog
+                    }
+                });
+                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                buttonPanel.add(closeButton);
+                addInfoDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+                addInfoDialog.setVisible(true); // Show the dialog
+            }
+        });
+        butonDelete.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
         butonModificari.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
             }
         });
+
     }
 }
 
