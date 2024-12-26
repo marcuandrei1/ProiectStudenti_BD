@@ -290,14 +290,31 @@ public class PaginaHomeProfesor extends JPanel {
                         System.out.println(idMaterie);
                     }
 
-                    // Insert statement in prof/disciplina table
-                    PreparedStatement insertProfDisciplinaStmt = conn.prepareStatement(
+                    /// Inserarea in tabela curs
+                    PreparedStatement insertCursStmt = conn.prepareStatement(
                             "INSERT INTO curs (idProfesor, idDisciplina,nrMaxStudenti, Procent, `interval`, ziua, ora, numarStudenti)  " +
                                     "VALUES (?, ?,0,0,'saptamanal','luni','12:30:20',0)");
-                    //insertProfDisciplinaStmt.setInt(1,);
-                    insertProfDisciplinaStmt.setInt(1, idProfesor);
-                    insertProfDisciplinaStmt.setInt(2, idMaterie);
-                    insertProfDisciplinaStmt.executeUpdate();
+                    //insertCursStmt.setInt(1,);
+                    insertCursStmt.setInt(1, idProfesor);
+                    insertCursStmt.setInt(2, idMaterie);
+                    insertCursStmt.executeUpdate();
+
+                    /// Inserarea si in tabela seminar
+                    PreparedStatement insertSeminarStmt = conn.prepareStatement(
+                            "INSERT INTO seminar (idProfesor, idDisciplina, nrMaxStudenti, procent, `interval`, ziua, ora)  " +
+                                    "VALUES (?, ?,0,0,'saptamanal','luni','12:30:20')");
+                    insertSeminarStmt.setInt(1, idProfesor);
+                    insertSeminarStmt.setInt(2, idMaterie);
+                    insertSeminarStmt.executeUpdate();
+
+                    /// Inserarea si in tabela seminar
+                    PreparedStatement insertLabStmt = conn.prepareStatement(
+                            "INSERT INTO laborator (idProfesor, idDisciplina, nrMaxStudenti, procent, `interval`, ziua, ora)  " +
+                                    "VALUES (?, ?,0,0,'saptamanal','luni','12:30:20')");
+                    insertLabStmt.setInt(1, idProfesor);
+                    insertLabStmt.setInt(2, idMaterie);
+                    insertLabStmt.executeUpdate();
+
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -339,25 +356,9 @@ public class PaginaHomeProfesor extends JPanel {
         materiiProfesorComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
         materiiProfesorComboBox.setVisible(false);
 
-        try {
-            String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
-            Connection conn = DriverManager.getConnection(url);
-            PreparedStatement selectMateriiProf = conn.prepareStatement("SELECT disciplina.nume FROM disciplina JOIN curs USING (idDisciplina) JOIN profesor USING (idProfesor) WHERE profesor.username = ?");
-            selectMateriiProf.setString(1, profesor.getUsername());
-            ResultSet rezultat = selectMateriiProf.executeQuery();
-
-            while(rezultat.next()){
-                materiiProfesorComboBox.addItem(rezultat.getString("nume"));
-            }
-
-        }catch(SQLException ex){
-            ex.printStackTrace();
-        }
-
 
         /// TOGGLE la NotareProcenteButton
         NotareProcenteButton.addActionListener(e -> {
-
             // Check if the components are already visible
             boolean isVisible = materiiProfesorComboBox.isVisible();
 
@@ -368,6 +369,7 @@ public class PaginaHomeProfesor extends JPanel {
             // Revalidate and repaint the panel to update the layout
             middlePanel.revalidate();
             middlePanel.repaint();
+
         });
 
         /// Cand se apasa butonul de Notare Procente
@@ -375,6 +377,21 @@ public class PaginaHomeProfesor extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 borderedPanelProcente.setVisible(true);
+
+                try {
+                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                    Connection conn = DriverManager.getConnection(url);
+                    PreparedStatement selectMateriiProf = conn.prepareStatement("SELECT disciplina.nume FROM disciplina JOIN curs USING (idDisciplina) JOIN profesor USING (idProfesor) WHERE profesor.username = ?");
+                    selectMateriiProf.setString(1, profesor.getUsername());
+                    ResultSet rezultat = selectMateriiProf.executeQuery();
+
+                    while(rezultat.next()){
+                        materiiProfesorComboBox.addItem(rezultat.getString("nume"));
+                    }
+
+                }catch(SQLException ex){
+                    ex.printStackTrace();
+                }
             }
         });
 
@@ -415,23 +432,200 @@ public class PaginaHomeProfesor extends JPanel {
         borderedPanelProcente.add(procentLaboratorField);
         borderedPanelProcente.add(butonSubmit3);
 
-        ///TODO: Cum adaug la procentul cursului specific profesorului (poate mai sunt profesori care pun procente la materia respectiva)
+        ///TODO: Adaugare procente in baza de date
+
+        /// Pentru butonSubmit1
+
+        procentCursField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                // Clear the text when the field gains focus
+                procentCursField.setText("");
+                procentCursField.setForeground(Color.BLACK); // Reset the text color to default
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                // Optionally do something when the field loses focus
+            }
+        });
 
         butonSubmit1.addActionListener(e->{
             if (Integer.parseInt(procentCursField.getText()) <= 100) {
                 try{
                     String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                     Connection conn = DriverManager.getConnection(url);
-                    PreparedStatement selectProcentCurs = conn.prepareStatement("INSERt into curs (Procent) values (?)");
-                    selectProcentCurs.setString(1, procentCursField.getText());
-                    ResultSet rezultat = selectProcentCurs.executeQuery();
+
+                    PreparedStatement selectIdProfesor = conn.prepareStatement("SELECT idProfesor FROM profesor WHERE username = ?");
+                    selectIdProfesor.setString(1, profesor.getUsername());
+                    ResultSet rezultat0 = selectIdProfesor.executeQuery();
+                    String idProfesor = "";
+                    if (rezultat0.next()) {
+                        idProfesor = rezultat0.getString(1);
+                    }
+
+
+                    /// Selectam idMaterie
+                    PreparedStatement selectIdMaterie = conn.prepareStatement("SELECT idDisciplina FROM disciplina WHERE Nume = ?");
+                    selectIdMaterie.setString(1, materiiProfesorComboBox.getSelectedItem().toString());
+                    ResultSet rezultat1 = selectIdMaterie.executeQuery();
+                    String idMaterie = "";
+                    if (rezultat1.next()) {
+                        idMaterie = rezultat1.getString(1);
+                    }
+
+
+                    PreparedStatement updateProcentCurs = conn.prepareStatement("UPDATE curs SET Procent = ? WHERE idProfesor = ? AND idDisciplina = ?");
+                    updateProcentCurs.setInt(1, Integer.parseInt(procentCursField.getText()));
+                    updateProcentCurs.setString(2, idProfesor);
+                    updateProcentCurs.setString(3, idMaterie);
+                    int rowsUpdated = updateProcentCurs.executeUpdate();
+                    if (rowsUpdated > 0) {
+                        System.out.println("Procent updated successfully!");
+                    } else {
+                        System.out.println("No rows updated. Check if the curs record exists.");
+                    }
+
                 }catch(SQLException ex){
                     ex.printStackTrace();
                 }
+
+                procentCursField.setText("Done!");
+                procentCursField.setForeground(Color.green);
             }
             else{
                 procentCursField.setText("Procent invalid!");
                 procentCursField.setForeground(Color.RED);
+            };
+        });
+
+        /// Pentru butonSubmit2
+
+        procentSeminarField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                // Clear the text when the field gains focus
+                procentSeminarField.setText("");
+                procentSeminarField.setForeground(Color.BLACK); // Reset the text color to default
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                // Optionally do something when the field loses focus
+            }
+        });
+
+        butonSubmit2.addActionListener(e->{
+            if (Integer.parseInt(procentSeminarField.getText()) <= 100) {
+                try{
+                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                    Connection conn = DriverManager.getConnection(url);
+
+                    PreparedStatement selectIdProfesor = conn.prepareStatement("SELECT idProfesor FROM profesor WHERE username = ?");
+                    selectIdProfesor.setString(1, profesor.getUsername());
+                    ResultSet rezultat0 = selectIdProfesor.executeQuery();
+                    String idProfesor = "";
+                    if (rezultat0.next()) {
+                        idProfesor = rezultat0.getString(1);
+                    }
+
+
+                    /// Selectam idMaterie
+                    PreparedStatement selectIdMaterie = conn.prepareStatement("SELECT idDisciplina FROM disciplina WHERE Nume = ?");
+                    selectIdMaterie.setString(1, materiiProfesorComboBox.getSelectedItem().toString());
+                    ResultSet rezultat1 = selectIdMaterie.executeQuery();
+                    String idMaterie = "";
+                    if (rezultat1.next()) {
+                        idMaterie = rezultat1.getString(1);
+                    }
+
+
+                    PreparedStatement updateProcentSeminar = conn.prepareStatement("UPDATE seminar SET procent = ? WHERE idProfesor = ? AND idDisciplina = ?");
+                    updateProcentSeminar.setInt(1, Integer.parseInt(procentSeminarField.getText()));
+                    updateProcentSeminar.setString(2, idProfesor);
+                    updateProcentSeminar.setString(3, idMaterie);
+                    int rowsUpdated = updateProcentSeminar.executeUpdate();
+                    if (rowsUpdated > 0) {
+                        System.out.println("Procent updated successfully!");
+                    } else {
+                        System.out.println("No rows updated. Check if the seminar record exists.");
+                    }
+
+                }catch(SQLException ex){
+                    ex.printStackTrace();
+                }
+
+                procentSeminarField.setText("Done!");
+                procentSeminarField.setForeground(Color.green);
+            }
+            else{
+                procentCursField.setText("Procent invalid!");
+                procentCursField.setForeground(Color.RED);
+            };
+        });
+
+        /// Pentru butonSubmit3
+
+        procentLaboratorField.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                // Clear the text when the field gains focus
+                procentLaboratorField.setText("");
+                procentLaboratorField.setForeground(Color.BLACK); // Reset the text color to default
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                // Optionally do something when the field loses focus
+            }
+        });
+
+        butonSubmit3.addActionListener(e->{
+            if (Integer.parseInt(procentLaboratorField.getText()) <= 100) {
+                try{
+                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                    Connection conn = DriverManager.getConnection(url);
+
+                    PreparedStatement selectIdProfesor = conn.prepareStatement("SELECT idProfesor FROM profesor WHERE username = ?");
+                    selectIdProfesor.setString(1, profesor.getUsername());
+                    ResultSet rezultat0 = selectIdProfesor.executeQuery();
+                    String idProfesor = "";
+                    if (rezultat0.next()) {
+                        idProfesor = rezultat0.getString(1);
+                    }
+
+
+                    /// Selectam idMaterie
+                    PreparedStatement selectIdMaterie = conn.prepareStatement("SELECT idDisciplina FROM disciplina WHERE Nume = ?");
+                    selectIdMaterie.setString(1, materiiProfesorComboBox.getSelectedItem().toString());
+                    ResultSet rezultat1 = selectIdMaterie.executeQuery();
+                    String idMaterie = "";
+                    if (rezultat1.next()) {
+                        idMaterie = rezultat1.getString(1);
+                    }
+
+
+                    PreparedStatement updateProcentLaborator = conn.prepareStatement("UPDATE laborator SET procent = ? WHERE idProfesor = ? AND idDisciplina = ?");
+                    updateProcentLaborator.setInt(1, Integer.parseInt(procentLaboratorField.getText()));
+                    updateProcentLaborator.setString(2, idProfesor);
+                    updateProcentLaborator.setString(3, idMaterie);
+                    int rowsUpdated = updateProcentLaborator.executeUpdate();
+                    if (rowsUpdated > 0) {
+                        System.out.println("Procent updated successfully!");
+                    } else {
+                        System.out.println("No rows updated. Check if the seminar record exists.");
+                    }
+
+                }catch(SQLException ex){
+                    ex.printStackTrace();
+                }
+
+                procentLaboratorField.setText("Done!");
+                procentLaboratorField.setForeground(Color.green);
+            }
+            else{
+                procentLaboratorField.setText("Procent invalid!");
+                procentLaboratorField.setForeground(Color.RED);
             };
         });
 
@@ -440,6 +634,11 @@ public class PaginaHomeProfesor extends JPanel {
         middlePanel.add(NotareProcenteButton);
         middlePanel.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing
         middlePanel.add(borderedPanelProcente);
+
+
+
+
+
 
 
 
