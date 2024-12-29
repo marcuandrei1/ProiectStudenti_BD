@@ -95,12 +95,10 @@ public class PaginaHomeStudent extends JPanel {
             panel.add(Box.createVerticalStrut(10));
             b.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
-                    System.out.println("f");
                         JFrame chatFrame=new JFrame();
                         chatFrame.setTitle(b.getText());
-                        chatFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        chatFrame.setMinimumSize(new Dimension(400, 600));
-                        chatFrame.add(new ChatWindow(student,groupsID.get(groups.indexOf(b))));
+                        chatFrame.setMinimumSize(new Dimension(438, 707));
+                        chatFrame.add(new ChatWindow(student,groupsID.get(groups.indexOf(b)),chatFrame));
                         chatFrame.setVisible(true);
 
                 }

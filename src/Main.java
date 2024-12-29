@@ -12,9 +12,6 @@ public class Main {
             Statement s=conn.createStatement();
             ResultSet rs=s.executeQuery("SELECT * FROM adresa");
 
-            Statement st=conn.createStatement();
-            st.execute
-
             while(rs.next()){
                 System.out.println(rs.getString("strada"));
             }
