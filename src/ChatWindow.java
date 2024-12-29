@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ChatWindow extends JPanel {
     private Student student;
@@ -10,10 +12,27 @@ public class ChatWindow extends JPanel {
         this.idGrupStudiu = idGrupStudiu;
         this.setLayout(new BorderLayout());
 
-        JTextField chatbox = new JTextField();
-        JPanel l=FunctiiUtile.creareText(chatbox,"","Introduce-ti mesajul");
-        chatbox.setFont(new Font("Arial", Font.PLAIN, 15));
-        this.add(l,BorderLayout.SOUTH);
+
+        //creare chatbox space
+        JPanel chatbox=new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JTextField chatfield = new JTextField();
+        JPanel l=FunctiiUtile.creareText(chatfield,"","Introduce-ti mesajul");
+        chatfield.setFont(new Font("Arial", Font.PLAIN, 15));
+        chatfield.setPreferredSize(new Dimension(300,30));
+        JButton submit=new JButton("SEND");
+        chatbox.add(l);
+        chatbox.add(submit);
+        this.add(chatbox,BorderLayout.SOUTH);
+
+        //trmitere mesaje
+        submit.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
     }
     //introdus buton de submit,poate si enter sa mearga?
     //cine apasa pe buton ii apare sus mesajul,pe dreapta daca ii atau,pe stanga in rest
