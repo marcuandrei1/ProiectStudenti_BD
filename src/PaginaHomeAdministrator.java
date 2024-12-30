@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 
@@ -330,6 +329,7 @@ public class PaginaHomeAdministrator extends JPanel {
             }
         });
 
+
         butonAddStudent.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Create a new dialog to embed PaginaAutentificare
@@ -357,6 +357,8 @@ public class PaginaHomeAdministrator extends JPanel {
                 addInfoDialog.setVisible(true); // Show the dialog
             }
         });
+
+
         butonAddProfesor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Create a new dialog to embed PaginaAutentificare
@@ -384,6 +386,8 @@ public class PaginaHomeAdministrator extends JPanel {
                 addInfoDialog.setVisible(true); // Show the dialog
             }
         });
+
+
         butonAddAdmin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Create a new dialog to embed PaginaAutentificare
@@ -408,17 +412,240 @@ public class PaginaHomeAdministrator extends JPanel {
                 buttonPanel.add(closeButton);
                 addInfoDialog.add(buttonPanel, BorderLayout.SOUTH);
 
+
                 addInfoDialog.setVisible(true); // Show the dialog
             }
         });
+
+
         butonDelete.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // Create a new dialog to embed PaginaAutentificare
+                JDialog addInfoDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this), "Adaugă informații", true);
+                addInfoDialog.setLayout(new BorderLayout());
+                addInfoDialog.setSize(800, 600); // Set appropriate size
+                addInfoDialog.setLocationRelativeTo(PaginaHomeAdministrator.this); // Center it relative to the main panel
 
+                //Content for delete
+                //get username for utilizator to be deleted
+                JTextField textUsername = new JTextField();
+                JPanel l = FunctiiUtile.creareText(textUsername,"Username:  ","Introduce-ti Username");
+                textUsername.setFont(new Font("Arial", Font.PLAIN, 15));
+                textUsername.setPreferredSize(new Dimension(100,25));
+
+                addInfoDialog.add(l, BorderLayout.CENTER);
+
+
+                JButton deleteUtilizator = new JButton("Șterge");
+                deleteUtilizator.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        String username=textUsername.getText();
+                        if (username.isEmpty()) {
+                            JOptionPane.showMessageDialog(addInfoDialog, "Introduceți un nume de utilizator valid.", "Eroare", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        try {
+                            // Database connection
+                            String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                            Connection conn = DriverManager.getConnection(url);
+
+                            // Get the address ID for the user
+                            PreparedStatement statement = conn.prepareStatement(
+                                    "SELECT idAdresa FROM utilizator WHERE Username = ?");
+                            statement.setString(1, username);
+                            ResultSet rs = statement.executeQuery();
+
+                            if (rs.next()) {
+                                int idAdresa = rs.getInt("idAdresa");
+
+                                // Delete the user
+                                PreparedStatement deleteUserStmt = conn.prepareStatement(
+                                        "DELETE FROM utilizator WHERE Username = ?");
+                                deleteUserStmt.setString(1, username);
+                                deleteUserStmt.executeUpdate();
+
+                                // Delete the address
+                                PreparedStatement deleteAddressStmt = conn.prepareStatement(
+                                        "DELETE FROM adresa WHERE idAdresa = ?");
+                                deleteAddressStmt.setInt(1, idAdresa);
+                                deleteAddressStmt.executeUpdate();
+
+                                JOptionPane.showMessageDialog(addInfoDialog, "Utilizatorul a fost șters cu succes.");
+                            } else {
+                                JOptionPane.showMessageDialog(addInfoDialog, "Numele de utilizator nu există.", "Eroare", JOptionPane.ERROR_MESSAGE);
+                            }
+
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(addInfoDialog, "Eroare la ștergerea utilizatorului: " + ex.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                });
+
+
+                // Add a close button at the bottom of the dialog
+                JButton closeButton = new JButton("Close");
+                closeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        addInfoDialog.dispose(); // Close the dialog
+                    }
+                });
+                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                buttonPanel.add(closeButton);
+                buttonPanel.add(deleteUtilizator);
+                addInfoDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+                addInfoDialog.setVisible(true); // Show the dialog
             }
         });
+
+
         butonModificari.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // Create a new dialog to embed PaginaAutentificare
+                JDialog addInfoDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this), "Adaugă informații", true);
+                addInfoDialog.setLayout(new BorderLayout());
+                addInfoDialog.setSize(800, 600); // Set appropriate size
+                addInfoDialog.setLocationRelativeTo(PaginaHomeAdministrator.this); // Center it relative to the main panel
 
+                //Content for add
+                JTextField username = new JTextField();
+                JPanel l = FunctiiUtile.creareText(username,"Username:  ","Introduce-ti Username");
+                username.setFont(new Font("Arial", Font.PLAIN, 15));
+                username.setPreferredSize(new Dimension(100,25));
+
+                String user = username.getText();
+
+                addInfoDialog.add(l, BorderLayout.CENTER);
+
+                JButton modifyButton = new JButton("Modifica");
+                modifyButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            // Fetch user data from the database
+                            String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                            Connection conn = DriverManager.getConnection(url);
+
+                            PreparedStatement stmt = conn.prepareStatement(
+                                    "SELECT u.*, s.anStudiu, p.departament FROM utilizator u LEFT JOIN student s ON u.Username = s.Username LEFT JOIN profesor p ON u.Username = p.Username WHERE u.Username = ?");
+                            stmt.setString(1, user);
+
+                            ResultSet rs = stmt.executeQuery();
+                            ///always user not found
+                            if (!rs.next()) {
+                                JOptionPane.showMessageDialog(null, "User not found!");
+                                return;
+                            }
+
+                            // Pre-fill form with existing data
+                            JTextField textCNP = new JTextField(rs.getString("CNP"));
+                            JTextField textNume = new JTextField(rs.getString("nume"));
+                            JTextField textPrenume = new JTextField(rs.getString("prenume"));
+                            JTextField textAdresa = new JTextField(rs.getString("adresa"));
+                            JTextField textNrTel = new JTextField(rs.getString("numarTelefon"));
+                            JTextField textEmail = new JTextField(rs.getString("email"));
+                            JTextField textContIBAN = new JTextField(rs.getString("IBAN"));
+                            JTextField textNrContract = new JTextField(String.valueOf(rs.getInt("nrContract")));
+                            JTextField textUsername = new JTextField(rs.getString("Username"));
+                            JPasswordField textPassword = new JPasswordField(rs.getString("password"));
+
+                            // Create dialog
+                            JPanel form = new JPanel(new GridLayout(0, 2, 10, 10));
+                            form.add(new JLabel("CNP:")); form.add(textCNP);
+                            form.add(new JLabel("Nume:")); form.add(textNume);
+                            form.add(new JLabel("Prenume:")); form.add(textPrenume);
+                            form.add(new JLabel("Adresa:")); form.add(textAdresa);
+                            form.add(new JLabel("Nr. Telefon:")); form.add(textNrTel);
+                            form.add(new JLabel("Email:")); form.add(textEmail);
+                            form.add(new JLabel("IBAN:")); form.add(textContIBAN);
+                            form.add(new JLabel("Nr. Contract:")); form.add(textNrContract);
+                            form.add(new JLabel("Username:")); form.add(textUsername);
+                            form.add(new JLabel("Password:")); form.add(textPassword);
+
+                            // Type-specific fields
+                            String anStudiu = rs.getString("anStudiu");
+                            String departament = rs.getString("departament");
+                            JTextField textAnStudiu = new JTextField(anStudiu != null ? anStudiu : "");
+                            JTextField textDepartament = new JTextField(departament != null ? departament : "");
+
+                            if (anStudiu != null) {
+                                form.add(new JLabel("An Studiu:")); form.add(textAnStudiu);
+                            }
+                            if (departament != null) {
+                                form.add(new JLabel("Departament:")); form.add(textDepartament);
+                            }
+
+                            // Show dialog
+                            int result = JOptionPane.showConfirmDialog(null, form,
+                                    "Modifică Utilizator", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+                            if (result == JOptionPane.OK_OPTION) {
+                                // Validate and update database
+                                ValidareUtilizator.verificareCNP(textCNP.getText(), textCNP);
+                                ValidareUtilizator.verificareNume(textNume.getText(), textNume);
+                                ValidareUtilizator.verificarePrenume(textPrenume.getText(), textPrenume);
+                                ValidareUtilizator.verificareAdresa(textAdresa.getText(), textAdresa);
+                                ValidareUtilizator.verificareNrtel(textNrTel.getText(), textNrTel);
+                                ValidareUtilizator.verificareEmail(textEmail.getText(), textEmail);
+                                ValidareUtilizator.verificareIban(textContIBAN.getText(), textContIBAN);
+                                ValidareUtilizator.verificareNrContract(textNrContract.getText(), textNrContract);
+                                ValidareUtilizator.verificareUsername(textUsername.getText(), textUsername);
+                                ValidareUtilizator.verificarePassword(new String(textPassword.getPassword()), textPassword);
+
+                                PreparedStatement updateStmt = conn.prepareStatement(
+                                        "UPDATE utilizator SET CNP = ?, nume = ?, prenume = ?, numarTelefon = ?, email = ?, " +
+                                                "IBAN = ?, nrContract = ?, password = ? WHERE Username = ?");
+                                updateStmt.setString(1, textCNP.getText());
+                                updateStmt.setString(2, textNume.getText());
+                                updateStmt.setString(3, textPrenume.getText());
+                                updateStmt.setString(4, textNrTel.getText());
+                                updateStmt.setString(5, textEmail.getText());
+                                updateStmt.setString(6, textContIBAN.getText());
+                                updateStmt.setInt(7, Integer.parseInt(textNrContract.getText()));
+                                updateStmt.setString(8, new String(textPassword.getPassword()));
+                                updateStmt.setString(9, textUsername.getText());
+                                updateStmt.executeUpdate();
+
+                                // Type-specific updates
+                                if (!textAnStudiu.getText().isEmpty()) {
+                                    PreparedStatement updateStudentStmt = conn.prepareStatement(
+                                            "UPDATE student SET anStudiu = ? WHERE Username = ?");
+                                    updateStudentStmt.setString(1, textAnStudiu.getText());
+                                    updateStudentStmt.setString(2, textUsername.getText());
+                                    updateStudentStmt.executeUpdate();
+                                }
+                                if (!textDepartament.getText().isEmpty()) {
+                                    PreparedStatement updateProfesorStmt = conn.prepareStatement(
+                                            "UPDATE profesor SET departament = ? WHERE Username = ?");
+                                    updateProfesorStmt.setString(1, textDepartament.getText());
+                                    updateProfesorStmt.setString(2, textUsername.getText());
+                                    updateProfesorStmt.executeUpdate();
+                                }
+
+                                JOptionPane.showMessageDialog(null, "User updated successfully!");
+                            }
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+                        }
+                    }
+                });
+
+
+
+                // Add a close button at the bottom of the dialog
+                JButton closeButton = new JButton("Close");
+                closeButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        addInfoDialog.dispose(); // Close the dialog
+                    }
+                });
+                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                buttonPanel.add(closeButton);
+                buttonPanel.add(modifyButton);
+                addInfoDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+                addInfoDialog.setVisible(true); // Show the dialog
             }
         });
 
@@ -426,5 +653,6 @@ public class PaginaHomeAdministrator extends JPanel {
 }
 
 ///to do:
-///- adauga, sterge, modifica informatii in baza de date
+///- diferenta intre super si admin
+///-modificare not working
 
