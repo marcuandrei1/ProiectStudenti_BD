@@ -1,8 +1,12 @@
 import javax.swing.*;
 import java.awt.event.*;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import GroupChat.Background;
 import GroupChat.Components.ChatArea;
@@ -13,7 +17,6 @@ import GroupChat.ChatEvent;
 public class ChatWindow extends JPanel {
     private Student student;
     private int idGrupStudiu;
-
     private Background background1;
     private ChatArea chatArea;
     public ChatWindow(Student student,int idGrupStudiu, JFrame frame) {
@@ -30,11 +33,52 @@ public class ChatWindow extends JPanel {
                     String name = student.getUsername();
                     String date = df.format(new Date());
                     String message = chatArea.getText().trim();
-                    chatArea.addChatBox(new ModelMessage(name, date, message), ChatBox.BoxType.RIGHT);
+                    ModelMessage modelM=new ModelMessage(name, date, message);
+                    chatArea.addChatBox(modelM, ChatBox.BoxType.RIGHT);
                     chatArea.clearTextAndGrabFocus();
+                    try{
+                       modelM.InserareMesaj("mesaj",idGrupStudiu,student.getUsername());
+                       modelM.InserareMesaj("mesajasteptare",idGrupStudiu,student.getUsername());
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         });
+        ScheduledExecutorService scheduleExe= Executors.newScheduledThreadPool(1);
+        scheduleExe.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                    Connection conn = DriverManager.getConnection(url);
+                    PreparedStatement stmt = conn.prepareStatement("SELECT idStudent,mesaj,dataMesaj from mesajasteptare where idGrupStudiu=?");
+                    stmt.setInt(1, idGrupStudiu);
+                    ResultSet rs = stmt.executeQuery();
+                    while (rs.next()) {
+                        PreparedStatement stmt2=conn.prepareStatement("SELECT Username from student where idStudent=?");
+                        stmt2.setInt(1, rs.getInt("idStudent"));
+                        ResultSet rs2=stmt2.executeQuery();
+                        while (rs2.next()){
+                            String name=rs2.getString("Username");
+                            System.out.println("sunt aici");
+                            if(!name.equals(student.getUsername())){
+                                System.out.println("nu sunt utilizatorul bun");
+                                String message=rs.getString("mesaj");
+                                String date = rs.getString("dataMesaj");
+                                ModelMessage modelM=new ModelMessage(name, date, message);
+                                chatArea.addChatBox(modelM, ChatBox.BoxType.LEFT);
+                            }
+                        }
+                    }
+                    stmt=conn.prepareStatement("DELETE From mesajasteptare");
+                    stmt.executeUpdate();
+                }catch (SQLException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+        },0,2, TimeUnit.SECONDS);
+
         //verificare o data la 2 sec daca este mesaj nou si daca da in functie daca e useru conectat,care o scris mesaju sau nu se pune right sau left
     }
 

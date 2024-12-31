@@ -1,8 +1,12 @@
+import GroupChat.model.ModelMessage;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -78,7 +82,7 @@ public class PaginaHomeStudent extends JPanel {
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
-            PreparedStatement stmt=conn.prepareStatement("SELECT  numeGrup,idGrupStudiu from grupstudiu join `grup/student` using (idGrupStudiu) where idStudent=(select idStudent from student where Username=?);");
+            PreparedStatement stmt=conn.prepareStatement("SELECT  distinct  numeGrup,idGrupStudiu from grupstudiu join mesaj using (idGrupStudiu) where idStudent=(select idStudent from student where Username=?);");
             stmt.setString(1,student.getUsername());
             ResultSet rs=stmt.executeQuery();
             while(rs.next()){
@@ -98,9 +102,16 @@ public class PaginaHomeStudent extends JPanel {
                         JFrame chatFrame=new JFrame();
                         chatFrame.setTitle(b.getText());
                         chatFrame.setMinimumSize(new Dimension(438, 707));
-                        chatFrame.add(new ChatWindow(student,groupsID.get(groups.indexOf(b)),chatFrame));
+                        int idGrupStudiu=groupsID.get(groups.indexOf(b));
+                        chatFrame.add(new ChatWindow(student,idGrupStudiu,chatFrame));
                         chatFrame.setVisible(true);
-
+                        /*SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy, HH:mm");//mutare pentru cand creezi buton de alaturare grupuri
+                        ModelMessage modelM=new ModelMessage(student.getUsername(),df.format(new Date()),"");
+                        try {
+                            modelM.InserareMesaj(idGrupStudiu);
+                        } catch (SQLException ex) {
+                            System.out.println(ex.getMessage());;
+                        }*/
                 }
             });
         }
