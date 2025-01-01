@@ -56,6 +56,7 @@ public class ModelMessage {
             try {
                 SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
                 java.util.Date parsedDate =df.parse(date);
+
                 stmt.setTimestamp(4,new Timestamp(parsedDate.getTime()));
                 stmt.executeUpdate();
             }

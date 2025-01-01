@@ -93,7 +93,6 @@ public class ChatArea extends JPanel {
         return layer;
     }
 
-
     private JScrollPane createScroll() {
         JScrollPane scroll = new JScrollPane();
         scroll.setBorder(null);
@@ -154,7 +153,9 @@ public class ChatArea extends JPanel {
     public void textGrabFocus() {
         textMessage.grabFocus();
     }
-
+    public JScrollPane getScroll() {
+        return scrollBody;
+    }
     public void clearTextAndGrabFocus() {
         textMessage.setText("");
         textMessage.grabFocus();

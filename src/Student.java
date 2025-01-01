@@ -25,8 +25,44 @@ public class Student extends Utilizator{
         stmt.setString(1, super.getUsername());
         return stmt.executeQuery();
     }
-    public void ConectareGrup() throws SQLException{
 
+    public void InscriereGrup(String numeGrup,Connection conn)throws SQLException{
+        PreparedStatement stmt=conn.prepareStatement("SELECT idStudent from student where Username=?;");
+        stmt.setString(1, super.getUsername());
+        ResultSet rs=stmt.executeQuery();
+        while(rs.next()){
+            stmt=conn.prepareStatement("SELECT idGrupStudiu from grupstudiu where numeGrup=?");
+            stmt.setString(1, numeGrup);
+            ResultSet rs2=stmt.executeQuery();
+            while(rs2.next()){
+                stmt=conn.prepareStatement("INSERT INTO mesaj(idGrupStudiu, idStudent, mesaj, dataMesaj) VALUES (?,?,'',now());");
+                stmt.setInt(1, rs2.getInt("idGrupStudiu"));
+                stmt.setInt(2, rs.getInt("idStudent"));
+                stmt.executeUpdate();
+            }
+        }
+        stmt.close();
+    }
+    public void CreareeGrup(String disciplina,String numeGrup) throws SQLException{
+        String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+        Connection conn= DriverManager.getConnection(url);
+        PreparedStatement stmt=conn.prepareStatement("SELECT idStudent from student where Username=?;");
+        stmt.setString(1, super.getUsername());
+        ResultSet rs=stmt.executeQuery();
+        while(rs.next()){
+            stmt=conn.prepareStatement("SELECT idDisciplina from disciplina where nume=?;");
+            stmt.setString(1, disciplina);
+            ResultSet rs2=stmt.executeQuery();
+            while(rs2.next()){
+                stmt=conn.prepareStatement("INSERT INTO grupstudiu(idDisciplina, numeGrup, idStudent) VALUES (?,?,?);");
+                stmt.setInt(1,rs2.getInt("idDisciplina"));
+                stmt.setString(2,numeGrup);
+                stmt.setInt(3,rs.getInt("idStudent"));
+                stmt.executeUpdate();
+                this.InscriereGrup(numeGrup,conn);
+            }
+        }
+        stmt.close();
     }
     //trebuie sa vedem cum facem sa aiba acelasi prof la discipline diferite,nu se poate aceeasi primary key,se alege alt prof?
     //studentul poate vedea activitatiile din ziua curenta

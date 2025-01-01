@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -19,12 +20,14 @@ public class ChatWindow extends JPanel {
     private int idGrupStudiu;
     private Background background1;
     private ChatArea chatArea;
+    private JFrame frame;
     public ChatWindow(Student student,int idGrupStudiu, JFrame frame) {
         this.student = student;
         this.idGrupStudiu = idGrupStudiu;
-
+        this.frame = frame;
         initComponents();//initializare intefata chat
-
+        initMessagesChat();
+        frame.setVisible(true);
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
         chatArea.addChatEvent(new ChatEvent() {
             @Override
@@ -52,7 +55,7 @@ public class ChatWindow extends JPanel {
                 try {
                     String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                     Connection conn = DriverManager.getConnection(url);
-                    PreparedStatement stmt = conn.prepareStatement("SELECT idStudent,mesaj,dataMesaj from mesajasteptare where idGrupStudiu=?");
+                    PreparedStatement stmt = conn.prepareStatement("SELECT idMesaj,idStudent,mesaj,dataMesaj from mesajasteptare where idGrupStudiu=?");
                     stmt.setInt(1, idGrupStudiu);
                     ResultSet rs = stmt.executeQuery();
                     while (rs.next()) {
@@ -61,18 +64,19 @@ public class ChatWindow extends JPanel {
                         ResultSet rs2=stmt2.executeQuery();
                         while (rs2.next()){
                             String name=rs2.getString("Username");
-                            System.out.println("sunt aici");
                             if(!name.equals(student.getUsername())){
-                                System.out.println("nu sunt utilizatorul bun");
                                 String message=rs.getString("mesaj");
-                                String date = rs.getString("dataMesaj");
-                                ModelMessage modelM=new ModelMessage(name, date, message);
+                                Timestamp date = rs.getTimestamp("dataMesaj");
+                                String dateString=df.format(date);
+                                ModelMessage modelM=new ModelMessage(name, dateString, message);
                                 chatArea.addChatBox(modelM, ChatBox.BoxType.LEFT);
+                                PreparedStatement stmt3=conn.prepareStatement("DELETE From mesajasteptare where idMesaj=?");
+                                stmt3.setInt(1, rs.getInt("idMesaj"));
+                                stmt3.executeUpdate();
                             }
                         }
                     }
-                    stmt=conn.prepareStatement("DELETE From mesajasteptare");
-                    stmt.executeUpdate();
+                    conn.close();
                 }catch (SQLException e){
                     System.out.println(e.getMessage());
                 }
@@ -86,17 +90,6 @@ public class ChatWindow extends JPanel {
 
 
     private void initComponents() {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
         background1 = new Background();
         chatArea = new ChatArea();
         javax.swing.GroupLayout background1Layout = new javax.swing.GroupLayout(background1);
@@ -127,6 +120,45 @@ public class ChatWindow extends JPanel {
                         .addComponent(background1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }
+    public void initMessagesChat(){
+        SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
+        try{
+            String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+            Connection conn= DriverManager.getConnection(url);
 
+            PreparedStatement stmt=conn.prepareStatement("SELECT idStudent,mesaj,dataMesaj from mesaj where idGrupStudiu=? ORDER BY dataMesaj ASC ;");
+            stmt.setInt(1, idGrupStudiu);
+            ResultSet rs=stmt.executeQuery();
+            while(rs.next()){
+                PreparedStatement stmt2=conn.prepareStatement("SELECT Username from student where idStudent=?");
+                stmt2.setInt(1, rs.getInt("idStudent"));
+                ResultSet rs2=stmt2.executeQuery();
+                while (rs2.next()) {
+                    String name = rs2.getString("Username");
+                    String message=rs.getString("mesaj");
+                    Timestamp date = rs.getTimestamp("dataMesaj");
+                    String dateString=df.format(date);
+                    ModelMessage modelM=new ModelMessage(name,dateString,message);
+                    if(!Objects.equals(message, "")) {
+                        if (Objects.equals(name, student.getUsername())) {
+                            chatArea.addChatBox(modelM, ChatBox.BoxType.RIGHT);
+                        } else {
+                            chatArea.addChatBox(modelM, ChatBox.BoxType.LEFT);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException er) {
+            System.out.println(er.getMessage());
+        }
+        JScrollPane scrollPane =chatArea.getScroll();
+        scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                Adjustable adjustable = e.getAdjustable();
+                adjustable.setValue(adjustable.getMaximum());
+               scrollPane.getVerticalScrollBar().removeAdjustmentListener(this);
+            }
+        });
+    }
 }
 
