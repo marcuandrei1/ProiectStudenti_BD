@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -6,6 +7,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class PaginaHomeProfesor extends JPanel {
@@ -149,7 +152,6 @@ public class PaginaHomeProfesor extends JPanel {
         });
 
 
-
         /// Un label mare in care se afla un label left
         // Middle Panel
         JPanel middlePanel = new JPanel();
@@ -196,7 +198,7 @@ public class PaginaHomeProfesor extends JPanel {
 
             // Check if the components are already visible
             boolean isVisible = inscriereCursField.isVisible();
-            if(isVisible) {
+            if (isVisible) {
                 inscriereCursField.setText("Introduce-ti disciplina!");
                 inscriereCursField.setForeground(Color.BLACK);
             }
@@ -262,17 +264,16 @@ public class PaginaHomeProfesor extends JPanel {
                     stmtSelectId.setString(2, profesor.getPassword());
                     ResultSet rezultat = stmtSelectId.executeQuery();
                     int idProfesor = 0;
-                    if(rezultat.next()){                    // verifica daca a returnat vreun rezultat query-ul
+                    if (rezultat.next()) {                    // verifica daca a returnat vreun rezultat query-ul
                         idProfesor = rezultat.getInt("idProfesor");
                     }
 
                     System.out.println(idProfesor);
 
 
-
                     String materie = inscriereCursField.getText();
                     int idMaterie = 0;
-                    if(materie != "Introduce-ti disciplina!") {         // daca chiar s-a introdus o materie
+                    if (materie != "Introduce-ti disciplina!") {         // daca chiar s-a introdus o materie
 
                         // Trebuie sa gasim materia dupa id
                         PreparedStatement stmtidMaterie = conn.prepareStatement("SELECT idDisciplina FROM disciplina where Nume= ?");
@@ -282,10 +283,9 @@ public class PaginaHomeProfesor extends JPanel {
                             idMaterie = rezultatMaterie.getInt("idDisciplina");
                             inscriereCursField.setText("Done!");
                             inscriereCursField.setForeground(Color.GREEN);
-                        }
-                        else{
-                           inscriereCursField.setText("Disciplina invalida!");
-                           inscriereCursField.setForeground(Color.RED);
+                        } else {
+                            inscriereCursField.setText("Disciplina invalida!");
+                            inscriereCursField.setForeground(Color.RED);
                         }
                         System.out.println(idMaterie);
                     }
@@ -321,10 +321,6 @@ public class PaginaHomeProfesor extends JPanel {
                 }
             }
         });
-
-
-
-
 
 
         /// TODO: de setat procente (in curs procent, laborator procent si seminar procent)
@@ -385,11 +381,21 @@ public class PaginaHomeProfesor extends JPanel {
                     selectMateriiProf.setString(1, profesor.getUsername());
                     ResultSet rezultat = selectMateriiProf.executeQuery();
 
-                    while(rezultat.next()){
-                        materiiProfesorComboBox.addItem(rezultat.getString("nume"));
+
+                    Set<String> materiiAdaugate = new HashSet<>();
+                    for (int i = 0; i < materiiProfesorComboBox.getItemCount(); i++) {
+                        materiiAdaugate.add(materiiProfesorComboBox.getItemAt(i).toString());
                     }
 
-                }catch(SQLException ex){
+                    while (rezultat.next()) {
+                        String numeMaterie = rezultat.getString("nume");
+                        if (!materiiAdaugate.contains(numeMaterie)) {
+                            materiiProfesorComboBox.addItem(numeMaterie);
+                            materiiAdaugate.add(numeMaterie);
+                        }
+                    }
+
+                } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -407,16 +413,14 @@ public class PaginaHomeProfesor extends JPanel {
         JLabel procentSeminarLabel = new JLabel("Procente seminar: ");
         JLabel procentLaboratorLabel = new JLabel("Procente laborator: ");
         JTextField procentCursField = new JTextField(10);
-        procentCursField.setMaximumSize(new Dimension(100, 20));
+        procentCursField.setMaximumSize(new Dimension(100, 30));
         JTextField procentSeminarField = new JTextField(10);
-        procentSeminarField.setMaximumSize(new Dimension(100, 20));
+        procentSeminarField.setMaximumSize(new Dimension(100, 30));
         JTextField procentLaboratorField = new JTextField(10);
-        procentLaboratorField.setMaximumSize(new Dimension(100, 20));
+        procentLaboratorField.setMaximumSize(new Dimension(100, 30));
         JButton butonSubmit1 = new JButton("Submit1");
         JButton butonSubmit2 = new JButton("Submit2");
         JButton butonSubmit3 = new JButton("Submit3");
-
-
 
 
         borderedPanelProcente.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing
@@ -450,9 +454,9 @@ public class PaginaHomeProfesor extends JPanel {
             }
         });
 
-        butonSubmit1.addActionListener(e->{
+        butonSubmit1.addActionListener(e -> {
             if (Integer.parseInt(procentCursField.getText()) <= 100) {
-                try{
+                try {
                     String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                     Connection conn = DriverManager.getConnection(url);
 
@@ -486,17 +490,17 @@ public class PaginaHomeProfesor extends JPanel {
                         System.out.println("No rows updated. Check if the curs record exists.");
                     }
 
-                }catch(SQLException ex){
+                } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
 
                 procentCursField.setText("Done!");
                 procentCursField.setForeground(Color.green);
-            }
-            else{
+            } else {
                 procentCursField.setText("Procent invalid!");
                 procentCursField.setForeground(Color.RED);
-            };
+            }
+            ;
         });
 
         /// Pentru butonSubmit2
@@ -515,9 +519,9 @@ public class PaginaHomeProfesor extends JPanel {
             }
         });
 
-        butonSubmit2.addActionListener(e->{
+        butonSubmit2.addActionListener(e -> {
             if (Integer.parseInt(procentSeminarField.getText()) <= 100) {
-                try{
+                try {
                     String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                     Connection conn = DriverManager.getConnection(url);
 
@@ -551,17 +555,17 @@ public class PaginaHomeProfesor extends JPanel {
                         System.out.println("No rows updated. Check if the seminar record exists.");
                     }
 
-                }catch(SQLException ex){
+                } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
 
                 procentSeminarField.setText("Done!");
                 procentSeminarField.setForeground(Color.green);
-            }
-            else{
+            } else {
                 procentCursField.setText("Procent invalid!");
                 procentCursField.setForeground(Color.RED);
-            };
+            }
+            ;
         });
 
         /// Pentru butonSubmit3
@@ -580,9 +584,9 @@ public class PaginaHomeProfesor extends JPanel {
             }
         });
 
-        butonSubmit3.addActionListener(e->{
+        butonSubmit3.addActionListener(e -> {
             if (Integer.parseInt(procentLaboratorField.getText()) <= 100) {
-                try{
+                try {
                     String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                     Connection conn = DriverManager.getConnection(url);
 
@@ -605,7 +609,10 @@ public class PaginaHomeProfesor extends JPanel {
                     }
 
 
-                    PreparedStatement updateProcentLaborator = conn.prepareStatement("UPDATE laborator SET procent = ? WHERE idProfesor = ? AND idDisciplina = ?");
+                    PreparedStatement updateProcentLaborator = conn.prepareStatement(
+                            "UPDATE laborator " +
+                                    "SET procent = ? " +
+                                    "WHERE idProfesor = ? AND idDisciplina = ?");
                     updateProcentLaborator.setInt(1, Integer.parseInt(procentLaboratorField.getText()));
                     updateProcentLaborator.setString(2, idProfesor);
                     updateProcentLaborator.setString(3, idMaterie);
@@ -616,17 +623,17 @@ public class PaginaHomeProfesor extends JPanel {
                         System.out.println("No rows updated. Check if the seminar record exists.");
                     }
 
-                }catch(SQLException ex){
+                } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
 
                 procentLaboratorField.setText("Done!");
                 procentLaboratorField.setForeground(Color.green);
-            }
-            else{
+            } else {
                 procentLaboratorField.setText("Procent invalid!");
                 procentLaboratorField.setForeground(Color.RED);
-            };
+            }
+            ;
         });
 
         /// Adaugam componentele la label-urile care trebuie
@@ -636,11 +643,354 @@ public class PaginaHomeProfesor extends JPanel {
         middlePanel.add(borderedPanelProcente);
 
 
+        // TODO: notele la studenti, lista de studenti si descarcare catalog (studentii cu notele lor)
+
+        ///  Pentru sectiunea de note pentru studenti
+
+        JButton NotePentruStudentiButton = new JButton("Notare note");
+        NotePentruStudentiButton.setBackground(Color.DARK_GRAY);
+        NotePentruStudentiButton.setForeground(Color.WHITE);
+        NotePentruStudentiButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        /// Panelul pentru "note pentru studenti"
+        JPanel borderedPanelNote = new JPanel();
+        borderedPanelNote.setLayout(new BoxLayout(borderedPanelNote, BoxLayout.Y_AXIS));
+        borderedPanelNote.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 2), "Notare note")); // Add border with title
+        borderedPanelNote.setMaximumSize(new Dimension(500, 300));
+        borderedPanelNote.setBackground(Color.WHITE);
+        borderedPanelNote.setAlignmentX(Component.LEFT_ALIGNMENT);
+        borderedPanelNote.setVisible(false);
+
+
+        JComboBox materiiProfesorComboBox1 = new JComboBox();
+        materiiProfesorComboBox1.setPreferredSize(new Dimension(150, 25));
+        materiiProfesorComboBox1.setMaximumSize(new Dimension(250, 25));
+        materiiProfesorComboBox1.setMinimumSize(new Dimension(150, 25));
+        materiiProfesorComboBox1.setAlignmentX(Component.LEFT_ALIGNMENT);
+        materiiProfesorComboBox1.setVisible(false);
+        borderedPanelNote.add(Box.createRigidArea(new Dimension(0, 20)));
+        borderedPanelNote.add(materiiProfesorComboBox1);
+
+        JComboBox studentiMaterieComboBox = new JComboBox();
+        studentiMaterieComboBox.setPreferredSize(new Dimension(150, 25));
+        studentiMaterieComboBox.setMaximumSize(new Dimension(250, 25));
+        studentiMaterieComboBox.setMinimumSize(new Dimension(150, 25));
+        studentiMaterieComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        studentiMaterieComboBox.setVisible(false);
+
+        borderedPanelNote.add(Box.createRigidArea(new Dimension(0, 20)));
+        borderedPanelNote.add(studentiMaterieComboBox);
+
+
+        /// TOGGLE la butonul NotePentruStudentiButton
+        NotePentruStudentiButton.addActionListener(e -> {
+            // Check if the components are already visible
+            boolean isVisible = borderedPanelNote.isVisible();
+
+            // Toggle visibility
+            materiiProfesorComboBox1.setVisible(!isVisible);
+            studentiMaterieComboBox.setVisible(!isVisible);
+            borderedPanelNote.setVisible(!isVisible); // Toggle the bordered panel visibility
+
+            // Revalidate and repaint the panel to update the layout
+            middlePanel.revalidate();
+            middlePanel.repaint();
+
+        });
+
+        /// Un comboBox cu materiile predate, dupaia cu studentii de la materia respectiva si profesorul acesta ca sa le pot da note
+        NotePentruStudentiButton.addActionListener(e -> {
+            try {
+                String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                Connection conn = DriverManager.getConnection(url);
+                PreparedStatement selectMateriiProf = conn.prepareStatement("SELECT disciplina.nume FROM disciplina JOIN curs USING (idDisciplina) JOIN profesor USING (idProfesor) WHERE profesor.username = ?");
+                selectMateriiProf.setString(1, profesor.getUsername());
+                ResultSet rezultat = selectMateriiProf.executeQuery();
+
+                Set<String> materiiAdaugate = new HashSet<>();
+                for (int i = 0; i < materiiProfesorComboBox1.getItemCount(); i++) {
+                    materiiAdaugate.add(materiiProfesorComboBox1.getItemAt(i).toString());
+                }
+
+                while (rezultat.next()) {
+                    String numeMaterie = rezultat.getString("nume");
+                    if (!materiiAdaugate.contains(numeMaterie)) {
+                        materiiProfesorComboBox1.addItem(numeMaterie);
+                        materiiAdaugate.add(numeMaterie);
+                    }
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+            /// Cream comboBox-ul cu studentii de la materia selectata
+            materiiProfesorComboBox1.addActionListener(t -> {
+                try {
+                    // Golim ComboBox-ul pentru studenți înainte de actualizare
+                    studentiMaterieComboBox.removeAllItems();
+
+                    // Verificăm dacă există o selecție validă
+                    String materieSelectata = (String) materiiProfesorComboBox1.getSelectedItem();
+                    if (materieSelectata != null && !materieSelectata.isEmpty()) {
+                        // Conexiunea la baza de date
+                        String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                        try (Connection conn = DriverManager.getConnection(url);
+                             PreparedStatement selectStudentProf = conn.prepareStatement(
+                                     "SELECT student.Username " +
+                                             "FROM student " +
+                                             "JOIN nota USING (idStudent) " +
+                                             "JOIN disciplina USING (idDisciplina) " +
+                                             "JOIN profesor USING (idProfesor) " +
+                                             "WHERE profesor.username = ? AND disciplina.Nume = ?"
+                             )) {
+                            // Setăm parametrii interogării
+                            selectStudentProf.setString(1, profesor.getUsername());
+                            selectStudentProf.setString(2, materieSelectata);
+
+                            try (ResultSet rezultat = selectStudentProf.executeQuery()) {
+                                // Populăm ComboBox-ul cu studenți
+                                while (rezultat.next()) {
+                                    String usernameStudent = rezultat.getString("Username");
+                                    studentiMaterieComboBox.addItem(usernameStudent);
+                                }
+                            }
+                        }
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            });
+
+            /// Field-urile cu note pentru curs, lab si seminar
+            JLabel notaCursLabel = new JLabel("Nota curs: ");
+            JLabel notaSeminarLabel = new JLabel("Nota seminar: ");
+            JLabel notaLaboratorLabel = new JLabel("Nota laborator: ");
+            JTextField notaCursField = new JTextField(10);
+            notaCursField.setMaximumSize(new Dimension(100, 30));
+            JTextField notaSeminarField = new JTextField(10);
+            notaSeminarField.setMaximumSize(new Dimension(100, 30));
+            JTextField notaLaboratorField = new JTextField(10);
+            notaLaboratorField.setMaximumSize(new Dimension(100, 30));
+            JButton butonSubmitNote = new JButton("Submit");
+
+            borderedPanelNote.add(notaCursLabel);
+            borderedPanelNote.add(notaCursField);
+            borderedPanelNote.add(notaSeminarLabel);
+            borderedPanelNote.add(notaSeminarField);
+            borderedPanelNote.add(notaLaboratorLabel);
+            borderedPanelNote.add(notaLaboratorField);
+            borderedPanelNote.add(butonSubmitNote);
+
+            /// Introducerea notelor in baza de date
+            butonSubmitNote.addActionListener(b -> {
+                String studentSelectat = (String) studentiMaterieComboBox.getSelectedItem();
+                if (studentSelectat != null && !studentSelectat.isEmpty()) {
+                    try {
+                        // Conexiunea la baza de date
+                        String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                        try (Connection conn = DriverManager.getConnection(url)) {
+
+                            // Declarații pentru identificatori
+                            int idStudent = 0, idProfesor = 0, idDisciplina = 0;
+
+                            // Găsim `idStudent`
+                            try (PreparedStatement interogare = conn.prepareStatement("SELECT idStudent FROM student WHERE Username = ?")) {
+                                interogare.setString(1, studentSelectat);
+                                try (ResultSet rs = interogare.executeQuery()) {
+                                    if (rs.next()) {
+                                        idStudent = rs.getInt("idStudent");
+                                    } else {
+                                        System.out.println("Student not found!");
+                                        return;
+                                    }
+                                }
+                            }
+
+                            // Găsim `idProfesor`
+                            try (PreparedStatement interogare = conn.prepareStatement("SELECT idProfesor FROM profesor WHERE Username = ?")) {
+                                interogare.setString(1, profesor.getUsername());
+                                try (ResultSet rs = interogare.executeQuery()) {
+                                    if (rs.next()) {
+                                        idProfesor = rs.getInt("idProfesor");
+                                    } else {
+                                        System.out.println("Profesor not found!");
+                                        return;
+                                    }
+                                }
+                            }
+
+                            // Găsim `idDisciplina`
+                            try (PreparedStatement interogare = conn.prepareStatement("SELECT idDisciplina FROM disciplina WHERE Nume = ?")) {
+                                interogare.setString(1, materiiProfesorComboBox1.getSelectedItem().toString());
+                                try (ResultSet rs = interogare.executeQuery()) {
+                                    if (rs.next()) {
+                                        idDisciplina = rs.getInt("idDisciplina");
+                                    } else {
+                                        System.out.println("Disciplina not found!");
+                                        return;
+                                    }
+                                }
+                            }
+
+                            // Validare valori introduse
+                            int notaCurs, notaSeminar, notaLaborator;
+                            try {
+                                notaCurs = Integer.parseInt(notaCursField.getText());
+                                notaSeminar = Integer.parseInt(notaSeminarField.getText());
+                                notaLaborator = Integer.parseInt(notaLaboratorField.getText());
+                            } catch (NumberFormatException ex) {
+                                System.out.println("Invalid input for grades!");
+                                return;
+                            }
+
+                            // Actualizare note
+                            String query = "UPDATE nota SET notaCurs = ?, notaSeminar = ?, notaLaborator = ? " +
+                                    "WHERE idStudent = ? AND idDisciplina = ? AND idProfesor = ?";
+                            try (PreparedStatement introducereNote = conn.prepareStatement(query)) {
+                                introducereNote.setInt(1, notaCurs);
+                                introducereNote.setInt(2, notaSeminar);
+                                introducereNote.setInt(3, notaLaborator);
+                                introducereNote.setInt(4, idStudent);
+                                introducereNote.setInt(5, idDisciplina);
+                                introducereNote.setInt(6, idProfesor);
+
+                                int rowsUpdated = introducereNote.executeUpdate();
+                                if (rowsUpdated > 0) {
+                                    System.out.println("Note updated successfully!");
+                                } else {
+                                    System.out.println("No rows updated. Check if the record exists.");
+                                }
+                            }
+                        }
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    System.out.println("Please select a student!");
+                }
+
+                /// clear fields
+                notaCursField.setText("Done");
+                notaCursField.setForeground(Color.GREEN);
+
+                notaSeminarField.setText("Done");
+                notaSeminarField.setForeground(Color.GREEN);
+
+                notaLaboratorField.setText("Done");
+                notaLaboratorField.setForeground(Color.GREEN);
+            });
+
+
+            /// Verificarea pentru field-uri cand scriu in ele
+            JTextField[] fieldAux = new JTextField[3];
+            fieldAux[0] = notaCursField;
+            fieldAux[1] = notaSeminarField;
+            fieldAux[2] = notaLaboratorField;
+
+            for (int i = 0; i < fieldAux.length; i++) {
+                final int index = i; // Copie locală a lui i
+                fieldAux[index].addFocusListener(new FocusListener() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        // Clear the text when the field gains focus
+                        fieldAux[index].setText(""); // Folosește index-ul local
+                        fieldAux[index].setForeground(Color.BLACK); // Reset the text color to default
+                    }
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        // Optionally do something when the field loses focus
+                    }
+                });
+            }
+
+        });
+
+
+        /// Adaugarea la panel-ul principal
+        middlePanel.add(NotePentruStudentiButton);
+        middlePanel.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing
+        middlePanel.add(borderedPanelNote);
+
+
+        /// TODO: vizualizare liste studenti, fac direct catalogul (materie->nume->note (curs, seminar si laborator))
+        middlePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        JButton catalogStudentiButton = new JButton("Catalog Studenti");
+        middlePanel.add(catalogStudentiButton);
+
+        String[] numeColoane = {"Materie", "Nume Student", "Nota Curs", "Nota Seminar", "Nota Laborator"};
+        // Creăm modelul tabelului (inițial gol)
+        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0);
+        JTable catalogTable = new JTable(tableModel);
+        catalogTable.setFillsViewportHeight(true);
+        catalogTable.setPreferredScrollableViewportSize(new Dimension(600, 400));
+
+        // Adăugăm tabelul într-un JScrollPane pentru scroll
+        JScrollPane scrollPane = new JScrollPane(catalogTable);
+
+        // Panel pentru afișare
+        JPanel catalogPanel = new JPanel();
+        catalogPanel.setLayout(new BorderLayout());
+        catalogPanel.add(scrollPane, BorderLayout.CENTER);
+        catalogPanel.setVisible(false);
+
+        // TOGGLE la butonul catalogStudentiButton
+        catalogStudentiButton.addActionListener(e -> {
+
+            // Check if the components are already visible
+            boolean isVisible = catalogPanel.isVisible();
+
+            // Toggle visibility
+            catalogPanel.setVisible(!isVisible);
+
+            // Revalidate and repaint the panel to update the layout
+            middlePanel.revalidate();
+            middlePanel.repaint();
+
+        });
+
+
+        catalogStudentiButton.addActionListener(e -> {
+            try {
+                String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                Connection conn = DriverManager.getConnection(url);
+
+                // Interogarea pentru datele catalogului
+                String query = "SELECT disciplina.Nume AS Materie, student.username AS NumeStudent, " +
+                        "nota.notaCurs, nota.notaSeminar, nota.notaLaborator " +
+                        "FROM nota " +
+                        "JOIN student ON nota.idStudent = student.idStudent " +
+                        "JOIN disciplina ON nota.idDisciplina = disciplina.idDisciplina " +
+                        "JOIN profesor ON nota.idProfesor = profesor.idProfesor " +
+                        "WHERE profesor.Username = ?";
+                PreparedStatement stmt = conn.prepareStatement(query);
+                stmt.setString(1, profesor.getUsername());
+
+                ResultSet rs = stmt.executeQuery();
+
+                // Ștergem datele existente din tabel
+                DefaultTableModel model = (DefaultTableModel) catalogTable.getModel();
+                model.setRowCount(0);
+
+                // Adăugăm datele noi
+                while (rs.next()) {
+                    String materie = rs.getString("Materie");
+                    String numeStudent = rs.getString("NumeStudent");
+                    int notaCurs = rs.getInt("notaCurs");
+                    int notaSeminar = rs.getInt("notaSeminar");
+                    int notaLaborator = rs.getInt("notaLaborator");
+
+                    model.addRow(new Object[]{materie, numeStudent, notaCurs, notaSeminar, notaLaborator});
+                }
+                conn.close();
+            } catch (SQLException p) {
+                p.printStackTrace();
+            }
+        });
 
 
 
-
-
+        middlePanel.add(catalogPanel);
 
     }
 }
