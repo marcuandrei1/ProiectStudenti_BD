@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -5,10 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
+
 
 
 public class PaginaHomeProfesor extends JPanel {
@@ -19,6 +23,8 @@ public class PaginaHomeProfesor extends JPanel {
         if (s.equals("Introduce-ti disciplina!"))
             throw new IOException("Username invalid");
     }
+
+
 
 
 
@@ -843,16 +849,35 @@ public class PaginaHomeProfesor extends JPanel {
                                 return;
                             }
 
+                            /// Calculez nota finala
+
+                            String sql = "{CALL nota_finala(?, ?, ?, ?, ?, ?)}";
+                            CallableStatement stmt = conn.prepareCall(sql);
+                            stmt.setFloat(1, notaCurs);
+                            stmt.setFloat(2, notaLaborator);
+                            stmt.setFloat(3, notaSeminar);
+                            stmt.setFloat(4, idDisciplina);
+                            stmt.setFloat(5, idProfesor);
+                            // Register the output parameter
+                            stmt.registerOutParameter(6, Types.FLOAT);
+
+                            // Execute the procedure
+                            stmt.execute();
+
+                            // Get the result from the output parameter
+                            float notaFinala = stmt.getFloat(6);
+
                             // Actualizare note
-                            String query = "UPDATE nota SET notaCurs = ?, notaSeminar = ?, notaLaborator = ? " +
+                            String query = "UPDATE nota SET notaCurs = ?, notaSeminar = ?, notaLaborator = ?, notaFinala = ? " +
                                     "WHERE idStudent = ? AND idDisciplina = ? AND idProfesor = ?";
                             try (PreparedStatement introducereNote = conn.prepareStatement(query)) {
                                 introducereNote.setInt(1, notaCurs);
                                 introducereNote.setInt(2, notaSeminar);
                                 introducereNote.setInt(3, notaLaborator);
-                                introducereNote.setInt(4, idStudent);
-                                introducereNote.setInt(5, idDisciplina);
-                                introducereNote.setInt(6, idProfesor);
+                                introducereNote.setInt(4, (int) Math.round(notaFinala));
+                                introducereNote.setInt(5, idStudent);
+                                introducereNote.setInt(6, idDisciplina);
+                                introducereNote.setInt(7, idProfesor);
 
                                 int rowsUpdated = introducereNote.executeUpdate();
                                 if (rowsUpdated > 0) {
@@ -878,6 +903,10 @@ public class PaginaHomeProfesor extends JPanel {
 
                 notaLaboratorField.setText("Done");
                 notaLaboratorField.setForeground(Color.GREEN);
+
+
+
+
             });
 
 
@@ -918,12 +947,13 @@ public class PaginaHomeProfesor extends JPanel {
         JButton catalogStudentiButton = new JButton("Catalog Studenti");
         middlePanel.add(catalogStudentiButton);
 
-        String[] numeColoane = {"Materie", "Nume Student", "Nota Curs", "Nota Seminar", "Nota Laborator"};
+        String[] numeColoane = {"Materie", "Nume Student", "Nota Curs", "Nota Seminar", "Nota Laborator", "Nota Finala"};
         // Creăm modelul tabelului (inițial gol)
         DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0);
         JTable catalogTable = new JTable(tableModel);
         catalogTable.setFillsViewportHeight(true);
-        catalogTable.setPreferredScrollableViewportSize(new Dimension(600, 400));
+        catalogTable.setPreferredScrollableViewportSize(new Dimension(400, 200));
+        //catalogTable.setRowHeight(18); // Setează înălțimea rândului
 
         // Adăugăm tabelul într-un JScrollPane pentru scroll
         JScrollPane scrollPane = new JScrollPane(catalogTable);
@@ -934,9 +964,9 @@ public class PaginaHomeProfesor extends JPanel {
         catalogPanel.add(scrollPane, BorderLayout.CENTER);
         catalogPanel.setVisible(false);
 
-        // TOGGLE la butonul catalogStudentiButton
-        catalogStudentiButton.addActionListener(e -> {
 
+        /// TOGGLE la catalogStudentiButton
+        catalogStudentiButton.addActionListener(e -> {
             // Check if the components are already visible
             boolean isVisible = catalogPanel.isVisible();
 
@@ -949,19 +979,19 @@ public class PaginaHomeProfesor extends JPanel {
 
         });
 
-
+        ///  afisarea catalogului
         catalogStudentiButton.addActionListener(e -> {
             try {
                 String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                 Connection conn = DriverManager.getConnection(url);
 
                 // Interogarea pentru datele catalogului
-                String query = "SELECT disciplina.Nume AS Materie, student.username AS NumeStudent, " +
-                        "nota.notaCurs, nota.notaSeminar, nota.notaLaborator " +
+                String query = "SELECT disciplina.Nume AS Materie, student.Username AS NumeStudent, " +
+                        "nota.notaCurs, nota.notaSeminar, nota.notaLaborator, nota.notaFinala " +
                         "FROM nota " +
-                        "JOIN student ON nota.idStudent = student.idStudent " +
-                        "JOIN disciplina ON nota.idDisciplina = disciplina.idDisciplina " +
-                        "JOIN profesor ON nota.idProfesor = profesor.idProfesor " +
+                        "JOIN student USING (idStudent) " +
+                        "JOIN disciplina USING (idDisciplina) " +
+                        "JOIN profesor USING (idProfesor) " +
                         "WHERE profesor.Username = ?";
                 PreparedStatement stmt = conn.prepareStatement(query);
                 stmt.setString(1, profesor.getUsername());
@@ -979,17 +1009,36 @@ public class PaginaHomeProfesor extends JPanel {
                     int notaCurs = rs.getInt("notaCurs");
                     int notaSeminar = rs.getInt("notaSeminar");
                     int notaLaborator = rs.getInt("notaLaborator");
+                    int notaFinala = rs.getInt("notaFinala");
 
-                    model.addRow(new Object[]{materie, numeStudent, notaCurs, notaSeminar, notaLaborator});
+                    model.addRow(new Object[]{materie, numeStudent, notaCurs, notaSeminar, notaLaborator, notaFinala});
                 }
                 conn.close();
-            } catch (SQLException p) {
-                p.printStackTrace();
+            } catch (SQLException h) {
+                h.printStackTrace();
             }
+
+            // Revalidăm și repictăm layout-ul
+            middlePanel.revalidate();
+            middlePanel.repaint();
         });
 
 
+//        // Funcție pentru descărcarea catalogului
+//        downloadButton.addActionListener(e -> {
+//            JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setDialogTitle("Save Catalog");
+//            fileChooser.setSelectedFile(new File("Catalog.xlsx"));
+//
+//            int userSelection = fileChooser.showSaveDialog(null);
+//            if (userSelection == JFileChooser.APPROVE_OPTION) {
+//                File fileToSave = fileChooser.getSelectedFile();
+//                exportToExcel(fileToSave, catalogTable);
+//            }
+//        });
 
+
+        /// Adaug la panelul principal
         middlePanel.add(catalogPanel);
 
     }
