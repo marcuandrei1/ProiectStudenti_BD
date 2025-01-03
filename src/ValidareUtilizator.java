@@ -64,7 +64,7 @@ public class ValidareUtilizator {
             text.setBackground(lightRed);
             throw new IOException("Email invalid!");
         }
-        try{
+        /*try{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
@@ -78,7 +78,7 @@ public class ValidareUtilizator {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        }
+        }*/
         text.setBackground(Color.WHITE);
     }
     public static void verificareIban(String s, JTextField text) throws IOException {
@@ -136,7 +136,7 @@ public class ValidareUtilizator {
             text.setBackground(lightRed);
             throw new IOException("Username invalid!");
         }
-        try{
+        /*try{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
@@ -151,7 +151,7 @@ public class ValidareUtilizator {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        }
+        }*/
         text.setBackground(Color.WHITE);
     }
     public static void verificarePassword(String s, JTextField text) throws IOException {

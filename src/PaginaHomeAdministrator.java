@@ -2,19 +2,85 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 
 public class PaginaHomeAdministrator extends JPanel {
     private Administrator administrator;
+
+    private static Utilizator getUser(String username,String password) throws IOException{
+        Utilizator user = null;
+        try{
+            String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+            Connection conn= DriverManager.getConnection(url);
+
+            CallableStatement statement=conn.prepareCall("{call selectTypeOfUtilizator(?,?,?)}");
+
+            statement.setString(1,username);
+            statement.setString(2,password);
+            statement.registerOutParameter(3,java.sql.Types.VARCHAR);
+            ResultSet rs=statement.executeQuery();
+
+            PreparedStatement stmtAdresa=conn.prepareStatement("SELECT * FROM adresa join utilizator using(idAdresa) where username=? and password=?");
+            stmtAdresa.setString(1,username);
+            stmtAdresa.setString(2,password);
+            ResultSet rs1=stmtAdresa.executeQuery();
+            String adresa = "";
+            if(rs1.next()){
+                adresa=adresa.concat("Strada: ").concat(rs1.getString("strada"));
+                adresa = adresa.concat(" Nr: ").concat(rs1.getString("numar"));
+            }
+            else{
+                throw new IOException("User invalid! (adresa)");
+            }
+
+            if(rs.next()) {
+                //verificare ce este in functie de tip
+                if(statement.getString(3).equals("Administrator")){
+                    user = new Administrator(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"),adresa);
+                }
+                else if(statement.getString(3).equals("Student")){
+                    user = new Student(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"),adresa,rs.getInt("anStudiu"),rs.getInt("nrOreObligatorii"));
+                }
+                else if(statement.getString(3).equals("Profesor")){
+                    user = new Profesor(rs.getString("username"), rs.getString("password"), rs.getString("CNP"), rs.getString("nume"), rs.getString("prenume"), rs.getString("numarTelefon"), rs.getString("email"), rs.getString("IBAN"), rs.getInt("nrContract"),adresa,rs.getInt("nrMinOre"),rs.getInt("nrMaxOre"),rs.getString("departament"));
+                }
+            }
+            else {
+                throw new IOException("User invalid");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        if(user == null){
+            throw new IOException("User invalid");
+        }
+        return user;                // daca user e null atunci returneaza null
+    }
+
     public PaginaHomeAdministrator(JFrame frame, Administrator administrator) {
-
-
-
-
-
-
         this.administrator = administrator;
+        String adminUsername = administrator.getUsername();
+
+        //ifsuper or not
+        boolean ifSuper=false;
+        try{
+            String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+            Connection conn = DriverManager.getConnection(url);
+            PreparedStatement statement = conn.prepareStatement(
+                    "SELECT ifSuper FROM administrator WHERE Username = ?");
+            statement.setString(1, adminUsername);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                // Get the value of ifSuper
+                ifSuper = rs.getBoolean("ifSuper"); // or rs.getBoolean(1)
+            }
+        }catch (SQLException ex) {
+            System.out.println("Database error: " + ex.getMessage());
+        }
+
         this.setLayout(new BorderLayout());
 
         JButton profile = new JButtonCircle("Profil");
@@ -199,8 +265,10 @@ public class PaginaHomeAdministrator extends JPanel {
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
         rightPanel.add(butonAddProfesor);
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
-        rightPanel.add(butonAddAdmin);
-        rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
+        if (ifSuper) {
+            rightPanel.add(butonAddAdmin);
+            rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
+        }
         rightPanel.add(butonDelete);
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Optional spacing between buttons
         rightPanel.add(butonModificari);
@@ -418,6 +486,7 @@ public class PaginaHomeAdministrator extends JPanel {
         });
 
 
+        boolean finalIfSuper = ifSuper;
         butonDelete.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Create a new dialog to embed PaginaAutentificare
@@ -440,6 +509,37 @@ public class PaginaHomeAdministrator extends JPanel {
                 deleteUtilizator.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         String username=textUsername.getText();
+                        String password="";
+                        try{
+                            // Database connection
+                            String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                            Connection conn = DriverManager.getConnection(url);
+                            PreparedStatement statement = conn.prepareStatement(
+                                    "SELECT password FROM utilizator WHERE Username = ?");
+                            statement.setString(1, username);
+                            ResultSet rs = statement.executeQuery();
+                            if (rs.next()){
+                                password=rs.getString("password");
+                            }
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+
+
+
+                        Utilizator user = null;
+                        try {
+                            user = getUser(username,password);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        if (!finalIfSuper){
+                            if (user instanceof Administrator) {
+                                JOptionPane.showMessageDialog(addInfoDialog, "Introduceți un nume de utilizator valid.", "Eroare", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                        }
                         if (username.isEmpty()) {
                             JOptionPane.showMessageDialog(addInfoDialog, "Introduceți un nume de utilizator valid.", "Eroare", JOptionPane.ERROR_MESSAGE);
                             return;
@@ -509,29 +609,60 @@ public class PaginaHomeAdministrator extends JPanel {
                 addInfoDialog.setLocationRelativeTo(PaginaHomeAdministrator.this); // Center it relative to the main panel
 
                 //Content for add
-                JTextField username = new JTextField();
-                JPanel l = FunctiiUtile.creareText(username,"Username:  ","Introduce-ti Username");
-                username.setFont(new Font("Arial", Font.PLAIN, 15));
-                username.setPreferredSize(new Dimension(100,25));
+                JTextField textUsername = new JTextField();
+                JPanel l = FunctiiUtile.creareText(textUsername,"Username:  ","Introduce-ti Username");
+                textUsername.setFont(new Font("Arial", Font.PLAIN, 15));
+                textUsername.setPreferredSize(new Dimension(100,25));
 
-                String user = username.getText();
+
 
                 addInfoDialog.add(l, BorderLayout.CENTER);
 
                 JButton modifyButton = new JButton("Modifica");
                 modifyButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+                        String username=textUsername.getText();
+                        String password="";
+                        try{
+                            // Database connection
+                            String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                            Connection conn = DriverManager.getConnection(url);
+                            PreparedStatement statement = conn.prepareStatement(
+                                    "SELECT password FROM utilizator WHERE Username = ?");
+                            statement.setString(1, username);
+                            ResultSet rs = statement.executeQuery();
+                            if (rs.next()){
+                                password=rs.getString("password");
+                            }
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                        Utilizator user = null;
                         try {
+                            user = getUser(username,password);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        if (!finalIfSuper){
+                            if (user instanceof Administrator) {
+                                JOptionPane.showMessageDialog(addInfoDialog, "Introduceți un nume de utilizator valid.", "Eroare", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                        }
+                        try {
+
+                            String usernameText = textUsername.getText();
+
                             // Fetch user data from the database
                             String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                             Connection conn = DriverManager.getConnection(url);
 
                             PreparedStatement stmt = conn.prepareStatement(
-                                    "SELECT u.*, s.anStudiu, p.departament FROM utilizator u LEFT JOIN student s ON u.Username = s.Username LEFT JOIN profesor p ON u.Username = p.Username WHERE u.Username = ?");
-                            stmt.setString(1, user);
+                                    "SELECT u.*, s.anStudiu, p.departament, a.strada, a.numar FROM utilizator u LEFT JOIN student s ON u.Username = s.Username LEFT JOIN profesor p ON u.Username = p.Username LEFT JOIN adresa a ON u.idAdresa = a.idAdresa WHERE u.Username = ?");
+                            stmt.setString(1, usernameText);
 
                             ResultSet rs = stmt.executeQuery();
-                            ///always user not found
                             if (!rs.next()) {
                                 JOptionPane.showMessageDialog(null, "User not found!");
                                 return;
@@ -541,26 +672,28 @@ public class PaginaHomeAdministrator extends JPanel {
                             JTextField textCNP = new JTextField(rs.getString("CNP"));
                             JTextField textNume = new JTextField(rs.getString("nume"));
                             JTextField textPrenume = new JTextField(rs.getString("prenume"));
-                            JTextField textAdresa = new JTextField(rs.getString("adresa"));
+                            JTextField textidAdresa = new JTextField(rs.getString("idAdresa"));
                             JTextField textNrTel = new JTextField(rs.getString("numarTelefon"));
                             JTextField textEmail = new JTextField(rs.getString("email"));
                             JTextField textContIBAN = new JTextField(rs.getString("IBAN"));
                             JTextField textNrContract = new JTextField(String.valueOf(rs.getInt("nrContract")));
                             JTextField textUsername = new JTextField(rs.getString("Username"));
                             JPasswordField textPassword = new JPasswordField(rs.getString("password"));
+                            JTextField textAdresa = new JTextField(rs.getString("strada") + " " + rs.getString("numar"));
 
                             // Create dialog
-                            JPanel form = new JPanel(new GridLayout(0, 2, 10, 10));
+                            JPanel form = new JPanel(new GridLayout(0, 2, 11, 11));
                             form.add(new JLabel("CNP:")); form.add(textCNP);
                             form.add(new JLabel("Nume:")); form.add(textNume);
                             form.add(new JLabel("Prenume:")); form.add(textPrenume);
-                            form.add(new JLabel("Adresa:")); form.add(textAdresa);
+                            form.add(new JLabel("idAdresa:")); form.add(textidAdresa);
                             form.add(new JLabel("Nr. Telefon:")); form.add(textNrTel);
                             form.add(new JLabel("Email:")); form.add(textEmail);
                             form.add(new JLabel("IBAN:")); form.add(textContIBAN);
                             form.add(new JLabel("Nr. Contract:")); form.add(textNrContract);
                             form.add(new JLabel("Username:")); form.add(textUsername);
                             form.add(new JLabel("Password:")); form.add(textPassword);
+                            form.add(new JLabel("Adresa:")); form.add(textAdresa);
 
                             // Type-specific fields
                             String anStudiu = rs.getString("anStudiu");
@@ -605,6 +738,15 @@ public class PaginaHomeAdministrator extends JPanel {
                                 updateStmt.setString(8, new String(textPassword.getPassword()));
                                 updateStmt.setString(9, textUsername.getText());
                                 updateStmt.executeUpdate();
+
+                                String[] parts = textAdresa.getText().split(" ", 2);
+
+                                PreparedStatement updateAdresaStmt = conn.prepareStatement(
+                                        "UPDATE adresa SET strada = ?, numar = ? WHERE idAdresa = ?");
+                                updateAdresaStmt.setString(1, parts[0]);
+                                updateAdresaStmt.setInt(2, Integer.parseInt(parts[1]));
+                                updateAdresaStmt.setString(3, textidAdresa.getText());
+                                updateAdresaStmt.executeUpdate();
 
                                 // Type-specific updates
                                 if (!textAnStudiu.getText().isEmpty()) {
@@ -654,5 +796,4 @@ public class PaginaHomeAdministrator extends JPanel {
 
 ///to do:
 ///- diferenta intre super si admin
-///-modificare not working
 

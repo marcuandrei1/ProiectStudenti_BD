@@ -149,6 +149,19 @@ public class PaginaAutentificare extends JPanel {
                             insertProfesorStmt.setString(3,departament.getText());
                             insertProfesorStmt.executeUpdate();
                         }
+                        else if(job.equals("Administrator")){
+                            stmt=conn.prepareStatement("SELECT max(idAdministrator) as maxAdministrator FROM administrator");
+                            ResultSet ra = stmt.executeQuery();
+
+                            int idAdministrator = 1;
+                            if (ra.next()) {
+                                idAdministrator = ra.getInt("maxAdministrator") + 1;
+                            }
+                            PreparedStatement insertAdministratorStmt=conn.prepareStatement("INSERT INTO administrator(idAdministrator, Username, ifSuper) VALUES (?,?,false)");
+                            insertAdministratorStmt.setInt(1,idAdministrator);
+                            insertAdministratorStmt.setString(2,textUsername.getText());
+                            insertAdministratorStmt.executeUpdate();
+                        }
                     } catch (SQLException en) {
                         System.out.println(en.getMessage());
                     }
