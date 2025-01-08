@@ -68,9 +68,7 @@ public class Student extends Utilizator{
     //renunta la cursuri
 
     //furare tabel fain de la marcu pentru vizualizare note
-    //vizualizare membri grupului+JDialog in dreapta chatului
-    //stergere grup studiu
-    //iesire din grup=stergere mesajul '' din tabela mesaj
+    //stergere din tabela mesajasteptare daca cumva se inchide respectivul chat
     //modificare la inscreire grup,vedere sugestii grupuri in functie la ce materie esti inscris+buton search daca vrei la unu specific
     //punere JmenuBar si pus butoane pe ea
     //pop up JDialog prima data cand te conectezi dupa ce o fost programata o noua activitate la grup de stiudiu

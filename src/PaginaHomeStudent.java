@@ -12,7 +12,7 @@ import java.util.Objects;
 public class PaginaHomeStudent extends JPanel {
     private Student student;
     private JPanel panel;
-    private  JPanel InterfataInscriere(){
+    public  JPanel InterfataInscriere(){
         panel = new JPanel();
         JComboBox<String> c=new JComboBox<>();
         JButton b=new JButton("Submit");
@@ -45,7 +45,7 @@ public class PaginaHomeStudent extends JPanel {
         panel.add(b);
         return panel;
     }
-    private JPanel InterfataVizualizareNote(){
+    public JPanel InterfataVizualizareNote(){
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Vertical stacking of labels
         panel.setBorder(BorderFactory.createTitledBorder("Notele la toate disciplinele"));
@@ -71,7 +71,7 @@ public class PaginaHomeStudent extends JPanel {
 
         return panel;
     }
-    private JPanel InterfataVizualizareGrupuri(){
+    public JPanel InterfataVizualizareGrupuri(){
         panel = new JPanel();
         panel.setLayout(new MigLayout("wrap, inset 0,center","[center]","[]10[]10[]"));
         List<JButton> groups=new ArrayList<>();
@@ -80,7 +80,7 @@ public class PaginaHomeStudent extends JPanel {
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
 
-            PreparedStatement stmt=conn.prepareStatement("SELECT  distinct  numeGrup,idGrupStudiu from grupstudiu join mesaj using (idGrupStudiu) where mesaj.idStudent=(select idStudent from student where Username=?);");
+            PreparedStatement stmt=conn.prepareStatement("SELECT  distinct  numeGrup,idGrupStudiu from grupstudiu join mesaj using (idGrupStudiu) where mesaj.idStudent=(select idStudent from student where Username=?) and mesaj='';");
             stmt.setString(1,student.getUsername());
             ResultSet rs=stmt.executeQuery();
             while(rs.next()){
@@ -100,7 +100,7 @@ public class PaginaHomeStudent extends JPanel {
                         chatFrame.setTitle(b.getText());
                         chatFrame.setMinimumSize(new Dimension(438, 707));
                         int idGrupStudiu=groupsID.get(groups.indexOf(b));
-                        chatFrame.add(new ChatWindow(student,idGrupStudiu,chatFrame));
+                        chatFrame.add(new ChatWindow(student,idGrupStudiu,chatFrame,PaginaHomeStudent.this));
                 }
             });
         }
@@ -119,7 +119,7 @@ public class PaginaHomeStudent extends JPanel {
         panel.add(inscriereGrup);
         return panel;
     }
-    private JPanel InterfataInscriereGrupuri(){
+    public JPanel InterfataInscriereGrupuri(){
         panel=new JPanel();
         panel.setLayout(new MigLayout("wrap, inset 0","","[]10[]")); // Vertical stacking of labels
         panel.setBorder(BorderFactory.createTitledBorder("Grupuri la care te poti inscrie"));
@@ -128,7 +128,7 @@ public class PaginaHomeStudent extends JPanel {
             String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn = DriverManager.getConnection(url);
             PreparedStatement stmt = conn.prepareStatement("SELECT grupstudiu.numeGrup,disciplina.Nume from grupstudiu join disciplina using(idDisciplina) where idGrupStudiu not in " +
-                    "(SELECT distinct idGrupStudiu from mesaj  where mesaj.idStudent= (SELECT idStudent from student where Username=?));");
+                    "(SELECT distinct idGrupStudiu from mesaj  where mesaj.idStudent= (SELECT idStudent from student where Username=?) and mesaj='');");
             stmt.setString(1, student.getUsername());
             ResultSet rs = stmt.executeQuery();
 
