@@ -14,6 +14,7 @@ import GroupChat.Components.ChatArea;
 import GroupChat.Components.ChatBox;
 import GroupChat.model.ModelMessage;
 import GroupChat.ChatEvent;
+import net.miginfocom.swing.MigLayout;
 
 public class ChatWindow extends JPanel {
     private Student student;
@@ -27,6 +28,7 @@ public class ChatWindow extends JPanel {
         this.frame = frame;
         initComponents();//initializare intefata chat
         initMessagesChat();
+        InitMenuBar();
         frame.setVisible(true);
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy, HH:mm");
         chatArea.addChatEvent(new ChatEvent() {
@@ -85,7 +87,22 @@ public class ChatWindow extends JPanel {
 
         //verificare o data la 2 sec daca este mesaj nou si daca da in functie daca e useru conectat,care o scris mesaju sau nu se pune right sau left
     }
+    public void InitMenuBar(){
+        JMenuBar mb=new JMenuBar();
+        mb.setLayout(new MigLayout("inset 0","[grow]"));
+        JMenu settings=new JMenu("");
+        ImageIcon ic=new ImageIcon("Resources/MenuDots.png");
+        Image image=ic.getImage();
+        Image newimg=image.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        ic=new ImageIcon(newimg);
+        settings.setIcon(ic);
+        mb.add(settings,"align right");
 
+        JButton vizualizareMembri=new JButton("Vizualizare membri");
+        settings.add(vizualizareMembri);
+        settings.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        frame.setJMenuBar(mb);
+    }
 
 
 

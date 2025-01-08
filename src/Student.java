@@ -64,9 +64,14 @@ public class Student extends Utilizator{
         }
         stmt.close();
     }
-    //trebuie sa vedem cum facem sa aiba acelasi prof la discipline diferite,nu se poate aceeasi primary key,se alege alt prof?
     //studentul poate vedea activitatiile din ziua curenta
-    //studentul poate vedea toate activitatille la care este inscris
-    //renunta la cursuri?
-    //+chestii despre grupu de stidiu chat+stuff
+    //renunta la cursuri
+
+    //furare tabel fain de la marcu pentru vizualizare note
+    //vizualizare membri grupului+JDialog in dreapta chatului
+    //stergere grup studiu
+    //iesire din grup=stergere mesajul '' din tabela mesaj
+    //modificare la inscreire grup,vedere sugestii grupuri in functie la ce materie esti inscris+buton search daca vrei la unu specific
+    //punere JmenuBar si pus butoane pe ea
+    //pop up JDialog prima data cand te conectezi dupa ce o fost programata o noua activitate la grup de stiudiu
 }

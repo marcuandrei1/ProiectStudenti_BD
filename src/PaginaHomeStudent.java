@@ -230,10 +230,12 @@ public class PaginaHomeStudent extends JPanel {
 
         return panel;
     }
+
     public PaginaHomeStudent(JFrame frame, Student student ) {
 
         this.student = student;
         this.setLayout(new BorderLayout());
+
 
         JButton profile = new JButtonCircle("Profil");
         profile.setBackground(Color.DARK_GRAY);
