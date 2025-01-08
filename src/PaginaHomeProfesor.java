@@ -6,9 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +23,35 @@ public class PaginaHomeProfesor extends JPanel {
     }
 
 
+    private void exportToCSV(File file, JTable table) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            // Scrie header-ul tabelului
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            for (int i = 0; i < model.getColumnCount(); i++) {
+                writer.write(model.getColumnName(i));
+                if (i < model.getColumnCount() - 1) {
+                    writer.write(",");
+                }
+            }
+            writer.newLine();
+
+            // Scrie datele tabelului
+            for (int i = 0; i < model.getRowCount(); i++) {
+                for (int j = 0; j < model.getColumnCount(); j++) {
+                    writer.write(model.getValueAt(i, j).toString());
+                    if (j < model.getColumnCount() - 1) {
+                        writer.write(",");
+                    }
+                }
+                writer.newLine();
+            }
+
+            System.out.println("Catalog salvat cu succes în: " + file.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Eroare la salvarea catalogului!", "Eroare", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
 
 
@@ -909,7 +936,6 @@ public class PaginaHomeProfesor extends JPanel {
 
             });
 
-
             /// Verificarea pentru field-uri cand scriu in ele
             JTextField[] fieldAux = new JTextField[3];
             fieldAux[0] = notaCursField;
@@ -1023,20 +1049,20 @@ public class PaginaHomeProfesor extends JPanel {
             middlePanel.repaint();
         });
 
+        JButton downloadButton = new JButton("Descarcă Catalog");
+        middlePanel.add(downloadButton);
 
-//        // Funcție pentru descărcarea catalogului
-//        downloadButton.addActionListener(e -> {
-//            JFileChooser fileChooser = new JFileChooser();
-//            fileChooser.setDialogTitle("Save Catalog");
-//            fileChooser.setSelectedFile(new File("Catalog.xlsx"));
-//
-//            int userSelection = fileChooser.showSaveDialog(null);
-//            if (userSelection == JFileChooser.APPROVE_OPTION) {
-//                File fileToSave = fileChooser.getSelectedFile();
-//                exportToExcel(fileToSave, catalogTable);
-//            }
-//        });
+        downloadButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Save Catalog");
+            fileChooser.setSelectedFile(new File("Catalog.csv"));
 
+            int userSelection = fileChooser.showSaveDialog(null);
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+                exportToCSV(fileToSave, catalogTable);
+            }
+        });
 
         /// Adaug la panelul principal
         middlePanel.add(catalogPanel);
