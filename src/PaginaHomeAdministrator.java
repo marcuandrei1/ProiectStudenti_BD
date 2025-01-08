@@ -1,3 +1,5 @@
+import net.miginfocom.swing.MigLayout;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -491,18 +493,19 @@ public class PaginaHomeAdministrator extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 // Create a new dialog to embed PaginaAutentificare
                 JDialog addInfoDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this), "Adaugă informații", true);
-                addInfoDialog.setLayout(new BorderLayout());
-                addInfoDialog.setSize(800, 600); // Set appropriate size
+                addInfoDialog.setLayout(new MigLayout("wrap, inset 0, align center","[grow]","[grow]"));
+                addInfoDialog.setSize(400, 300); // Set appropriate size
                 addInfoDialog.setLocationRelativeTo(PaginaHomeAdministrator.this); // Center it relative to the main panel
 
-                //Content for delete
-                //get username for utilizator to be deleted
+                //Content for add
                 JTextField textUsername = new JTextField();
                 JPanel l = FunctiiUtile.creareText(textUsername,"Username:  ","Introduce-ti Username");
                 textUsername.setFont(new Font("Arial", Font.PLAIN, 15));
-                textUsername.setPreferredSize(new Dimension(100,25));
 
-                addInfoDialog.add(l, BorderLayout.CENTER);
+
+
+
+                addInfoDialog.add(l,"align center, push");
 
 
                 JButton deleteUtilizator = new JButton("Șterge");
@@ -604,19 +607,19 @@ public class PaginaHomeAdministrator extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 // Create a new dialog to embed PaginaAutentificare
                 JDialog addInfoDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(PaginaHomeAdministrator.this), "Adaugă informații", true);
-                addInfoDialog.setLayout(new BorderLayout());
-                addInfoDialog.setSize(800, 600); // Set appropriate size
+                addInfoDialog.setLayout(new MigLayout("wrap, inset 0, align center","[grow]","[grow]"));
+                addInfoDialog.setSize(400, 300); // Set appropriate size
                 addInfoDialog.setLocationRelativeTo(PaginaHomeAdministrator.this); // Center it relative to the main panel
 
                 //Content for add
                 JTextField textUsername = new JTextField();
                 JPanel l = FunctiiUtile.creareText(textUsername,"Username:  ","Introduce-ti Username");
                 textUsername.setFont(new Font("Arial", Font.PLAIN, 15));
-                textUsername.setPreferredSize(new Dimension(100,25));
 
 
 
-                addInfoDialog.add(l, BorderLayout.CENTER);
+
+                addInfoDialog.add(l,"align center, push");
 
                 JButton modifyButton = new JButton("Modifica");
                 modifyButton.addActionListener(new ActionListener() {
