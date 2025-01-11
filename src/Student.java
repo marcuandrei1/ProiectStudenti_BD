@@ -66,10 +66,9 @@ public class Student extends Utilizator{
     }
     //studentul poate vedea activitatiile din ziua curenta
     //renunta la cursuri
+    //stergere din tabela mesajasteptare daca cumva se inchide respectivul chat(nu stiu daca merge dar e facut)
 
-    //furare tabel fain de la marcu pentru vizualizare note
-    //stergere din tabela mesajasteptare daca cumva se inchide respectivul chat
-    //modificare la inscreire grup,vedere sugestii grupuri in functie la ce materie esti inscris+buton search daca vrei la unu specific
-    //punere JmenuBar si pus butoane pe ea
+
+    //separare orar in functie de rol prof,student
     //pop up JDialog prima data cand te conectezi dupa ce o fost programata o noua activitate la grup de stiudiu
 }

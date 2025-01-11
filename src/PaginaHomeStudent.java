@@ -1,6 +1,7 @@
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,23 +47,29 @@ public class PaginaHomeStudent extends JPanel {
         return panel;
     }
     public JPanel InterfataVizualizareNote(){
+        String[] numeColoane = {"Materie", "Nota Curs", "Nota Seminar", "Nota Laborator", "Nota Finala"};
+
+        // Creăm modelul tabelului (inițial gol)
+        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0);
+        JTable catalogTable = new JTable(tableModel);
+        catalogTable.setFillsViewportHeight(true);
+        catalogTable.setPreferredScrollableViewportSize(new Dimension(400, 200));
+        //catalogTable.setRowHeight(18); // Setează înălțimea rândului
+
+        // Adăugăm tabelul într-un JScrollPane pentru scroll
+        JScrollPane scrollPane = new JScrollPane(catalogTable);
+
+        // Panel pentru afișare
         panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Vertical stacking of labels
-        panel.setBorder(BorderFactory.createTitledBorder("Notele la toate disciplinele"));
-        panel.setOpaque(true);
+        panel.setLayout(new BorderLayout());
+        panel.add(scrollPane, BorderLayout.CENTER);
         try {
+
             ResultSet rs=student.VizualizareNote();
+            DefaultTableModel model = (DefaultTableModel) catalogTable.getModel();
+            model.setRowCount(0);
             while (rs.next()){
-                JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-                rowPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-                panel.add(rowPanel);
-                JLabel nameLabel = new JLabel(
-                        String.format("%s, %s, %s, %s, %s",
-                                rs.getString("Nume"), rs.getString("notaSeminar"),rs.getString("notaCurs"),
-                                rs.getString("notaLaborator"),rs.getString("notaFinala")));
-                nameLabel.setForeground(Color.BLACK);
-                nameLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-                rowPanel.add(nameLabel);
+                model.addRow(new Object[]{rs.getString("Nume"), rs.getString("notaCurs"), rs.getString("notaSeminar"),  rs.getString("notaLaborator"), rs.getString("notaFinala")});
             }
         }catch (SQLException e){
             JOptionPane.showMessageDialog(null,
@@ -121,26 +128,29 @@ public class PaginaHomeStudent extends JPanel {
     }
     public JPanel InterfataInscriereGrupuri(){
         panel=new JPanel();
-        panel.setLayout(new MigLayout("wrap, inset 0","","[]10[]")); // Vertical stacking of labels
-        panel.setBorder(BorderFactory.createTitledBorder("Grupuri la care te poti inscrie"));
-        panel.setOpaque(true);
+
+        JPanel sugestiiPanel=new JPanel();
+        sugestiiPanel.setLayout(new MigLayout("wrap, inset 0","","[]10[]")); // Vertical stacking of labels
+        sugestiiPanel.setBorder(BorderFactory.createTitledBorder("Grupuri la care te poti inscrie"));
+        sugestiiPanel.setOpaque(true);
         try {
             String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn = DriverManager.getConnection(url);
-            PreparedStatement stmt = conn.prepareStatement("SELECT grupstudiu.numeGrup,disciplina.Nume from grupstudiu join disciplina using(idDisciplina) where idGrupStudiu not in " +
-                    "(SELECT distinct idGrupStudiu from mesaj  where mesaj.idStudent= (SELECT idStudent from student where Username=?) and mesaj='');");
+            PreparedStatement stmt = conn.prepareStatement("SELECT grupstudiu.numeGrup,disciplina.Nume from grupstudiu join disciplina using(idDisciplina) where idGrupStudiu not in\n" +
+                    "(SELECT distinct idGrupStudiu from mesaj  where mesaj.idStudent= (SELECT idStudent from student where Username=?) and mesaj='') and disciplina.idDisciplina=(SELECT idDisciplina from nota where nota.idStudent=(SELECT idStudent from student where Username=?));");
             stmt.setString(1, student.getUsername());
+            stmt.setString(2,student.getUsername());
             ResultSet rs = stmt.executeQuery();
 
             if (!rs.next()) {
-                JOptionPane.showMessageDialog(null, "NU exista grupuri disponibile. Incearca sa creezi unul nou.");
+                JOptionPane.showMessageDialog(null, "NU exista sugestii disponibile. Incearca sa creezi unul nou.");
             } else {
                 List<JPanel> rows=new ArrayList<>();
                 List<String> numeGrupuri=new ArrayList<>();
                 do {
                     JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
                     rowPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-                    panel.add(rowPanel);
+                    sugestiiPanel.add(rowPanel);
 
                     JLabel nameLabel = new JLabel(
                             String.format("Nume: %s, Disciplina: %s",
@@ -160,7 +170,7 @@ public class PaginaHomeStudent extends JPanel {
                             for(int i=0;i<rows.size();i++){
                                 if(rows.get(i).getComponent(1).equals(butonAcceptat)){
                                     try {
-                                        student.InscriereGrup(numeGrupuri.get(i),conn);
+                                       student.InscriereGrup(numeGrupuri.get(i),conn);
                                         if(rows.get(i)!=null){
                                             panel.remove(rows.get(i));
                                         }
@@ -183,6 +193,50 @@ public class PaginaHomeStudent extends JPanel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        JPanel cautarePanel=new JPanel();
+;       cautarePanel.setLayout(new MigLayout("wrap,center"));
+
+        JTextField searchField=new JTextField();
+        JPanel l = FunctiiUtile.creareText(searchField,"Cautare grup:  ","Introduce-ti Numele");
+        searchField.setFont(new Font("Arial", Font.PLAIN, 15));
+        JButton searchButton=new JButton("Search");
+        cautarePanel.add(l);
+        cautarePanel.add(searchButton);
+        panel.setLayout(new MigLayout("inset 0"));
+        panel.add(sugestiiPanel,"w 50%,h 100%");
+        panel.add(cautarePanel,"w 50%,h 100%");
+
+        searchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                    Connection conn = DriverManager.getConnection(url);
+
+                    PreparedStatement stmt = conn.prepareStatement("SELECT grupstudiu.numeGrup,disciplina.Nume from grupstudiu join disciplina using(idDisciplina) where idGrupStudiu not in\n" +
+                            "(SELECT distinct idGrupStudiu from mesaj  where mesaj.idStudent= (SELECT idStudent from student where Username=?) and mesaj='');");
+                    stmt.setString(1, student.getUsername());
+                    ResultSet rs = stmt.executeQuery();
+
+                    int ok=0;
+                    while (rs.next()){
+                            if(rs.getString("NumeGrup").equals(searchField.getText())){
+                                student.InscriereGrup(rs.getString("NumeGrup"),conn);
+                                ok=1;
+                                JOptionPane.showMessageDialog(null, "Ai reusit sa te inscrii cu succes.");
+                                break;
+                            }
+                    }
+                    if(ok==0){
+                        JOptionPane.showMessageDialog(null, "NU exista grupul cautat de catre tine.");
+                    }
+                }
+                catch (Exception ex){
+                    ex.printStackTrace();
+                }
+                searchField.setText("");
+            }
+        });
         return panel;
     }
     private JPanel InterfataCreareGrupuri(){
@@ -408,6 +462,22 @@ public class PaginaHomeStudent extends JPanel {
             }
         });
 
+        JButton orar=new JButton("Vizualizare Orar");
+        creareGrupuri.setBackground(Color.DARK_GRAY);
+        creareGrupuri.setForeground(Color.WHITE);
+        orar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(panel!=null){
+                    PaginaHomeStudent.this.remove(panel);
+                }
+
+                PaginaHomeStudent.this.add(new Calendar(student),BorderLayout.CENTER);
+                //PaginaHomeStudent.this.setBorder(BorderFactory.createTitledBorder("Grupuri la care te poti inscrie"));
+                PaginaHomeStudent.this.revalidate();
+                PaginaHomeStudent.this.repaint();
+            }
+        });
+
         JPanel butonsPanel=new JPanel();
         butonsPanel.setLayout(new BoxLayout(butonsPanel,BoxLayout.Y_AXIS));
         butonsPanel.setOpaque(false);
@@ -420,6 +490,8 @@ public class PaginaHomeStudent extends JPanel {
         butonsPanel.add(creareGrupuri);
         butonsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         butonsPanel.add(vizualizareGrupuri);
+        butonsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        butonsPanel.add(orar);
         this.add(butonsPanel, BorderLayout.EAST);
     }
 }
