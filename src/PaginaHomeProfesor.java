@@ -16,7 +16,6 @@ import java.util.Set;
 public class PaginaHomeProfesor extends JPanel {
     private Profesor profesor;
 
-
     public  void verificareDisciplina(String s) throws IOException {
         if (s.equals("Introduce-ti disciplina!"))
             throw new IOException("Username invalid");
@@ -189,13 +188,12 @@ public class PaginaHomeProfesor extends JPanel {
         // Middle Panel
         JPanel middlePanel = new JPanel();
         middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.Y_AXIS));
-        middlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); /// avem padding
+        middlePanel.setBorder(BorderFactory.createEmptyBorder(20, 5, 20, 10)); /// avem padding
 
         /// Label-ul pentru Inscriere Curs
         JPanel borderedPanel = new JPanel();
         borderedPanel.setLayout(new BoxLayout(borderedPanel, BoxLayout.Y_AXIS));
         borderedPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 2), "Inscriere Curs")); // Add border with title
-        borderedPanel.setMaximumSize(new Dimension(500, 100));
         borderedPanel.setBackground(Color.WHITE);
         borderedPanel.setVisible(false);
         borderedPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -207,10 +205,10 @@ public class PaginaHomeProfesor extends JPanel {
         inscriereCursLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         inscriereCursLabel.setVisible(false);                                           /// e ascuns
 
-        JTextField inscriereCursField = new JTextField(10);
+        JTextField inscriereCursField = new JTextField(11);
         inscriereCursField.setText("Introduce-ti disciplina!");
-        inscriereCursField.setPreferredSize(new Dimension(400, 25));
-        inscriereCursField.setMaximumSize(new Dimension(400, 25));
+        inscriereCursField.setPreferredSize(new Dimension(450, 25));
+        inscriereCursField.setMaximumSize(new Dimension(450, 25));
         inscriereCursField.setAlignmentX(Component.CENTER_ALIGNMENT);
         inscriereCursField.setVisible(false);                                           /// tot ascuns
 
@@ -220,11 +218,15 @@ public class PaginaHomeProfesor extends JPanel {
         submitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         submitButton.setVisible(false);                                                 /// tot ascuns
 
+        Dimension buttonSize = new Dimension(150, 27);
 
         JButton inscriereCursButton = new JButton("Inscriere Curs");
         inscriereCursButton.setBackground(Color.DARK_GRAY);
         inscriereCursButton.setForeground(Color.WHITE);
         inscriereCursButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        inscriereCursButton.setMinimumSize(buttonSize);
+        inscriereCursButton.setMaximumSize(buttonSize);
+        inscriereCursButton.setPreferredSize(buttonSize);
 
         /// cand apas pe buton sa imi apara label-urile, cu TOGGLE
         inscriereCursButton.addActionListener(e -> {
@@ -259,7 +261,7 @@ public class PaginaHomeProfesor extends JPanel {
         middlePanel.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing
         middlePanel.add(borderedPanel);
 
-        this.add(middlePanel, BorderLayout.CENTER);
+        this.add(middlePanel, BorderLayout.WEST);
 
         inscriereCursField.addFocusListener(new FocusListener() {
             @Override
@@ -364,24 +366,24 @@ public class PaginaHomeProfesor extends JPanel {
         JPanel borderedPanelProcente = new JPanel();
         borderedPanelProcente.setLayout(new BoxLayout(borderedPanelProcente, BoxLayout.Y_AXIS));
         borderedPanelProcente.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 2), "Notare procente")); // Add border with title
-        borderedPanelProcente.setMaximumSize(new Dimension(500, 300));
         borderedPanelProcente.setBackground(Color.WHITE);
         borderedPanelProcente.setAlignmentX(Component.LEFT_ALIGNMENT);
         borderedPanelProcente.setVisible(false);
-
 
         JButton NotareProcenteButton = new JButton("Notare procente");
         NotareProcenteButton.setBackground(Color.DARK_GRAY);
         NotareProcenteButton.setForeground(Color.WHITE);
         NotareProcenteButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-
+        NotareProcenteButton.setMinimumSize(buttonSize);
+        NotareProcenteButton.setPreferredSize(buttonSize);
+        NotareProcenteButton.setMaximumSize(buttonSize);
 
         /// TODO: Sa avem un comboBox in care sa se afiseze materiile la care este inscris profesorul
 
         JComboBox materiiProfesorComboBox = new JComboBox();
-        materiiProfesorComboBox.setPreferredSize(new Dimension(150, 25));
-        materiiProfesorComboBox.setMaximumSize(new Dimension(250, 25));
-        materiiProfesorComboBox.setMinimumSize(new Dimension(150, 25));
+        materiiProfesorComboBox.setPreferredSize(new Dimension(130, 25));
+        materiiProfesorComboBox.setMaximumSize(new Dimension(130, 25));
+        materiiProfesorComboBox.setMinimumSize(new Dimension(130, 25));
         materiiProfesorComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
         materiiProfesorComboBox.setVisible(false);
 
@@ -445,12 +447,12 @@ public class PaginaHomeProfesor extends JPanel {
         JLabel procentCursLabel = new JLabel("Procente curs: ");
         JLabel procentSeminarLabel = new JLabel("Procente seminar: ");
         JLabel procentLaboratorLabel = new JLabel("Procente laborator: ");
-        JTextField procentCursField = new JTextField(10);
-        procentCursField.setMaximumSize(new Dimension(100, 30));
-        JTextField procentSeminarField = new JTextField(10);
-        procentSeminarField.setMaximumSize(new Dimension(100, 30));
-        JTextField procentLaboratorField = new JTextField(10);
-        procentLaboratorField.setMaximumSize(new Dimension(100, 30));
+        JTextField procentCursField = new JTextField();
+        procentCursField.setMaximumSize(new Dimension(200, 30));
+        JTextField procentSeminarField = new JTextField();
+        procentSeminarField.setMaximumSize(new Dimension(200, 30));
+        JTextField procentLaboratorField = new JTextField();
+        procentLaboratorField.setMaximumSize(new Dimension(200, 30));
         JButton butonSubmit1 = new JButton("Submit1");
         JButton butonSubmit2 = new JButton("Submit2");
         JButton butonSubmit3 = new JButton("Submit3");
@@ -684,30 +686,32 @@ public class PaginaHomeProfesor extends JPanel {
         NotePentruStudentiButton.setBackground(Color.DARK_GRAY);
         NotePentruStudentiButton.setForeground(Color.WHITE);
         NotePentruStudentiButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        NotePentruStudentiButton.setMinimumSize(buttonSize);
+        NotePentruStudentiButton.setMaximumSize(buttonSize);
+        NotePentruStudentiButton.setPreferredSize(buttonSize);
 
         /// Panelul pentru "note pentru studenti"
         JPanel borderedPanelNote = new JPanel();
         borderedPanelNote.setLayout(new BoxLayout(borderedPanelNote, BoxLayout.Y_AXIS));
         borderedPanelNote.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 2), "Notare note")); // Add border with title
-        borderedPanelNote.setMaximumSize(new Dimension(500, 300));
         borderedPanelNote.setBackground(Color.WHITE);
         borderedPanelNote.setAlignmentX(Component.LEFT_ALIGNMENT);
         borderedPanelNote.setVisible(false);
 
 
         JComboBox materiiProfesorComboBox1 = new JComboBox();
-        materiiProfesorComboBox1.setPreferredSize(new Dimension(150, 25));
-        materiiProfesorComboBox1.setMaximumSize(new Dimension(250, 25));
-        materiiProfesorComboBox1.setMinimumSize(new Dimension(150, 25));
+        materiiProfesorComboBox1.setPreferredSize(new Dimension(130, 25));
+        materiiProfesorComboBox1.setMaximumSize(new Dimension(130, 25));
+        materiiProfesorComboBox1.setMinimumSize(new Dimension(130, 25));
         materiiProfesorComboBox1.setAlignmentX(Component.LEFT_ALIGNMENT);
         materiiProfesorComboBox1.setVisible(false);
         borderedPanelNote.add(Box.createRigidArea(new Dimension(0, 20)));
         borderedPanelNote.add(materiiProfesorComboBox1);
 
         JComboBox studentiMaterieComboBox = new JComboBox();
-        studentiMaterieComboBox.setPreferredSize(new Dimension(150, 25));
-        studentiMaterieComboBox.setMaximumSize(new Dimension(250, 25));
-        studentiMaterieComboBox.setMinimumSize(new Dimension(150, 25));
+        studentiMaterieComboBox.setPreferredSize(new Dimension(130, 25));
+        studentiMaterieComboBox.setMaximumSize(new Dimension(130, 25));
+        studentiMaterieComboBox.setMinimumSize(new Dimension(130, 25));
         studentiMaterieComboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
         studentiMaterieComboBox.setVisible(false);
 
@@ -723,6 +727,7 @@ public class PaginaHomeProfesor extends JPanel {
             // Toggle visibility
             materiiProfesorComboBox1.setVisible(!isVisible);
             studentiMaterieComboBox.setVisible(!isVisible);
+
             borderedPanelNote.setVisible(!isVisible); // Toggle the bordered panel visibility
 
             // Revalidate and repaint the panel to update the layout
@@ -794,172 +799,173 @@ public class PaginaHomeProfesor extends JPanel {
                 }
             });
 
-            /// Field-urile cu note pentru curs, lab si seminar
-            JLabel notaCursLabel = new JLabel("Nota curs: ");
-            JLabel notaSeminarLabel = new JLabel("Nota seminar: ");
-            JLabel notaLaboratorLabel = new JLabel("Nota laborator: ");
-            JTextField notaCursField = new JTextField(10);
-            notaCursField.setMaximumSize(new Dimension(100, 30));
-            JTextField notaSeminarField = new JTextField(10);
-            notaSeminarField.setMaximumSize(new Dimension(100, 30));
-            JTextField notaLaboratorField = new JTextField(10);
-            notaLaboratorField.setMaximumSize(new Dimension(100, 30));
-            JButton butonSubmitNote = new JButton("Submit");
 
-            borderedPanelNote.add(notaCursLabel);
-            borderedPanelNote.add(notaCursField);
-            borderedPanelNote.add(notaSeminarLabel);
-            borderedPanelNote.add(notaSeminarField);
-            borderedPanelNote.add(notaLaboratorLabel);
-            borderedPanelNote.add(notaLaboratorField);
-            borderedPanelNote.add(butonSubmitNote);
+        });
 
-            /// Introducerea notelor in baza de date
-            butonSubmitNote.addActionListener(b -> {
-                String studentSelectat = (String) studentiMaterieComboBox.getSelectedItem();
-                if (studentSelectat != null && !studentSelectat.isEmpty()) {
-                    try {
-                        // Conexiunea la baza de date
-                        String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
-                        try (Connection conn = DriverManager.getConnection(url)) {
+        /// Field-urile cu note pentru curs, lab si seminar
+        JLabel notaCursLabel = new JLabel("Nota curs: ");
+        JLabel notaSeminarLabel = new JLabel("Nota seminar: ");
+        JLabel notaLaboratorLabel = new JLabel("Nota laborator: ");
+        JTextField notaCursField = new JTextField();
+        notaCursField.setMaximumSize(new Dimension(200, 30));
+        JTextField notaSeminarField = new JTextField();
+        notaSeminarField.setMaximumSize(new Dimension(200, 30));
+        JTextField notaLaboratorField = new JTextField();
+        notaLaboratorField.setMaximumSize(new Dimension(200, 30));
+        JButton butonSubmitNote = new JButton("Submit");
 
-                            // Declarații pentru identificatori
-                            int idStudent = 0, idProfesor = 0, idDisciplina = 0;
+        borderedPanelNote.add(notaCursLabel);
+        borderedPanelNote.add(notaCursField);
+        borderedPanelNote.add(notaSeminarLabel);
+        borderedPanelNote.add(notaSeminarField);
+        borderedPanelNote.add(notaLaboratorLabel);
+        borderedPanelNote.add(notaLaboratorField);
+        borderedPanelNote.add(butonSubmitNote);
 
-                            // Găsim `idStudent`
-                            try (PreparedStatement interogare = conn.prepareStatement("SELECT idStudent FROM student WHERE Username = ?")) {
-                                interogare.setString(1, studentSelectat);
-                                try (ResultSet rs = interogare.executeQuery()) {
-                                    if (rs.next()) {
-                                        idStudent = rs.getInt("idStudent");
-                                    } else {
-                                        System.out.println("Student not found!");
-                                        return;
-                                    }
-                                }
-                            }
+        /// Introducerea notelor in baza de date
+        butonSubmitNote.addActionListener(b -> {
+            String studentSelectat = (String) studentiMaterieComboBox.getSelectedItem();
+            if (studentSelectat != null && !studentSelectat.isEmpty()) {
+                try {
+                    // Conexiunea la baza de date
+                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                    try (Connection conn = DriverManager.getConnection(url)) {
 
-                            // Găsim `idProfesor`
-                            try (PreparedStatement interogare = conn.prepareStatement("SELECT idProfesor FROM profesor WHERE Username = ?")) {
-                                interogare.setString(1, profesor.getUsername());
-                                try (ResultSet rs = interogare.executeQuery()) {
-                                    if (rs.next()) {
-                                        idProfesor = rs.getInt("idProfesor");
-                                    } else {
-                                        System.out.println("Profesor not found!");
-                                        return;
-                                    }
-                                }
-                            }
+                        // Declarații pentru identificatori
+                        int idStudent = 0, idProfesor = 0, idDisciplina = 0;
 
-                            // Găsim `idDisciplina`
-                            try (PreparedStatement interogare = conn.prepareStatement("SELECT idDisciplina FROM disciplina WHERE Nume = ?")) {
-                                interogare.setString(1, materiiProfesorComboBox1.getSelectedItem().toString());
-                                try (ResultSet rs = interogare.executeQuery()) {
-                                    if (rs.next()) {
-                                        idDisciplina = rs.getInt("idDisciplina");
-                                    } else {
-                                        System.out.println("Disciplina not found!");
-                                        return;
-                                    }
-                                }
-                            }
-
-                            // Validare valori introduse
-                            int notaCurs, notaSeminar, notaLaborator;
-                            try {
-                                notaCurs = Integer.parseInt(notaCursField.getText());
-                                notaSeminar = Integer.parseInt(notaSeminarField.getText());
-                                notaLaborator = Integer.parseInt(notaLaboratorField.getText());
-                            } catch (NumberFormatException ex) {
-                                System.out.println("Invalid input for grades!");
-                                return;
-                            }
-
-                            /// Calculez nota finala
-
-                            String sql = "{CALL nota_finala(?, ?, ?, ?, ?, ?)}";
-                            CallableStatement stmt = conn.prepareCall(sql);
-                            stmt.setFloat(1, notaCurs);
-                            stmt.setFloat(2, notaLaborator);
-                            stmt.setFloat(3, notaSeminar);
-                            stmt.setFloat(4, idDisciplina);
-                            stmt.setFloat(5, idProfesor);
-                            // Register the output parameter
-                            stmt.registerOutParameter(6, Types.FLOAT);
-
-                            // Execute the procedure
-                            stmt.execute();
-
-                            // Get the result from the output parameter
-                            float notaFinala = stmt.getFloat(6);
-
-                            // Actualizare note
-                            String query = "UPDATE nota SET notaCurs = ?, notaSeminar = ?, notaLaborator = ?, notaFinala = ? " +
-                                    "WHERE idStudent = ? AND idDisciplina = ? AND idProfesor = ?";
-                            try (PreparedStatement introducereNote = conn.prepareStatement(query)) {
-                                introducereNote.setInt(1, notaCurs);
-                                introducereNote.setInt(2, notaSeminar);
-                                introducereNote.setInt(3, notaLaborator);
-                                introducereNote.setInt(4, (int) Math.round(notaFinala));
-                                introducereNote.setInt(5, idStudent);
-                                introducereNote.setInt(6, idDisciplina);
-                                introducereNote.setInt(7, idProfesor);
-
-                                int rowsUpdated = introducereNote.executeUpdate();
-                                if (rowsUpdated > 0) {
-                                    System.out.println("Note updated successfully!");
+                        // Găsim `idStudent`
+                        try (PreparedStatement interogare = conn.prepareStatement("SELECT idStudent FROM student WHERE Username = ?")) {
+                            interogare.setString(1, studentSelectat);
+                            try (ResultSet rs = interogare.executeQuery()) {
+                                if (rs.next()) {
+                                    idStudent = rs.getInt("idStudent");
                                 } else {
-                                    System.out.println("No rows updated. Check if the record exists.");
+                                    System.out.println("Student not found!");
+                                    return;
                                 }
                             }
                         }
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
+
+                        // Găsim `idProfesor`
+                        try (PreparedStatement interogare = conn.prepareStatement("SELECT idProfesor FROM profesor WHERE Username = ?")) {
+                            interogare.setString(1, profesor.getUsername());
+                            try (ResultSet rs = interogare.executeQuery()) {
+                                if (rs.next()) {
+                                    idProfesor = rs.getInt("idProfesor");
+                                } else {
+                                    System.out.println("Profesor not found!");
+                                    return;
+                                }
+                            }
+                        }
+
+                        // Găsim `idDisciplina`
+                        try (PreparedStatement interogare = conn.prepareStatement("SELECT idDisciplina FROM disciplina WHERE Nume = ?")) {
+                            interogare.setString(1, materiiProfesorComboBox1.getSelectedItem().toString());
+                            try (ResultSet rs = interogare.executeQuery()) {
+                                if (rs.next()) {
+                                    idDisciplina = rs.getInt("idDisciplina");
+                                } else {
+                                    System.out.println("Disciplina not found!");
+                                    return;
+                                }
+                            }
+                        }
+
+                        // Validare valori introduse
+                        int notaCurs, notaSeminar, notaLaborator;
+                        try {
+                            notaCurs = Integer.parseInt(notaCursField.getText());
+                            notaSeminar = Integer.parseInt(notaSeminarField.getText());
+                            notaLaborator = Integer.parseInt(notaLaboratorField.getText());
+                        } catch (NumberFormatException ex) {
+                            System.out.println("Invalid input for grades!");
+                            return;
+                        }
+
+                        /// Calculez nota finala
+
+                        String sql = "{CALL nota_finala(?, ?, ?, ?, ?, ?)}";
+                        CallableStatement stmt = conn.prepareCall(sql);
+                        stmt.setFloat(1, notaCurs);
+                        stmt.setFloat(2, notaLaborator);
+                        stmt.setFloat(3, notaSeminar);
+                        stmt.setFloat(4, idDisciplina);
+                        stmt.setFloat(5, idProfesor);
+                        // Register the output parameter
+                        stmt.registerOutParameter(6, Types.FLOAT);
+
+                        // Execute the procedure
+                        stmt.execute();
+
+                        // Get the result from the output parameter
+                        float notaFinala = stmt.getFloat(6);
+
+                        // Actualizare note
+                        String query = "UPDATE nota SET notaCurs = ?, notaSeminar = ?, notaLaborator = ?, notaFinala = ? " +
+                                "WHERE idStudent = ? AND idDisciplina = ? AND idProfesor = ?";
+                        try (PreparedStatement introducereNote = conn.prepareStatement(query)) {
+                            introducereNote.setInt(1, notaCurs);
+                            introducereNote.setInt(2, notaSeminar);
+                            introducereNote.setInt(3, notaLaborator);
+                            introducereNote.setInt(4, (int) Math.round(notaFinala));
+                            introducereNote.setInt(5, idStudent);
+                            introducereNote.setInt(6, idDisciplina);
+                            introducereNote.setInt(7, idProfesor);
+
+                            int rowsUpdated = introducereNote.executeUpdate();
+                            if (rowsUpdated > 0) {
+                                System.out.println("Note updated successfully!");
+                            } else {
+                                System.out.println("No rows updated. Check if the record exists.");
+                            }
+                        }
                     }
-                } else {
-                    System.out.println("Please select a student!");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
-
-                /// clear fields
-                notaCursField.setText("Done");
-                notaCursField.setForeground(Color.GREEN);
-
-                notaSeminarField.setText("Done");
-                notaSeminarField.setForeground(Color.GREEN);
-
-                notaLaboratorField.setText("Done");
-                notaLaboratorField.setForeground(Color.GREEN);
-
-
-
-
-            });
-
-            /// Verificarea pentru field-uri cand scriu in ele
-            JTextField[] fieldAux = new JTextField[3];
-            fieldAux[0] = notaCursField;
-            fieldAux[1] = notaSeminarField;
-            fieldAux[2] = notaLaboratorField;
-
-            for (int i = 0; i < fieldAux.length; i++) {
-                final int index = i; // Copie locală a lui i
-                fieldAux[index].addFocusListener(new FocusListener() {
-                    @Override
-                    public void focusGained(FocusEvent e) {
-                        // Clear the text when the field gains focus
-                        fieldAux[index].setText(""); // Folosește index-ul local
-                        fieldAux[index].setForeground(Color.BLACK); // Reset the text color to default
-                    }
-
-                    @Override
-                    public void focusLost(FocusEvent e) {
-                        // Optionally do something when the field loses focus
-                    }
-                });
+            } else {
+                System.out.println("Please select a student!");
             }
 
+            /// clear fields
+            notaCursField.setText("Done");
+            notaCursField.setForeground(Color.GREEN);
+
+            notaSeminarField.setText("Done");
+            notaSeminarField.setForeground(Color.GREEN);
+
+            notaLaboratorField.setText("Done");
+            notaLaboratorField.setForeground(Color.GREEN);
+
+
+
+
         });
+
+        /// Verificarea pentru field-uri cand scriu in ele
+        JTextField[] fieldAux = new JTextField[3];
+        fieldAux[0] = notaCursField;
+        fieldAux[1] = notaSeminarField;
+        fieldAux[2] = notaLaboratorField;
+
+        for (int i = 0; i < fieldAux.length; i++) {
+            final int index = i; // Copie locală a lui i
+            fieldAux[index].addFocusListener(new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                    // Clear the text when the field gains focus
+                    fieldAux[index].setText(""); // Folosește index-ul local
+                    fieldAux[index].setForeground(Color.BLACK); // Reset the text color to default
+                }
+
+                @Override
+                public void focusLost(FocusEvent e) {
+                    // Optionally do something when the field loses focus
+                }
+            });
+        }
 
 
         /// Adaugarea la panel-ul principal
@@ -967,6 +973,28 @@ public class PaginaHomeProfesor extends JPanel {
         middlePanel.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing
         middlePanel.add(borderedPanelNote);
 
+
+
+        JButton orar=new JButton("Vizualizare Orar");
+        orar.setBackground(Color.DARK_GRAY);
+        orar.setForeground(Color.WHITE);
+
+        final JPanel[] midPanel =new JPanel[1];
+        midPanel[0] = new JPanel();
+
+        orar.addActionListener(e -> {
+            if(midPanel[0] !=null){
+                PaginaHomeProfesor.this.remove(midPanel[0]);
+            }
+            midPanel[0] =new Calendar(profesor);
+            PaginaHomeProfesor.this.add(midPanel[0],BorderLayout.CENTER);
+
+            PaginaHomeProfesor.this.revalidate();
+            PaginaHomeProfesor.this.repaint();
+
+        });
+
+        middlePanel.add(orar);
 
         /// TODO: vizualizare liste studenti, fac direct catalogul (materie->nume->note (curs, seminar si laborator))
         middlePanel.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -984,24 +1012,18 @@ public class PaginaHomeProfesor extends JPanel {
         // Adăugăm tabelul într-un JScrollPane pentru scroll
         JScrollPane scrollPane = new JScrollPane(catalogTable);
 
-        // Panel pentru afișare
-        JPanel catalogPanel = new JPanel();
-        catalogPanel.setLayout(new BorderLayout());
-        catalogPanel.add(scrollPane, BorderLayout.CENTER);
-        catalogPanel.setVisible(false);
-
 
         /// TOGGLE la catalogStudentiButton
         catalogStudentiButton.addActionListener(e -> {
-            // Check if the components are already visible
-            boolean isVisible = catalogPanel.isVisible();
+            if(midPanel[0] !=null){
+                PaginaHomeProfesor.this.remove(midPanel[0]);
+            }
+            midPanel[0] =new JPanel(new BorderLayout());
+            midPanel[0].add(scrollPane, BorderLayout.CENTER);
+            PaginaHomeProfesor.this.add(midPanel[0],BorderLayout.CENTER);
 
-            // Toggle visibility
-            catalogPanel.setVisible(!isVisible);
-
-            // Revalidate and repaint the panel to update the layout
-            middlePanel.revalidate();
-            middlePanel.repaint();
+            PaginaHomeProfesor.this.revalidate();
+            PaginaHomeProfesor.this.repaint();
 
         });
 
@@ -1065,7 +1087,7 @@ public class PaginaHomeProfesor extends JPanel {
         });
 
         /// Adaug la panelul principal
-        middlePanel.add(catalogPanel);
+        this.add(midPanel[0],BorderLayout.CENTER);
 
     }
 }

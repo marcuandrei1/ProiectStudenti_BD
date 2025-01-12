@@ -137,7 +137,7 @@ public class PaginaHomeStudent extends JPanel {
             String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn = DriverManager.getConnection(url);
             PreparedStatement stmt = conn.prepareStatement("SELECT grupstudiu.numeGrup,disciplina.Nume from grupstudiu join disciplina using(idDisciplina) where idGrupStudiu not in\n" +
-                    "(SELECT distinct idGrupStudiu from mesaj  where mesaj.idStudent= (SELECT idStudent from student where Username=?) and mesaj='') and disciplina.idDisciplina=(SELECT idDisciplina from nota where nota.idStudent=(SELECT idStudent from student where Username=?));");
+                    "(SELECT distinct idGrupStudiu from mesaj  where mesaj.idStudent= (SELECT idStudent from student where Username=?) and mesaj='') and disciplina.idDisciplina in (SELECT idDisciplina from nota where nota.idStudent=(SELECT idStudent from student where Username=?));");
             stmt.setString(1, student.getUsername());
             stmt.setString(2,student.getUsername());
             ResultSet rs = stmt.executeQuery();
@@ -403,12 +403,15 @@ public class PaginaHomeStudent extends JPanel {
         });
         //pana aici este chestia de profile
 
-
+        Dimension buttonSize = new Dimension(150, 27);
 
 
         JButton inscriere=new JButton("Inscriere");//buton inscriere
         inscriere.setBackground(Color.DARK_GRAY);
         inscriere.setForeground(Color.WHITE);
+        inscriere.setMinimumSize(buttonSize);
+        inscriere.setPreferredSize(buttonSize);
+        inscriere.setMaximumSize(buttonSize);
         inscriere.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(panel!=null){
@@ -423,6 +426,9 @@ public class PaginaHomeStudent extends JPanel {
         JButton vizualizareNote=new JButton("Vizualizare Note");//buton vizulizare note
         vizualizareNote.setBackground(Color.DARK_GRAY);
         vizualizareNote.setForeground(Color.WHITE);
+        vizualizareNote.setMinimumSize(buttonSize);
+        vizualizareNote.setPreferredSize(buttonSize);
+        vizualizareNote.setMaximumSize(buttonSize);
         vizualizareNote.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(panel!=null){
@@ -437,6 +443,9 @@ public class PaginaHomeStudent extends JPanel {
         JButton vizualizareGrupuri =new JButton("Vizualizare Grupuri");//buton vizulizare grupuri
         vizualizareGrupuri.setBackground(Color.DARK_GRAY);
         vizualizareGrupuri.setForeground(Color.WHITE);
+        vizualizareGrupuri.setMinimumSize(buttonSize);
+        vizualizareGrupuri.setPreferredSize(buttonSize);
+        vizualizareGrupuri.setMaximumSize(buttonSize);
         vizualizareGrupuri.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(panel!=null){
@@ -451,6 +460,9 @@ public class PaginaHomeStudent extends JPanel {
         JButton creareGrupuri =new JButton("Creare Grup");//buton creare grup
         creareGrupuri.setBackground(Color.DARK_GRAY);
         creareGrupuri.setForeground(Color.WHITE);
+        creareGrupuri.setMinimumSize(buttonSize);
+        creareGrupuri.setPreferredSize(buttonSize);
+        creareGrupuri.setMaximumSize(buttonSize);
         creareGrupuri.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(panel!=null){
@@ -463,15 +475,18 @@ public class PaginaHomeStudent extends JPanel {
         });
 
         JButton orar=new JButton("Vizualizare Orar");
-        creareGrupuri.setBackground(Color.DARK_GRAY);
-        creareGrupuri.setForeground(Color.WHITE);
+        orar.setBackground(Color.DARK_GRAY);
+        orar.setForeground(Color.WHITE);
+        orar.setMinimumSize(buttonSize);
+        orar.setPreferredSize(buttonSize);
+        orar.setMaximumSize(buttonSize);
         orar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(panel!=null){
                     PaginaHomeStudent.this.remove(panel);
                 }
-
-                PaginaHomeStudent.this.add(new Calendar(student),BorderLayout.CENTER);
+                panel=new Calendar(student);
+                PaginaHomeStudent.this.add(panel,BorderLayout.CENTER);
                 //PaginaHomeStudent.this.setBorder(BorderFactory.createTitledBorder("Grupuri la care te poti inscrie"));
                 PaginaHomeStudent.this.revalidate();
                 PaginaHomeStudent.this.repaint();

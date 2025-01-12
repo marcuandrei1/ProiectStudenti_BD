@@ -117,8 +117,12 @@ public class Calendar extends JPanel{
                     }
                     else frame.setTitle(ziuaCurenta+" "+ finalDay);
 
-
-                    CreateDialogUI(frame,ziuaCurenta);
+                    if(user instanceof Profesor){
+                        CreateDialogUIProf(frame,ziuaCurenta);
+                    }
+                    else{
+                        CreateDialogUIStudent(frame,ziuaCurenta);
+                    }
                     frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     frame.setVisible(true);
                 }
@@ -137,14 +141,147 @@ public class Calendar extends JPanel{
         calendarPanel.repaint();
     }
 
-    public void CreateDialogUI(JFrame frame,String ziuaCurenta) {
+    public void CreateDialogUIProf(JFrame frame,String ziuaCurenta) {
         frame.setLayout(new BorderLayout());
         JPanel schedulePanel=new JPanel();
         schedulePanel.setLayout(new MigLayout("wrap,inset 5","","[]10[]"));
 
         boolean isDialogEmpty=true;
         SimpleDateFormat df = new SimpleDateFormat(" HH:mm");
-        List<String> data=new ArrayList<>();
+
+        String[] numeColoane = {"Tip", "Disciplina ", "Ora"};
+
+        // Creăm modelul tabelului (inițial gol)
+        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0);
+        JTable dataTable = new JTable(tableModel);
+        dataTable.setFillsViewportHeight(true);
+        dataTable.setPreferredScrollableViewportSize(new Dimension(400, 200));
+
+        // Adăugăm tabelul într-un JScrollPane pentru scroll
+        JScrollPane scrollPane = new JScrollPane(dataTable);
+        schedulePanel.add(scrollPane);
+
+        try{
+            String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+            Connection conn= DriverManager.getConnection(url);
+
+
+            PreparedStatement stmt=conn.prepareStatement("SELECT curs.ziua,curs.ora,disciplina.Nume,'Curs' as tip from curs join disciplina using (idDisciplina) where idProfesor=(SELECT idProfesor from profesor where Username=?) UNION ALL\n" +
+                    "SELECT seminar.ziua,seminar.ora,disciplina.Nume,'Seminar' as tip from seminar join disciplina using (idDisciplina) where idProfesor=(SELECT idProfesor from profesor where Username=?) UNION ALL\n" +
+                    "SELECT laborator.ziua,laborator.ora,disciplina.Nume,'Laborator' as tip from laborator join disciplina using (idDisciplina) where idProfesor=(SELECT idProfesor from profesor where Username=?)\n" +
+                    "ORDER BY ora;");
+            stmt.setString(1,user.getUsername());
+            stmt.setString(2,user.getUsername());
+            stmt.setString(3,user.getUsername());
+            ResultSet rs=stmt.executeQuery();
+
+            DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+            model.setRowCount(0);
+            while(rs.next()) {
+                if(rs.getString("ziua").equals(ziuaCurenta)){
+                    Timestamp date = rs.getTimestamp("Ora");
+                    String dateString=df.format(date);
+
+                    model.addRow(new Object[]{rs.getString(4), rs.getString("Nume"), dateString});
+
+                    isDialogEmpty=false;
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        JPanel butonsPanel=new JPanel(new MigLayout("inset 5","[left,grow][right]"));
+
+        JButton adaugare=new JButton("Adauga");
+        adaugare.setBackground(Color.DARK_GRAY);
+        adaugare.setForeground(Color.WHITE);
+        butonsPanel.add(adaugare);
+        adaugare.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JDialog adaugareDialog = new JDialog();
+                adaugareDialog.setLayout(new MigLayout("wrap, inset 5","","[]10[][grow,bottom]"));
+                adaugareDialog.setMinimumSize(new Dimension(200, 200));
+                adaugareDialog.setLocationRelativeTo(frame);
+                adaugareDialog.setModal(true);
+                adaugareDialog.setTitle("Adauga");
+
+                JComboBox<String> activityType=new JComboBox<>();
+                activityType.addItem("Curs");
+                activityType.addItem("Laborator");
+                activityType.addItem("Seminar");
+
+                JComboBox<String> disciplina=new JComboBox<>();
+                try {
+                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                    Connection conn = DriverManager.getConnection(url);
+
+                    PreparedStatement stmt=conn.prepareStatement("SELECT disciplina.Nume from  disciplina join nota using (idDisciplina) where idProfesor=(SELECT idProfesor from profesor where Username=?);");
+                    stmt.setString(1,user.getUsername());
+
+                    ResultSet rs=stmt.executeQuery();
+                    while(rs.next()) {
+                        disciplina.addItem(rs.getString("Nume"));
+                    }
+                    conn.close();
+                }
+                catch (Exception ex){
+                    ex.printStackTrace();
+                }
+
+                adaugareDialog.add(activityType,"w 170!");
+                adaugareDialog.add(disciplina,"w 170!");
+                HourUISubmit(frame,adaugareDialog,activityType,disciplina,ziuaCurenta);
+
+                adaugareDialog.setVisible(true);
+
+            }
+        });
+
+        if(!isDialogEmpty){
+
+            JButton downloadButton = new JButton("Descarcare");
+            downloadButton.setBackground(Color.DARK_GRAY);
+            downloadButton.setForeground(Color.WHITE);
+            butonsPanel.add(downloadButton);
+
+            downloadButton.addActionListener(e -> {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Salveaza Orar");
+                fileChooser.setSelectedFile(new File("Orar.csv"));
+
+                int userSelection = fileChooser.showSaveDialog(null);
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File fileToSave = fileChooser.getSelectedFile();
+                    exportToCSV(fileToSave,dataTable );
+                }
+            });
+        }
+
+        frame.add(schedulePanel,BorderLayout.NORTH);
+        frame.add(butonsPanel,BorderLayout.SOUTH);
+    }
+    private void CreateDialogUIStudent(JFrame frame,String ziuaCurenta){
+        frame.setLayout(new BorderLayout());
+        JPanel schedulePanel=new JPanel();
+        schedulePanel.setLayout(new MigLayout("wrap,inset 5","","[]10[]"));
+
+        boolean isDialogEmpty=true;
+        SimpleDateFormat df = new SimpleDateFormat(" HH:mm");
+
+        String[] numeColoane = {"Tip", "Disciplina ", "Ora"};
+
+        // Creăm modelul tabelului (inițial gol)
+        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0);
+        JTable dataTable = new JTable(tableModel);
+        dataTable.setFillsViewportHeight(true);
+        dataTable.setPreferredScrollableViewportSize(new Dimension(400, 200));
+
+        // Adăugăm tabelul într-un JScrollPane pentru scroll
+        JScrollPane scrollPane = new JScrollPane(dataTable);
+        schedulePanel.add(scrollPane);
+
         try{
             String url="jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn= DriverManager.getConnection(url);
@@ -161,20 +298,24 @@ public class Calendar extends JPanel{
             stmt.setString(2,user.getUsername());
             stmt.setString(3,user.getUsername());
             ResultSet rs=stmt.executeQuery();
+
+            DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+            model.setRowCount(0);
             while(rs.next()) {
                 if(rs.getString("ziua").equals(ziuaCurenta)){
                     Timestamp date = rs.getTimestamp("Ora");
                     String dateString=df.format(date);
-                    JLabel txt=new JLabel(rs.getString(4)+" de "+rs.getString("Nume")+" la ora "+dateString);
-                    data.add(txt.getText());
-                    txt.setFont(new Font("Arial", Font.PLAIN, 16));
-                    schedulePanel.add(txt);
+
+                    model.addRow(new Object[]{rs.getString(4), rs.getString("Nume"), dateString});
+
                     isDialogEmpty=false;
                 }
             }
         }catch (Exception e){
             e.printStackTrace();
         }
+
+
         JPanel butonsPanel=new JPanel(new MigLayout("inset 5","[left,grow][right]"));
 
         JButton adaugare=new JButton("Adauga");
@@ -184,52 +325,33 @@ public class Calendar extends JPanel{
         adaugare.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JDialog adaugareDialog = new JDialog();
-                adaugareDialog.setLayout(new MigLayout("wrap, inset 5","[]10[]"));
-                adaugareDialog.setMinimumSize(new Dimension(200, 300));
+                adaugareDialog.setLayout(new MigLayout("wrap, inset 5","","[]10[][grow,bottom]"));
+                adaugareDialog.setMinimumSize(new Dimension(200, 200));
                 adaugareDialog.setLocationRelativeTo(frame);
                 adaugareDialog.setModal(true);
-                adaugareDialog.setTitle("Adauga");
-                //TODO:in functie daca esti prof sau nu.Proful poate introduce cursuri,seminari,laburi in calendar pe cand elevul doar activitati
-                //TODO:trebuie complet separate nici query nu e la fel
-                JComboBox<String> activityType=new JComboBox<>();
-                activityType.addItem("Curs");
-                activityType.addItem("Laborator");
-                activityType.addItem("Seminar");
-                activityType.addItem("Activitate de grup");
+                adaugareDialog.setTitle("Adauga Activitate");
 
-                JComboBox<String> disciplina=new JComboBox<>();
+
+                JComboBox<String> grupStudiu=new JComboBox<>();
                 try {
                     String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                     Connection conn = DriverManager.getConnection(url);
 
-                    PreparedStatement stmt=conn.prepareStatement("SELECT disciplina.Nume from  disciplina join nota using (idDisciplina) where idStudent=(SELECT idStudent from student where Username=?);");
+                    PreparedStatement stmt=conn.prepareStatement("SELECT distinct grupstudiu.numeGrup from grupstudiu join mesaj using(idGrupStudiu) where mesaj.idStudent=(SELECT idStudent from student where Username=?);");
                     stmt.setString(1,user.getUsername());
 
                     ResultSet rs=stmt.executeQuery();
                     while(rs.next()) {
-                        disciplina.addItem(rs.getString("Nume"));
+                        grupStudiu.addItem(rs.getString("numeGrup"));
                     }
                     conn.close();
                 }
                 catch (Exception ex){
                     ex.printStackTrace();
                 }
+                adaugareDialog.add(grupStudiu,"w 170!");
 
-                JTextField activityHour = new JTextField();
-                JPanel l = FunctiiUtile.creareText(activityHour,"Ora:  ","HH:MM");
-                activityHour.setFont(new Font("Arial", Font.PLAIN, 15));
-                try{
-                    verificareOra(activityHour.getText(),activityHour);
-                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
-                    Connection conn = DriverManager.getConnection(url);
-                    PreparedStatement stmt=conn.prepareStatement("");
-                }catch (IOException | SQLException io){
-                    io.printStackTrace();
-                }
-                String width="w 170!";
-                adaugareDialog.add(activityType,width);
-                adaugareDialog.add(disciplina,width);
-                adaugareDialog.add(l,width);
+                HourUISubmit(frame,adaugareDialog,null,grupStudiu,ziuaCurenta);
                 adaugareDialog.setVisible(true);
 
             }
@@ -245,12 +367,12 @@ public class Calendar extends JPanel{
             downloadButton.addActionListener(e -> {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Salveaza Orar");
-                fileChooser.setSelectedFile(new File("Orar.txt"));
+                fileChooser.setSelectedFile(new File("Orar.csv"));
 
                 int userSelection = fileChooser.showSaveDialog(null);
                 if (userSelection == JFileChooser.APPROVE_OPTION) {
                     File fileToSave = fileChooser.getSelectedFile();
-                    exportToCSV(fileToSave, data);
+                    exportToCSV(fileToSave,dataTable );
                 }
             });
         }
@@ -258,16 +380,109 @@ public class Calendar extends JPanel{
         frame.add(schedulePanel,BorderLayout.NORTH);
         frame.add(butonsPanel,BorderLayout.SOUTH);
     }
+    private void HourUISubmit(JFrame frame,JDialog adaugareDialog,JComboBox<String>activtyType,JComboBox<String> disciplina,String ziuaCurenta){
+        JTextField activityHour = new JTextField();
+        JPanel l = FunctiiUtile.creareText(activityHour,"Ora:  ","HH:MM");
+        activityHour.setFont(new Font("Arial", Font.PLAIN, 15));
 
+        JButton submit=new JButton("Submit");
+        submit.setBackground(Color.DARK_GRAY);
+        submit.setForeground(Color.WHITE);
+        submit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    verificareOra(activityHour.getText(),activityHour);
+                    String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
+                    Connection conn = DriverManager.getConnection(url);
+                    if(user instanceof Profesor){
+                        PreparedStatement stmt;
+                        switch (activtyType.getSelectedItem().toString()){
+                            case "Curs":
 
-    private void exportToCSV(File file, List<String> data) {
+                                stmt =conn.prepareStatement("UPDATE curs set ziua=?,ora=? where idProfesor=(SELECT idProfesor from profesor where Username=?) and idDisciplina=(SELECT idDisciplina from disciplina where Nume=?);");
+                                stmt.setString(1,ziuaCurenta);
+                                stmt.setTime(2,Time.valueOf(activityHour.getText()+":00"));
+                                stmt.setString(3,user.getUsername());
+                                stmt.setString(4,disciplina.getSelectedItem().toString());
+                                stmt.executeUpdate();
+                                break;
+                            case "Seminar":
+                                stmt =conn.prepareStatement("UPDATE seminar set ziua=?,ora=? where idProfesor=(SELECT idProfesor from profesor where Username=?) and idDisciplina=(SELECT idDisciplina from disciplina where Nume=?);");
+                                stmt.setString(1,ziuaCurenta);
+                                stmt.setTime(2,Time.valueOf(activityHour.getText()+":00"));
+                                stmt.setString(3,user.getUsername());
+                                stmt.setString(4,disciplina.getSelectedItem().toString());
+                                stmt.executeUpdate();
+                                break;
+                            case "Laborator":
+                                stmt =conn.prepareStatement("UPDATE laborator set ziua=?,ora=? where idProfesor=(SELECT idProfesor from profesor where Username=?) and idDisciplina=(SELECT idDisciplina from disciplina where Nume=?);");
+                                stmt.setString(1,ziuaCurenta);
+                                stmt.setTime(2,Time.valueOf(activityHour.getText()+":00"));
+                                stmt.setString(3,user.getUsername());
+                                stmt.setString(4,disciplina.getSelectedItem().toString());
+                                stmt.executeUpdate();
+                                break;
+                            default:
+                                break;
+                        }
+                        adaugareDialog.dispose();
+                        frame.dispose();
+                        JFrame frame = new JFrame();
+                        frame.setMinimumSize(new Dimension(400, 500));
+                        frame.setLocationRelativeTo(Calendar.this);
+                        CreateDialogUIProf(frame,ziuaCurenta);
+                        frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                        frame.setVisible(true);
+                    }
+                    else {
+                        PreparedStatement stmt;
+                        stmt =conn.prepareStatement("");
+                        stmt.setString(1,ziuaCurenta);
+                        stmt.setTime(2,Time.valueOf(activityHour.getText()+":00"));
+                        stmt.setString(3,user.getUsername());
+                        stmt.setString(4,disciplina.getSelectedItem().toString());
+                        stmt.executeUpdate();
+                        adaugareDialog.dispose();
+                        frame.dispose();
+                        JFrame frame = new JFrame();
+                        frame.setMinimumSize(new Dimension(400, 500));
+                        frame.setLocationRelativeTo(Calendar.this);
+                        CreateDialogUIProf(frame,ziuaCurenta);
+                        frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                        frame.setVisible(true);
+                    }
+                }catch (IOException | SQLException io){
+                    io.printStackTrace();
+                }
+            }
+        });
+        adaugareDialog.add(l,"w 170!");
+        adaugareDialog.add(submit,"align center");
+    }
+    private void exportToCSV(File file,JTable table) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            // Scrie header-ul tabelului
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            for (int i = 0; i < model.getColumnCount(); i++) {
+                writer.write(model.getColumnName(i));
+                if (i < model.getColumnCount() - 1) {
+                    writer.write(",");
+                }
+            }
+            writer.newLine();
+
             // Scrie datele tabelului
-            for (int i = 0; i < data.size(); i++) {
-                    writer.write(data.get(i));
+            for (int i = 0; i < model.getRowCount(); i++) {
+                for (int j = 0; j < model.getColumnCount(); j++) {
+                    writer.write(model.getValueAt(i, j).toString());
+                    if (j < model.getColumnCount() - 1) {
+                        writer.write(",");
+                    }
+                }
                 writer.newLine();
             }
 
+            System.out.println("Catalog salvat cu succes în: " + file.getAbsolutePath());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -280,7 +495,7 @@ public class Calendar extends JPanel{
                 text.setBackground(lightRed);
                 throw new IOException("Ora invalida!");
             }
-            String regex = "/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/";
+            String regex = "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
             if(!s.matches(regex)) {
                 Color lightRed = new Color(255, 102, 102);
                 text.setBackground(lightRed);

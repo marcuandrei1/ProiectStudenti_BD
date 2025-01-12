@@ -69,6 +69,8 @@ public class Student extends Utilizator{
     //stergere din tabela mesajasteptare daca cumva se inchide respectivul chat(nu stiu daca merge dar e facut)
 
 
-    //separare orar in functie de rol prof,student
+
     //pop up JDialog prima data cand te conectezi dupa ce o fost programata o noua activitate la grup de stiudiu
+
+    //vedere cum se face cu saptamanal and stuff
 }
