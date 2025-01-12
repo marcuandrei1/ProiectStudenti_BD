@@ -94,7 +94,7 @@ public class PaginaHomeAdministrator extends JPanel {
         topRightPanel.setOpaque(false); // Transparent background
         topRightPanel.add(profile);
 
-        JButton butonBack = new JButton("Înapoi");
+        JButton butonBack = new JButton("Log Out");
         butonBack.setBackground(Color.DARK_GRAY);
         butonBack.setForeground(Color.WHITE);
 

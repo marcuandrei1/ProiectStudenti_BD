@@ -120,7 +120,7 @@ public class PaginaLogare extends JPanel {
         });
 
         JPanel panelBack=new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton butonBack = new JButton("Inapoi");
+        JButton butonBack = new JButton("Log Out");
         butonBack.setBackground(Color.LIGHT_GRAY);
         panelBack.add(butonBack);
 
