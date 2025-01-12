@@ -798,5 +798,5 @@ public class PaginaHomeAdministrator extends JPanel {
 }
 
 ///to do:
-///- diferenta intre super si admin
+
 
