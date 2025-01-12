@@ -152,7 +152,12 @@ public class Calendar extends JPanel{
         String[] numeColoane = {"Tip", "Disciplina ", "Ora"};
 
         // Creăm modelul tabelului (inițial gol)
-        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0);
+        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         JTable dataTable = new JTable(tableModel);
         dataTable.setFillsViewportHeight(true);
         dataTable.setPreferredScrollableViewportSize(new Dimension(400, 200));
@@ -273,7 +278,12 @@ public class Calendar extends JPanel{
         String[] numeColoane = {"Tip", "Disciplina ", "Ora"};
 
         // Creăm modelul tabelului (inițial gol)
-        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0);
+        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         JTable dataTable = new JTable(tableModel);
         dataTable.setFillsViewportHeight(true);
         dataTable.setPreferredScrollableViewportSize(new Dimension(400, 200));
