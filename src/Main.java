@@ -94,7 +94,7 @@ public class Main {
             }
         }
 
-        graph.printNodeColors();
+
         try{
             String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
             Connection conn = DriverManager.getConnection(url);

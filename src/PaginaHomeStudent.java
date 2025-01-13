@@ -50,7 +50,12 @@ public class PaginaHomeStudent extends JPanel {
         String[] numeColoane = {"Materie", "Nota Curs", "Nota Seminar", "Nota Laborator", "Nota Finala"};
 
         // Creăm modelul tabelului (inițial gol)
-        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0);
+        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         JTable catalogTable = new JTable(tableModel);
         catalogTable.setFillsViewportHeight(true);
         catalogTable.setPreferredScrollableViewportSize(new Dimension(400, 200));

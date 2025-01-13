@@ -976,6 +976,10 @@ public class PaginaHomeProfesor extends JPanel {
 
 
         JButton orar=new JButton("Vizualizare Orar");
+        orar.setMinimumSize(buttonSize);
+        orar.setPreferredSize(buttonSize);
+        orar.setMaximumSize(buttonSize);
+
         orar.setBackground(Color.DARK_GRAY);
         orar.setForeground(Color.WHITE);
 
@@ -999,11 +1003,21 @@ public class PaginaHomeProfesor extends JPanel {
         /// TODO: vizualizare liste studenti, fac direct catalogul (materie->nume->note (curs, seminar si laborator))
         middlePanel.add(Box.createRigidArea(new Dimension(0, 20)));
         JButton catalogStudentiButton = new JButton("Catalog Studenti");
+        catalogStudentiButton.setMaximumSize(buttonSize);
+        catalogStudentiButton.setPreferredSize(buttonSize);
+        catalogStudentiButton.setMaximumSize(buttonSize);
+        catalogStudentiButton.setBackground(Color.DARK_GRAY);
+        catalogStudentiButton.setForeground(Color.WHITE);
         middlePanel.add(catalogStudentiButton);
 
         String[] numeColoane = {"Materie", "Nume Student", "Nota Curs", "Nota Seminar", "Nota Laborator", "Nota Finala"};
         // Creăm modelul tabelului (inițial gol)
-        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0);
+        DefaultTableModel tableModel = new DefaultTableModel(numeColoane, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         JTable catalogTable = new JTable(tableModel);
         catalogTable.setFillsViewportHeight(true);
         catalogTable.setPreferredScrollableViewportSize(new Dimension(400, 200));
@@ -1071,6 +1085,7 @@ public class PaginaHomeProfesor extends JPanel {
             middlePanel.repaint();
         });
 
+        middlePanel.add(Box.createRigidArea(new Dimension(0, 20))); // Spacing
         JButton downloadButton = new JButton("Descarcă Catalog");
         middlePanel.add(downloadButton);
 

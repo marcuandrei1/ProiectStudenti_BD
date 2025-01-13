@@ -38,7 +38,7 @@ public class PaginaInitiala extends JPanel {
         panelButtons.add(btnAutentificare);
 
         panelButtons.add(Box.createRigidArea(new Dimension(0, 20)));           // trebuie intre elementele intre care vreau spatiu
-        JButton butonLogin = FunctiiUtile.CreateButton("Login", panelButtons);
+        JButton butonLogin = FunctiiUtile.CreateButton("Conectare", panelButtons);
         butonLogin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.getContentPane().removeAll();

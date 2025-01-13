@@ -6,6 +6,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -14,7 +16,7 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 public class Calendar extends JPanel{
@@ -207,36 +209,57 @@ public class Calendar extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 JDialog adaugareDialog = new JDialog();
                 adaugareDialog.setLayout(new MigLayout("wrap, inset 5","","[]10[][grow,bottom]"));
-                adaugareDialog.setMinimumSize(new Dimension(200, 200));
+                adaugareDialog.setMinimumSize(new Dimension(200, 220));
                 adaugareDialog.setLocationRelativeTo(frame);
                 adaugareDialog.setModal(true);
                 adaugareDialog.setTitle("Adauga");
 
                 JComboBox<String> activityType=new JComboBox<>();
-                activityType.addItem("Curs");
-                activityType.addItem("Laborator");
-                activityType.addItem("Seminar");
-
                 JComboBox<String> disciplina=new JComboBox<>();
+                Map<String,List<String>> types=new HashMap<>();
+
                 try {
                     String url = "jdbc:mysql://139.144.67.202:3306/lms?user=lms&password=WHlQjrrRDs5t";
                     Connection conn = DriverManager.getConnection(url);
 
-                    PreparedStatement stmt=conn.prepareStatement("SELECT disciplina.Nume from  disciplina join nota using (idDisciplina) where idProfesor=(SELECT idProfesor from profesor where Username=?);");
+                    PreparedStatement stmt=conn.prepareStatement("SELECT Nume, GROUP_CONCAT(DISTINCT activity_type ORDER BY activity_type SEPARATOR ', ') AS types FROM ( SELECT disciplina.Nume, 'Curs' AS activity_type FROM disciplina JOIN curs ON disciplina.idDisciplina = curs.idDisciplina WHERE curs.idProfesor = (SELECT idProfesor FROM profesor WHERE Username = ?) UNION ALL\n" +
+                            "SELECT disciplina.Nume, 'Seminar' AS activity_type FROM disciplina JOIN seminar ON disciplina.idDisciplina = seminar.idDisciplina WHERE seminar.idProfesor = (SELECT idProfesor FROM profesor WHERE Username = ?) UNION ALL\n" +
+                            "SELECT disciplina.Nume, 'Laborator' AS activity_type FROM disciplina JOIN laborator ON disciplina.idDisciplina = laborator.idDisciplina WHERE laborator.idProfesor = (SELECT idProfesor FROM profesor WHERE Username = ?) ) AS combined\n" +
+                            "GROUP BY Nume;");
                     stmt.setString(1,user.getUsername());
+                    stmt.setString(2,user.getUsername());
+                    stmt.setString(3,user.getUsername());
 
                     ResultSet rs=stmt.executeQuery();
                     while(rs.next()) {
                         disciplina.addItem(rs.getString("Nume"));
+                        types.put(rs.getString("Nume"), List.of(rs.getString("types").split(",")));
                     }
                     conn.close();
                 }
                 catch (Exception ex){
                     ex.printStackTrace();
                 }
+                activityType.removeAllItems();
+                List<String> selectedTypes=new ArrayList<>(types.get(disciplina.getItemAt(0)));
+                for(int i=0;i<selectedTypes.size();i++){
+                    activityType.addItem(selectedTypes.get(i));
+                }
+                disciplina.addItemListener(new ItemListener() {
+                    public void itemStateChanged(ItemEvent e) {
+                        if(e.getStateChange()==ItemEvent.SELECTED){
+                            activityType.removeAllItems();
+                            String selectedItem=(String) disciplina.getSelectedItem();
+                            List<String> selectedTypes=new ArrayList<>(types.get(selectedItem));
+                            for(int i=0;i<selectedTypes.size();i++){
+                                activityType.addItem(selectedTypes.get(i));
+                            }
+                        }
+                    }
+                });
 
-                adaugareDialog.add(activityType,"w 170!");
                 adaugareDialog.add(disciplina,"w 170!");
+                adaugareDialog.add(activityType,"w 170!");
                 HourUISubmit(frame,adaugareDialog,activityType,disciplina,ziuaCurenta);
 
                 adaugareDialog.setVisible(true);
@@ -328,7 +351,7 @@ public class Calendar extends JPanel{
 
         JPanel butonsPanel=new JPanel(new MigLayout("inset 5","[left,grow][right]"));
 
-        JButton adaugare=new JButton("Adauga");
+        JButton adaugare=new JButton("Adauga Activitate");
         adaugare.setBackground(Color.DARK_GRAY);
         adaugare.setForeground(Color.WHITE);
         butonsPanel.add(adaugare);
@@ -336,7 +359,7 @@ public class Calendar extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 JDialog adaugareDialog = new JDialog();
                 adaugareDialog.setLayout(new MigLayout("wrap, inset 5","","[]10[][grow,bottom]"));
-                adaugareDialog.setMinimumSize(new Dimension(200, 200));
+                adaugareDialog.setMinimumSize(new Dimension(270, 220));
                 adaugareDialog.setLocationRelativeTo(frame);
                 adaugareDialog.setModal(true);
                 adaugareDialog.setTitle("Adauga Activitate");
@@ -359,8 +382,18 @@ public class Calendar extends JPanel{
                 catch (Exception ex){
                     ex.printStackTrace();
                 }
-                adaugareDialog.add(grupStudiu,"w 170!");
 
+                JTextField nrMinPartcipanti = new JTextField();
+                JPanel l = FunctiiUtile.creareText(nrMinPartcipanti,"Participanti: ","Numarul minim");
+                nrMinPartcipanti.setFont(new Font("Arial", Font.PLAIN, 15));
+
+                JTextField responseTime = new JTextField();
+                JPanel l2 = FunctiiUtile.creareText(responseTime,"Timp raspuns: ","Numar s/min/h/m/y)");
+                nrMinPartcipanti.setFont(new Font("Arial", Font.PLAIN, 15));
+
+                adaugareDialog.add(grupStudiu,"w 250!");
+                adaugareDialog.add(l,"w 250!");
+                adaugareDialog.add(l2,"w 250!");
                 HourUISubmit(frame,adaugareDialog,null,grupStudiu,ziuaCurenta);
                 adaugareDialog.setVisible(true);
 
@@ -392,7 +425,7 @@ public class Calendar extends JPanel{
     }
     private void HourUISubmit(JFrame frame,JDialog adaugareDialog,JComboBox<String>activtyType,JComboBox<String> disciplina,String ziuaCurenta){
         JTextField activityHour = new JTextField();
-        JPanel l = FunctiiUtile.creareText(activityHour,"Ora:  ","HH:MM");
+        JPanel l = FunctiiUtile.creareText(activityHour,"Ora activitati: ","HH:MM");
         activityHour.setFont(new Font("Arial", Font.PLAIN, 15));
 
         JButton submit=new JButton("Submit");
@@ -445,13 +478,11 @@ public class Calendar extends JPanel{
                         frame.setVisible(true);
                     }
                     else {
+
                         PreparedStatement stmt;
                         stmt =conn.prepareStatement("");
-                        stmt.setString(1,ziuaCurenta);
-                        stmt.setTime(2,Time.valueOf(activityHour.getText()+":00"));
-                        stmt.setString(3,user.getUsername());
-                        stmt.setString(4,disciplina.getSelectedItem().toString());
                         stmt.executeUpdate();
+
                         adaugareDialog.dispose();
                         frame.dispose();
                         JFrame frame = new JFrame();
@@ -466,7 +497,10 @@ public class Calendar extends JPanel{
                 }
             }
         });
-        adaugareDialog.add(l,"w 170!");
+        if(user instanceof Profesor){
+            adaugareDialog.add(l,"w 170!");
+        }
+        else adaugareDialog.add(l,"w 250!");
         adaugareDialog.add(submit,"align center");
     }
     private void exportToCSV(File file,JTable table) {
@@ -512,5 +546,19 @@ public class Calendar extends JPanel{
                 throw new IOException("Ora invalida!");
             }
             text.setBackground(Color.WHITE);
+    }
+    private void verificareRaspuns(String s,JTextField text)throws IOException{
+        if (s.equals("HH:MM")){
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
+            throw new IOException("Ora invalida!");
+        }
+        String regex = "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
+        if(!s.matches(regex)) {
+            Color lightRed = new Color(255, 102, 102);
+            text.setBackground(lightRed);
+            throw new IOException("Ora invalida!");
+        }
+        text.setBackground(Color.WHITE);
     }
 }
